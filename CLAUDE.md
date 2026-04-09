@@ -75,6 +75,7 @@ sudo pm2 restart ummahjobs-backend
 - S1 complete: Laravel 11 + Next.js 15 scaffold, PM2, Nginx config staged
 - S2 complete: All 20 migrations run, 3 seeders (26 categories, 7 job types, 3 packages), 17 Eloquent models
 - S3a complete: Auth backend done — Sanctum, CORS, 7 auth endpoints, password reset flow, legacy_password migration flow. UmmahPass SSO deferred to S3b.
+- S3b complete: Auth frontend done — TypeScript types, API client (Accept: application/json), AuthContext (localStorage), login, register (2-step), forgot-password, reset-password (Suspense), dashboard placeholders (candidate, employer, admin), homepage redirect to /login.
 
 ## Auth Notes
 - All API requests must include Accept: application/json header (without it Laravel redirects instead of returning JSON)
