@@ -76,6 +76,12 @@ sudo pm2 restart ummahjobs-backend
 - S2 complete: All 20 migrations run, 3 seeders (26 categories, 7 job types, 3 packages), 17 Eloquent models
 - S3a complete: Auth backend done — Sanctum, CORS, 7 auth endpoints, password reset flow, legacy_password migration flow. UmmahPass SSO deferred to S3b.
 - S3b complete: Auth frontend done — TypeScript types, API client (Accept: application/json), AuthContext (localStorage), login, register (2-step), forgot-password, reset-password (Suspense), dashboard placeholders (candidate, employer, admin), homepage redirect to /login.
+- S4a complete: WP dump loaded into ummahjobs_umg (wp_* tables, 2069 rows). 2061 users migrated with legacy_password=true. wp_import connection points to ummahjobs_umg. ID map at backend/storage/app/wp_user_id_map.json.
+
+## Import Notes
+- wp_import DB connection points to ummahjobs_umg (same DB — WP tables use wp_ prefix, no conflicts)
+- WP dump was pre-loaded into ummahjobs_umg (wp_commentmeta, wp_users, wp_usermeta, wp_posts, etc.)
+- ID map for WP→ULID lookup: backend/storage/app/wp_user_id_map.json
 
 ## Auth Notes
 - All API requests must include Accept: application/json header (without it Laravel redirects instead of returning JSON)
