@@ -74,6 +74,13 @@ sudo pm2 restart ummahjobs-backend
 ## Session Progress
 - S1 complete: Laravel 11 + Next.js 15 scaffold, PM2, Nginx config staged
 - S2 complete: All 20 migrations run, 3 seeders (26 categories, 7 job types, 3 packages), 17 Eloquent models
+- S3a complete: Auth backend done — Sanctum, CORS, 7 auth endpoints, password reset flow, legacy_password migration flow. UmmahPass SSO deferred to S3b.
+
+## Auth Notes
+- All API requests must include Accept: application/json header (without it Laravel redirects instead of returning JSON)
+- MAIL_MAILER=log (dev) — change to real SMTP before go-live
+- personal_access_tokens uses ulidMorphs (not default morphs) to support ULID user PKs
+- User model has boot() auto-ULID generation
 
 ## Logs
 sudo pm2 logs ummahjobs-backend --lines 50

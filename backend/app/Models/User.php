@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Support\Str;
 use Laravel\Sanctum\HasApiTokens;
 
 class User extends Authenticatable
@@ -39,6 +40,16 @@ class User extends Authenticatable
             'legacy_password'   => 'boolean',
             'is_active'         => 'boolean',
         ];
+    }
+
+    protected static function boot(): void
+    {
+        parent::boot();
+        static::creating(function ($model) {
+            if (empty($model->id)) {
+                $model->id = (string) Str::ulid();
+            }
+        });
     }
 
     public function candidate()
