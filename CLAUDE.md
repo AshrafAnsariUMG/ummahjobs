@@ -78,6 +78,7 @@ sudo pm2 restart ummahjobs-backend
 - S3b complete: Auth frontend done — TypeScript types, API client (Accept: application/json), AuthContext (localStorage), login, register (2-step), forgot-password, reset-password (Suspense), dashboard placeholders (candidate, employer, admin), homepage redirect to /login.
 - S4a complete: WP dump loaded into ummahjobs_umg (wp_* tables, 2069 rows). 2061 users migrated with legacy_password=true. wp_import connection points to ummahjobs_umg. ID map at backend/storage/app/wp_user_id_map.json.
 - S4b complete: 1955 candidates migrated (location/category resolved from wp_terms, languages/socials/cv unserialized). 101 employers migrated (logo direct URL, map_lat/lng extracted, slugs unique). 2 employers skipped (WP users filtered in S4a).
+- S4c complete: 11 blog posts imported (categories from wp_term_relationships, featured images reconstructed as full URLs). 3 employer package credits granted (CelebrateMercy×2 Standard, Echotalk×1 Basic, LaunchGood×3 Extended) with audit log entries. Full data migration complete.
 
 ## Import Notes
 - wp_import DB connection points to ummahjobs_umg (same DB — WP tables use wp_ prefix, no conflicts)
