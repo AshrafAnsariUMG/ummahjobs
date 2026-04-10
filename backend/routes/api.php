@@ -3,9 +3,11 @@
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\BlogController;
 use App\Http\Controllers\Api\CategoryController;
+use App\Http\Controllers\Api\Employer;
 use App\Http\Controllers\Api\EmployerController;
 use App\Http\Controllers\Api\JobController;
 use App\Http\Controllers\Api\PackageController;
+use App\Http\Controllers\Api\WebhookController;
 use Illuminate\Support\Facades\Route;
 
 // Public auth routes
@@ -52,3 +54,20 @@ Route::prefix('blog')->group(function () {
     Route::get('/', [BlogController::class, 'index']);
     Route::get('/{slug}', [BlogController::class, 'show']);
 });
+
+// Employer authenticated routes
+Route::middleware('auth:sanctum')->prefix('employer')->group(function () {
+    // Packages
+    Route::post('packages/checkout', [Employer\PackageController::class, 'checkout']);
+    Route::get('packages/balance', [Employer\PackageController::class, 'balance']);
+    Route::get('packages/history', [Employer\PackageController::class, 'history']);
+
+    // Jobs
+    Route::get('jobs', [Employer\JobController::class, 'index']);
+    Route::post('jobs', [Employer\JobController::class, 'store']);
+    Route::put('jobs/{id}', [Employer\JobController::class, 'update']);
+    Route::delete('jobs/{id}', [Employer\JobController::class, 'destroy']);
+});
+
+// Stripe webhook — no auth middleware
+Route::post('webhooks/stripe', [WebhookController::class, 'handleStripe']);
