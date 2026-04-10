@@ -81,6 +81,7 @@ sudo pm2 restart ummahjobs-backend
 - S4c complete: 11 blog posts imported (categories from wp_term_relationships, featured images reconstructed as full URLs). 3 employer package credits granted (CelebrateMercy×2 Standard, Echotalk×1 Basic, LaunchGood×3 Extended) with audit log entries. Full data migration complete.
 - S5 complete: Jobs API (index/show/featured/stats), Employer API (show/reviews/storeReview), Categories, Job Types, Packages — all public endpoints live. Routes cached.
 - S6a complete: Navbar (sticky, auth-aware, mobile hamburger, avatar dropdown), Footer (4-col dark), ConditionalLayout (hides nav on auth/dashboard paths), Homepage (hero+search, MAN banner, featured carousel, latest jobs, categories grid, stats counter, newsletter). Brand color #033BB0 throughout. TypeScript clean.
+- S6b complete: /jobs (paginated list + filter sidebar with category/type/location/experience), /jobs/[slug] (full detail, apply button, share, bookmark, AI match score stub), /employers/[slug] (profile with cover, open jobs, reviews, map). Toast system + JobCardSkeleton + BookmarkButton + ShareButtons + AIMatchScore + FilterSidebar. Build clean, PM2 restarted.
 
 ## Import Notes
 - wp_import DB connection points to ummahjobs_umg (same DB — WP tables use wp_ prefix, no conflicts)

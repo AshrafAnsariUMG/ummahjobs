@@ -3,6 +3,7 @@ import { Inter } from 'next/font/google'
 import './globals.css'
 import { AuthProvider } from '@/context/AuthContext'
 import ConditionalLayout from '@/components/layout/ConditionalLayout'
+import { ToastProvider } from '@/components/ui/Toast'
 
 const inter = Inter({
   variable: '--font-inter',
@@ -24,7 +25,9 @@ export default function RootLayout({
     <html lang="en" className={inter.variable}>
       <body>
         <AuthProvider>
-          <ConditionalLayout>{children}</ConditionalLayout>
+          <ToastProvider>
+            <ConditionalLayout>{children}</ConditionalLayout>
+          </ToastProvider>
         </AuthProvider>
       </body>
     </html>

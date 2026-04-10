@@ -40,8 +40,38 @@ export interface Employer {
   address: string | null
   logo_path: string | null
   cover_photo_path: string | null
+  map_lat: number | null
+  map_lng: number | null
+  socials: { network: string; url: string }[] | null
   is_verified: boolean
   show_profile: boolean
+  views_count: number
+}
+
+export interface EmployerReview {
+  id: number
+  employer_id: number
+  reviewer_id: string
+  rating: number
+  review_text: string | null
+  created_at: string
+  reviewer: { id: string; display_name: string } | null
+}
+
+export interface JobType {
+  id: number
+  name: string
+  slug: string
+}
+
+export interface PaginatedResponse<T> {
+  data: T[]
+  meta: {
+    current_page: number
+    last_page: number
+    per_page: number
+    total: number
+  }
 }
 
 export interface AuthResponse {
