@@ -62,6 +62,10 @@ Route::middleware('auth:sanctum')->prefix('employer')->group(function () {
     Route::get('packages/balance', [Employer\PackageController::class, 'balance']);
     Route::get('packages/history', [Employer\PackageController::class, 'history']);
 
+    // Profile
+    Route::get('profile', [Employer\ProfileController::class, 'show']);
+    Route::put('profile', [Employer\ProfileController::class, 'update']);
+
     // Jobs
     Route::get('jobs', [Employer\JobController::class, 'index']);
     Route::post('jobs', [Employer\JobController::class, 'store']);

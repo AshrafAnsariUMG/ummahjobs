@@ -110,6 +110,36 @@ export interface Package {
   is_active: boolean
 }
 
+export interface EmployerPackageItem {
+  id: number
+  employer_id: number
+  package_id: number
+  stripe_order_id: string | null
+  credits_remaining: number
+  duration_days: number
+  granted_by_admin: boolean
+  expires_at: string | null
+  created_at: string
+  package: Package | null
+}
+
+export interface CreditBalance {
+  total_credits: number
+  packages: EmployerPackageItem[]
+}
+
+export interface StripeOrderItem {
+  id: number
+  employer_id: number
+  package_id: number
+  stripe_session_id: string
+  amount: number
+  status: string
+  completed_at: string | null
+  created_at: string
+  package: Package | null
+}
+
 export interface Job {
   id: number
   title: string

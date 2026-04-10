@@ -9,11 +9,8 @@ const NO_CHROME_PATHS = [
   '/register',
   '/forgot-password',
   '/reset-password',
-  '/candidate/dashboard',
-  '/employer/dashboard',
-  '/employer/post-job',
-  '/employer/profile',
-  '/candidate/profile',
+  '/candidate',
+  '/employer',
   '/admin',
 ]
 
