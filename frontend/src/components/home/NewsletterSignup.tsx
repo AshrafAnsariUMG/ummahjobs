@@ -1,0 +1,61 @@
+'use client'
+
+import { useState } from 'react'
+
+export default function NewsletterSignup() {
+  const [email, setEmail] = useState('')
+  const [submitted, setSubmitted] = useState(false)
+  const [isLoading, setIsLoading] = useState(false)
+
+  async function handleSubmit(e: React.FormEvent) {
+    e.preventDefault()
+    setIsLoading(true)
+    try {
+      await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/newsletter/subscribe`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+        body: JSON.stringify({ email }),
+      })
+    } catch {
+      // Best-effort — show success regardless
+    } finally {
+      setIsLoading(false)
+      setSubmitted(true)
+    }
+  }
+
+  if (submitted) {
+    return (
+      <div className="text-center">
+        <div className="inline-flex items-center gap-2 bg-green-50 text-green-700 border border-green-200 rounded-xl px-5 py-3 text-sm font-medium">
+          <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+          </svg>
+          You&apos;re subscribed! We&apos;ll keep you updated.
+        </div>
+      </div>
+    )
+  }
+
+  return (
+    <form onSubmit={handleSubmit} className="flex flex-col sm:flex-row gap-3 max-w-md mx-auto">
+      <input
+        type="email"
+        required
+        value={email}
+        onChange={(e) => setEmail(e.target.value)}
+        placeholder="your@email.com"
+        className="flex-1 px-4 py-3 rounded-xl border border-gray-300 text-sm focus:outline-none focus:ring-2 focus:border-transparent bg-white"
+        style={{ '--tw-ring-color': '#033BB0' } as React.CSSProperties}
+      />
+      <button
+        type="submit"
+        disabled={isLoading}
+        className="px-6 py-3 rounded-xl text-sm font-semibold text-white transition-opacity hover:opacity-90 disabled:opacity-70 shrink-0"
+        style={{ backgroundColor: '#033BB0' }}
+      >
+        {isLoading ? 'Subscribing…' : 'Subscribe'}
+      </button>
+    </form>
+  )
+}

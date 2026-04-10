@@ -49,3 +49,36 @@ export interface AuthResponse {
   token: string
   role: string
 }
+
+export interface JobCategory {
+  id: number
+  name: string
+  slug: string
+  icon: string | null
+}
+
+export interface Job {
+  id: number
+  title: string
+  slug: string
+  description: string
+  job_type: string | null
+  location: string | null
+  country: string | null
+  salary_min: number | null
+  salary_max: number | null
+  salary_currency: string
+  salary_type: string | null
+  experience_level: string | null
+  career_level: string | null
+  apply_type: string
+  apply_url: string | null
+  is_featured: boolean
+  is_urgent: boolean
+  status: string
+  expires_at: string | null
+  views_count: number
+  created_at: string
+  employer: Employer
+  category: JobCategory | null
+}
