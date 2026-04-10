@@ -1,0 +1,148 @@
+<?php
+
+namespace App\Http\Controllers\Api;
+
+use App\Http\Controllers\Controller;
+use App\Models\Candidate;
+use App\Models\Employer;
+use App\Models\Job;
+use App\Models\JobCategory;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
+
+class JobController extends Controller
+{
+    public function index(Request $request): JsonResponse
+    {
+        $query = Job::with([
+            'employer:id,company_name,slug,logo_path,is_verified',
+            'category:id,name,slug',
+        ])
+            ->where('status', 'active')
+            ->where(function ($q) {
+                $q->whereNull('expires_at')
+                  ->orWhere('expires_at', '>', now());
+            });
+
+        if ($request->search) {
+            $query->where(function ($q) use ($request) {
+                $q->where('title', 'like', '%' . $request->search . '%')
+                  ->orWhere('description', 'like', '%' . $request->search . '%');
+            });
+        }
+
+        if ($request->category) {
+            $query->whereHas('category', function ($q) use ($request) {
+                $q->where('slug', $request->category);
+            });
+        }
+
+        if ($request->job_type) {
+            $query->where('job_type', $request->job_type);
+        }
+
+        if ($request->location) {
+            $query->where(function ($q) use ($request) {
+                $q->where('location', 'like', '%' . $request->location . '%')
+                  ->orWhere('country', 'like', '%' . $request->location . '%');
+            });
+        }
+
+        if ($request->date_posted) {
+            $map = [
+                '1h'  => now()->subHour(),
+                '24h' => now()->subDay(),
+                '7d'  => now()->subDays(7),
+                '14d' => now()->subDays(14),
+                '30d' => now()->subDays(30),
+            ];
+            if (isset($map[$request->date_posted])) {
+                $query->where('created_at', '>=', $map[$request->date_posted]);
+            }
+        }
+
+        if ($request->experience_level) {
+            $query->where('experience_level', $request->experience_level);
+        }
+
+        if ($request->career_level) {
+            $query->where('career_level', $request->career_level);
+        }
+
+        if ($request->salary_min) {
+            $query->where('salary_max', '>=', $request->salary_min);
+        }
+
+        if ($request->salary_max) {
+            $query->where('salary_min', '<=', $request->salary_max);
+        }
+
+        if ($request->featured) {
+            $query->where('is_featured', true);
+        }
+
+        match ($request->sort) {
+            'newest'      => $query->orderBy('created_at', 'desc'),
+            'salary_asc'  => $query->orderBy('salary_min', 'asc'),
+            'salary_desc' => $query->orderBy('salary_min', 'desc'),
+            default       => $query->orderByDesc('is_featured')->orderByDesc('created_at'),
+        };
+
+        $perPage = min((int) ($request->per_page ?? 12), 50);
+        $jobs    = $query->paginate($perPage);
+
+        return response()->json([
+            'data' => $jobs->items(),
+            'meta' => [
+                'current_page' => $jobs->currentPage(),
+                'last_page'    => $jobs->lastPage(),
+                'per_page'     => $jobs->perPage(),
+                'total'        => $jobs->total(),
+            ],
+        ]);
+    }
+
+    public function show(string $slug): JsonResponse
+    {
+        $job = Job::with([
+            'employer:id,company_name,slug,logo_path,cover_photo_path,is_verified,category,email,socials',
+            'category:id,name,slug',
+        ])
+            ->where('slug', $slug)
+            ->where('status', 'active')
+            ->firstOrFail();
+
+        $job->increment('views_count');
+
+        return response()->json($job);
+    }
+
+    public function featured(): JsonResponse
+    {
+        $jobs = Job::with([
+            'employer:id,company_name,slug,logo_path',
+            'category:id,name,slug',
+        ])
+            ->where('status', 'active')
+            ->where('is_featured', true)
+            ->where(function ($q) {
+                $q->whereNull('expires_at')
+                  ->orWhere('expires_at', '>', now());
+            })
+            ->orderByDesc('created_at')
+            ->limit(6)
+            ->get();
+
+        return response()->json($jobs);
+    }
+
+    public function stats(): JsonResponse
+    {
+        return response()->json([
+            'total_jobs'        => Job::where('status', 'active')->count(),
+            'total_employers'   => Employer::count(),
+            'total_candidates'  => Candidate::count(),
+            'total_categories'  => JobCategory::count(),
+        ]);
+    }
+}
