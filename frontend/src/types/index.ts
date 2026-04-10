@@ -87,6 +87,29 @@ export interface JobCategory {
   icon: string | null
 }
 
+export interface BlogPost {
+  id: number
+  title: string
+  slug: string
+  excerpt: string | null
+  content?: string
+  category: string | null
+  featured_image_path: string | null
+  published_at: string
+  author?: { id: string; display_name: string } | null
+}
+
+export interface Package {
+  id: number
+  name: string
+  price: number
+  post_count: number
+  post_type: string
+  duration_days: number
+  includes_newsletter: boolean
+  is_active: boolean
+}
+
 export interface Job {
   id: number
   title: string

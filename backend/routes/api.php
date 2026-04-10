@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Api\AuthController;
+use App\Http\Controllers\Api\BlogController;
 use App\Http\Controllers\Api\CategoryController;
 use App\Http\Controllers\Api\EmployerController;
 use App\Http\Controllers\Api\JobController;
@@ -45,3 +46,9 @@ Route::middleware('auth:sanctum')->group(function () {
 Route::get('/categories', [CategoryController::class, 'index']);
 Route::get('/job-types', [CategoryController::class, 'jobTypes']);
 Route::get('/packages', [PackageController::class, 'index']);
+
+// Blog routes
+Route::prefix('blog')->group(function () {
+    Route::get('/', [BlogController::class, 'index']);
+    Route::get('/{slug}', [BlogController::class, 'show']);
+});
