@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api\Employer;
 
 use App\Models\Job;
+use App\Models\JobApplication;
 use App\Services\EmployerPackageService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -170,5 +171,37 @@ class JobController
         $job->delete();
 
         return response()->json(['message' => 'Job deleted.']);
+    }
+
+    public function analytics(Request $request, int $id): JsonResponse
+    {
+        $employer = $request->user()->employer;
+        if (!$employer) {
+            return response()->json(['error' => 'Employer profile not found.'], 403);
+        }
+
+        $job = Job::where('id', $id)
+            ->where('employer_id', $employer->id)
+            ->first();
+
+        if (!$job) {
+            return response()->json(['error' => 'Job not found.'], 404);
+        }
+
+        $applicationCount = JobApplication::where('job_id', $job->id)->count();
+        $byStatus = JobApplication::where('job_id', $job->id)
+            ->selectRaw('status, COUNT(*) as count')
+            ->groupBy('status')
+            ->pluck('count', 'status');
+
+        return response()->json([
+            'job_id'             => $job->id,
+            'title'              => $job->title,
+            'views'              => $job->views_count ?? 0,
+            'applications_total' => $applicationCount,
+            'applications_by_status' => $byStatus,
+            'expires_at'         => $job->expires_at,
+            'status'             => $job->status,
+        ]);
     }
 }

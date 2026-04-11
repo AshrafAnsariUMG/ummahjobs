@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\BlogController;
+use App\Http\Controllers\Api\Candidate;
 use App\Http\Controllers\Api\CategoryController;
 use App\Http\Controllers\Api\Employer;
 use App\Http\Controllers\Api\EmployerController;
@@ -71,6 +72,30 @@ Route::middleware('auth:sanctum')->prefix('employer')->group(function () {
     Route::post('jobs', [Employer\JobController::class, 'store']);
     Route::put('jobs/{id}', [Employer\JobController::class, 'update']);
     Route::delete('jobs/{id}', [Employer\JobController::class, 'destroy']);
+    Route::get('jobs/{id}/analytics', [Employer\JobController::class, 'analytics']);
+
+    // Applicants
+    Route::get('applicants', [Employer\ApplicantController::class, 'index']);
+    Route::put('applicants/{id}/status', [Employer\ApplicantController::class, 'updateStatus']);
+});
+
+// Candidate authenticated routes
+Route::middleware('auth:sanctum')->prefix('candidate')->group(function () {
+    // Profile
+    Route::get('profile', [Candidate\ProfileController::class, 'show']);
+    Route::put('profile', [Candidate\ProfileController::class, 'update']);
+    Route::post('profile/cv', [Candidate\ProfileController::class, 'uploadCV']);
+    Route::post('profile/photo', [Candidate\ProfileController::class, 'uploadPhoto']);
+
+    // Saved jobs
+    Route::get('saved-jobs', [Candidate\SavedJobController::class, 'index']);
+    Route::post('saved-jobs', [Candidate\SavedJobController::class, 'store']);
+    Route::delete('saved-jobs/{jobId}', [Candidate\SavedJobController::class, 'destroy']);
+
+    // Applications
+    Route::get('applications', [Candidate\ApplicationController::class, 'index']);
+    Route::post('applications', [Candidate\ApplicationController::class, 'store']);
+    Route::get('applications/check/{jobId}', [Candidate\ApplicationController::class, 'checkApplied']);
 });
 
 // Stripe webhook — no auth middleware
