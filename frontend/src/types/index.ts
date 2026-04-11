@@ -175,6 +175,32 @@ export interface JobAlert {
   category?: JobCategory | null
 }
 
+export interface EmployerApplicant {
+  id: number
+  job_id: number
+  candidate_id: number
+  status: 'applied' | 'viewed' | 'shortlisted' | 'offer'
+  cover_letter: string | null
+  applied_at: string
+  updated_at: string | null
+  job?: { id: number; title: string; slug: string }
+  candidate?: {
+    id: number
+    profile_photo_path: string | null
+    user?: { id: string; display_name: string; email: string }
+  }
+}
+
+export interface JobAnalytics {
+  job_id: number
+  title: string
+  views: number
+  applications_total: number
+  applications_by_status: Record<string, number>
+  expires_at: string | null
+  status: string
+}
+
 export interface Job {
   id: number
   title: string

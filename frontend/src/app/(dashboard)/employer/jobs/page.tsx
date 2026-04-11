@@ -205,6 +205,13 @@ export default function EmployerJobsPage() {
                     <td className="px-5 py-3 hidden lg:table-cell text-gray-500">{job.views_count}</td>
                     <td className="px-5 py-3">
                       <div className="flex items-center justify-end gap-2">
+                        <Link
+                          href={`/employer/jobs/${job.id}/applicants?title=${encodeURIComponent(job.title)}`}
+                          className="text-xs font-medium px-2.5 py-1 rounded-lg border border-blue-200 hover:border-blue-300 transition-colors"
+                          style={{ color: '#033BB0' }}
+                        >
+                          Applicants
+                        </Link>
                         <button
                           onClick={() => openEdit(job)}
                           className="text-xs font-medium px-2.5 py-1 rounded-lg border border-gray-200 hover:border-gray-300 text-gray-700 transition-colors"
