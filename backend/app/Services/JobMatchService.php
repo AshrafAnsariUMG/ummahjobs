@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\Models\Candidate;
 use App\Models\Job;
+use App\Services\CVTextExtractor;
 use Illuminate\Support\Collection;
 
 class JobMatchService
@@ -222,9 +223,10 @@ class JobMatchService
     public function score(Candidate $candidate, Job $job): array
     {
         // ─── 1. SKILLS (weight 0.30) ──────────────────────────────────────
-        // Job: title (doubled for emphasis) + description
-        $jobText = $job->title . ' ' . $job->title . ' ' . strip_tags($job->description ?? '');
-        $jobKws  = $this->expandWithSynonyms($this->extractKeywords($jobText));
+        // Job: title (tripled for emphasis) + description
+        $jobTitle = $job->title . ' ' . $job->title . ' ' . $job->title . ' ';
+        $jobText  = $jobTitle . strip_tags($job->description ?? '');
+        $jobKws   = $this->expandWithSynonyms($this->extractKeywords($jobText));
 
         // Candidate: professional title + job_category + languages
         $langStr = '';
@@ -234,6 +236,18 @@ class JobMatchService
         }
         $candText = trim(($candidate->title ?? '') . ' ' . ($candidate->job_category ?? '') . ' ' . $langStr);
         $candKws  = $this->expandWithSynonyms($this->extractKeywords($candText));
+
+        // Extract CV keywords if a CV file exists — merged with equal weight to profile fields
+        if (!empty($candidate->cv_path)) {
+            $cvFullPath = storage_path('app/public/' . $candidate->cv_path);
+            if (file_exists($cvFullPath)) {
+                $cvText = (new CVTextExtractor())->extract($cvFullPath);
+                if (!empty($cvText)) {
+                    $cvKws   = $this->expandWithSynonyms($this->extractKeywords($cvText));
+                    $candKws = array_values(array_unique(array_merge($candKws, $cvKws)));
+                }
+            }
+        }
 
         $skillsScore = $this->tokenOverlap($jobKws, $candKws);
 

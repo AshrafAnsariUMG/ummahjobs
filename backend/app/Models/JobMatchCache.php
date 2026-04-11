@@ -11,13 +11,14 @@ class JobMatchCache extends Model
     protected $table = 'job_match_cache';
 
     protected $fillable = [
-        'job_id', 'candidate_id', 'match_score', 'match_reasons', 'cached_at',
+        'job_id', 'candidate_id', 'match_score', 'match_reasons', 'dimensions', 'cached_at',
     ];
 
     protected function casts(): array
     {
         return [
             'match_reasons' => 'array',
+            'dimensions'    => 'array',
             'cached_at'     => 'datetime',
         ];
     }

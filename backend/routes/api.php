@@ -43,6 +43,8 @@ Route::prefix('employers')->group(function () {
 // Auth required routes
 Route::middleware('auth:sanctum')->group(function () {
     Route::post('/employers/{slug}/reviews', [EmployerController::class, 'storeReview']);
+    // Batch match — registered before {slug} pattern to avoid route collision
+    Route::post('/jobs/batch-match-scores', [JobController::class, 'batchMatchScores']);
     Route::get('/jobs/{slug}/match-score', [JobController::class, 'matchScore']);
 });
 

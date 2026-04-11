@@ -177,39 +177,112 @@ class JobController extends Controller
             ->first();
 
         if ($cache) {
-            $payload = $cache->match_reasons ?? [];
             return response()->json([
-                'status'     => 'cached',
+                'status'     => 'ready',
                 'score'      => $cache->match_score,
-                'reasons'    => $payload['reasons'] ?? [],
-                'missing'    => $payload['missing'] ?? [],
-                'dimensions' => $payload['dimensions'] ?? [],
+                'reasons'    => $cache->match_reasons ?? [],
+                'dimensions' => $cache->dimensions ?? [],
             ]);
         }
 
         // Calculate fresh score
         $result = (new JobMatchService())->score($candidate, $job);
 
-        // Upsert cache row
+        // Upsert cache row — dimensions stored in dedicated column
         JobMatchCache::updateOrCreate(
             ['job_id' => $job->id, 'candidate_id' => $candidate->id],
             [
                 'match_score'   => $result['score'],
-                'match_reasons' => [
-                    'reasons'    => $result['reasons'],
-                    'missing'    => $result['missing'],
-                    'dimensions' => $result['dimensions'],
-                ],
-                'cached_at' => now(),
+                'match_reasons' => array_merge($result['reasons'], $result['missing']),
+                'dimensions'    => $result['dimensions'],
+                'cached_at'     => now(),
             ]
         );
 
         return response()->json([
-            'status'     => 'calculated',
+            'status'     => 'ready',
             'score'      => $result['score'],
             'reasons'    => $result['reasons'],
             'missing'    => $result['missing'],
             'dimensions' => $result['dimensions'],
         ]);
+    }
+
+    public function batchMatchScores(Request $request): JsonResponse
+    {
+        $user = $request->user();
+
+        if (!$user || $user->role !== 'candidate') {
+            return response()->json([]);
+        }
+
+        $candidate = Candidate::where('user_id', $user->id)->first();
+        if (!$candidate) {
+            return response()->json([]);
+        }
+
+        $request->validate([
+            'slugs'   => 'required|array|max:20',
+            'slugs.*' => 'string',
+        ]);
+
+        $jobs = Job::with('category')
+            ->whereIn('slug', $request->slugs)
+            ->where('status', 'active')
+            ->get();
+
+        if ($jobs->isEmpty()) {
+            return response()->json([]);
+        }
+
+        $service = new JobMatchService();
+        $results = [];
+
+        foreach ($jobs as $job) {
+            // Check 24-hour cache
+            $cached = JobMatchCache::where('job_id', $job->id)
+                ->where('candidate_id', $candidate->id)
+                ->where('cached_at', '>=', now()->subHours(24))
+                ->first();
+
+            if ($cached) {
+                $results[$job->slug] = [
+                    'score' => $cached->match_score,
+                    'label' => $this->scoreLabel($cached->match_score),
+                ];
+                continue;
+            }
+
+            // Score and cache
+            $result = $service->score($candidate, $job);
+
+            JobMatchCache::updateOrCreate(
+                ['job_id' => $job->id, 'candidate_id' => $candidate->id],
+                [
+                    'match_score'   => $result['score'],
+                    'match_reasons' => array_merge($result['reasons'], $result['missing']),
+                    'dimensions'    => $result['dimensions'],
+                    'cached_at'     => now(),
+                ]
+            );
+
+            $results[$job->slug] = [
+                'score' => $result['score'],
+                'label' => $this->scoreLabel($result['score']),
+            ];
+        }
+
+        return response()->json($results);
+    }
+
+    private function scoreLabel(int $score): string
+    {
+        return match (true) {
+            $score >= 90 => 'Excellent Match',
+            $score >= 75 => 'Strong Match',
+            $score >= 60 => 'Good Match',
+            $score >= 40 => 'Moderate Match',
+            default      => 'Low Match',
+        };
     }
 }
