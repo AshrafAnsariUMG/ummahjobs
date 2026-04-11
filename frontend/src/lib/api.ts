@@ -52,4 +52,16 @@ export const api = {
       method: 'DELETE',
       headers: authHeaders(),
     }).then(handleResponse),
+
+  upload: (path: string, formData: FormData) => {
+    const token = getToken()
+    return fetch(`${BASE_URL}${path}`, {
+      method: 'POST',
+      headers: {
+        Accept: 'application/json',
+        ...(token ? { Authorization: `Bearer ${token}` } : {}),
+      },
+      body: formData,
+    }).then(handleResponse)
+  },
 }

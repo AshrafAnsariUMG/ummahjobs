@@ -16,7 +16,7 @@ export interface Candidate {
   phone: string | null
   gender: string | null
   age_range: string | null
-  experience_years: string | null
+  experience_years: number | string | null
   qualification: string | null
   languages: string[] | null
   job_category: string | null
@@ -25,7 +25,9 @@ export interface Candidate {
   cv_path: string | null
   profile_photo_path: string | null
   show_profile: boolean
-  profile_complete_pct: number
+  profile_complete_pct: number | string
+  views_count: number
+  user?: { id: string; display_name: string; email: string }
 }
 
 export interface Employer {
@@ -138,6 +140,39 @@ export interface StripeOrderItem {
   completed_at: string | null
   created_at: string
   package: Package | null
+}
+
+export interface JobApplication {
+  id: number
+  job_id: number
+  candidate_id: number
+  status: 'applied' | 'viewed' | 'shortlisted' | 'offer'
+  cover_letter: string | null
+  applied_at: string
+  updated_at: string | null
+  job?: Job
+}
+
+export interface SavedJob {
+  id: number
+  candidate_id: number
+  job_id: number
+  saved_at: string
+  job?: Job
+}
+
+export interface JobAlert {
+  id: number
+  candidate_id: number
+  keyword: string | null
+  category_id: number | null
+  location: string | null
+  job_type: string | null
+  frequency: 'daily' | 'weekly'
+  last_sent_at: string | null
+  created_at: string
+  updated_at: string
+  category?: JobCategory | null
 }
 
 export interface Job {

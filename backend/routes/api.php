@@ -96,6 +96,12 @@ Route::middleware('auth:sanctum')->prefix('candidate')->group(function () {
     Route::get('applications', [Candidate\ApplicationController::class, 'index']);
     Route::post('applications', [Candidate\ApplicationController::class, 'store']);
     Route::get('applications/check/{jobId}', [Candidate\ApplicationController::class, 'checkApplied']);
+
+    // Alerts
+    Route::get('alerts', [Candidate\AlertController::class, 'index']);
+    Route::post('alerts', [Candidate\AlertController::class, 'store']);
+    Route::put('alerts/{id}', [Candidate\AlertController::class, 'update']);
+    Route::delete('alerts/{id}', [Candidate\AlertController::class, 'destroy']);
 });
 
 // Stripe webhook — no auth middleware
