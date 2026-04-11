@@ -7,6 +7,8 @@ use App\Models\Candidate;
 use App\Models\Employer;
 use App\Models\Job;
 use App\Models\JobCategory;
+use App\Models\JobMatchCache;
+use App\Services\JobMatchService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
@@ -143,6 +145,71 @@ class JobController extends Controller
             'total_employers'   => Employer::count(),
             'total_candidates'  => Candidate::count(),
             'total_categories'  => JobCategory::count(),
+        ]);
+    }
+
+    public function matchScore(Request $request, string $slug): JsonResponse
+    {
+        $user = $request->user();
+
+        if ($user->role !== 'candidate') {
+            return response()->json(['score' => null, 'status' => 'not_candidate']);
+        }
+
+        $candidate = Candidate::where('user_id', $user->id)->first();
+        if (!$candidate) {
+            return response()->json(['score' => null, 'status' => 'no_profile']);
+        }
+
+        $job = Job::with('category')
+            ->where('slug', $slug)
+            ->where('status', 'active')
+            ->first();
+
+        if (!$job) {
+            return response()->json(['score' => null, 'status' => 'job_not_found'], 404);
+        }
+
+        // Check 24-hour cache
+        $cache = JobMatchCache::where('job_id', $job->id)
+            ->where('candidate_id', $candidate->id)
+            ->where('cached_at', '>=', now()->subHours(24))
+            ->first();
+
+        if ($cache) {
+            $payload = $cache->match_reasons ?? [];
+            return response()->json([
+                'status'     => 'cached',
+                'score'      => $cache->match_score,
+                'reasons'    => $payload['reasons'] ?? [],
+                'missing'    => $payload['missing'] ?? [],
+                'dimensions' => $payload['dimensions'] ?? [],
+            ]);
+        }
+
+        // Calculate fresh score
+        $result = (new JobMatchService())->score($candidate, $job);
+
+        // Upsert cache row
+        JobMatchCache::updateOrCreate(
+            ['job_id' => $job->id, 'candidate_id' => $candidate->id],
+            [
+                'match_score'   => $result['score'],
+                'match_reasons' => [
+                    'reasons'    => $result['reasons'],
+                    'missing'    => $result['missing'],
+                    'dimensions' => $result['dimensions'],
+                ],
+                'cached_at' => now(),
+            ]
+        );
+
+        return response()->json([
+            'status'     => 'calculated',
+            'score'      => $result['score'],
+            'reasons'    => $result['reasons'],
+            'missing'    => $result['missing'],
+            'dimensions' => $result['dimensions'],
         ]);
     }
 }

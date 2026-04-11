@@ -142,7 +142,7 @@ export default async function JobDetailPage({ params }: PageProps) {
           </div>
 
           {/* AI Match Score (client, token-aware) */}
-          <AIMatchScore jobSlug={job.slug} token={null} />
+          <AIMatchScore jobSlug={job.slug} />
 
           {/* Description */}
           <div className="bg-white rounded-2xl border border-gray-200 p-6">
