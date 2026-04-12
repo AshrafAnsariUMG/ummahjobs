@@ -12,6 +12,7 @@ class DatabaseSeeder extends Seeder
             JobCategorySeeder::class,
             JobTypeSeeder::class,
             PackageSeeder::class,
+            RoleEquivalencySeeder::class,
         ]);
     }
 }

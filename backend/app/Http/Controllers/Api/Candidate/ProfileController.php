@@ -12,7 +12,7 @@ class ProfileController
         'title', 'location', 'phone', 'gender', 'age_range',
         'experience_years', 'qualification', 'job_category',
         'salary_type', 'cv_path', 'profile_photo_path',
-        'languages', 'socials',
+        'languages', 'socials', 'skills',
     ];
 
     public function show(Request $request): JsonResponse
@@ -42,6 +42,8 @@ class ProfileController
             'qualification'    => 'nullable|string|max:255',
             'languages'        => 'nullable|array',
             'languages.*'      => 'string|max:100',
+            'skills'           => 'nullable|array',
+            'skills.*'         => 'string|max:100',
             'job_category'     => 'nullable|string|max:255',
             'salary_type'      => 'nullable|string|max:50',
             'socials'          => 'nullable|array',
