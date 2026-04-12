@@ -125,9 +125,14 @@ class AuthController extends Controller
             $profile = $user->employer;
         }
 
+        $unreadMessages = \App\Models\Message::where('recipient_id', $user->id)
+            ->whereNull('read_at')
+            ->count();
+
         return response()->json([
-            'user'    => $user,
-            'profile' => $profile,
+            'user'            => $user,
+            'profile'         => $profile,
+            'unread_messages' => $unreadMessages,
         ]);
     }
 

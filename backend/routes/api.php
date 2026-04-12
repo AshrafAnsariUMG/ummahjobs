@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\BlogController;
+use App\Http\Controllers\Api\MessageController;
 use App\Http\Controllers\Api\Candidate;
 use App\Http\Controllers\Api\CategoryController;
 use App\Http\Controllers\Api\Employer;
@@ -46,6 +47,15 @@ Route::middleware('auth:sanctum')->group(function () {
     // Batch match — registered before {slug} pattern to avoid route collision
     Route::post('/jobs/batch-match-scores', [JobController::class, 'batchMatchScores']);
     Route::get('/jobs/{slug}/match-score', [JobController::class, 'matchScore']);
+
+    // Messages
+    Route::prefix('messages')->group(function () {
+        Route::get('/', [MessageController::class, 'inbox']);
+        Route::get('/unread-count', [MessageController::class, 'unreadCount']);
+        Route::post('/', [MessageController::class, 'send']);
+        Route::get('/thread/{userId}', [MessageController::class, 'thread']);
+        Route::put('/thread/{userId}/read', [MessageController::class, 'markRead']);
+    });
 });
 
 // Public utility routes
