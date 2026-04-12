@@ -2,7 +2,7 @@
 
 import { Suspense, useEffect, useState } from 'react'
 import Link from 'next/link'
-import { useParams, useSearchParams } from 'next/navigation'
+import { useParams, useRouter, useSearchParams } from 'next/navigation'
 import { api } from '@/lib/api'
 import { useToast } from '@/components/ui/Toast'
 import type { EmployerApplicant } from '@/types'
@@ -36,6 +36,7 @@ function ApplicantCard({
   onStatusChange: (id: number, status: EmployerApplicant['status']) => void
 }) {
   const { showToast } = useToast()
+  const router = useRouter()
   const [updating, setUpdating] = useState(false)
   const [expanded, setExpanded] = useState(false)
 
@@ -110,6 +111,16 @@ function ApplicantCard({
               >
                 View Profile
               </button>
+
+              {app.candidate?.user?.id && (
+                <button
+                  onClick={() => router.push(`/employer/messages?compose=${app.candidate!.user!.id}`)}
+                  className="px-2.5 py-1.5 rounded-lg text-xs font-medium border transition-colors hover:bg-blue-50"
+                  style={{ color: '#033BB0', borderColor: '#033BB0' }}
+                >
+                  Message
+                </button>
+              )}
             </div>
           </div>
 

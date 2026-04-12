@@ -70,6 +70,7 @@ export default function CandidateLayout({ children }: { children: React.ReactNod
   const pathname = usePathname()
   const [mobileOpen, setMobileOpen] = useState(false)
   const [profilePhoto, setProfilePhoto] = useState<string | null>(null)
+  const [unreadCount, setUnreadCount] = useState(0)
 
   useEffect(() => {
     if (!isLoading && (!isAuthenticated || role !== 'candidate')) {
@@ -83,6 +84,18 @@ export default function CandidateLayout({ children }: { children: React.ReactNod
         .then((c: Candidate) => setProfilePhoto(c.profile_photo_path))
         .catch(() => {})
     }
+  }, [isAuthenticated, role])
+
+  useEffect(() => {
+    if (!isAuthenticated || role !== 'candidate') return
+    const fetchUnread = () => {
+      api.get('/api/messages/unread-count')
+        .then((d: { unread_count: number }) => setUnreadCount(d.unread_count))
+        .catch(() => {})
+    }
+    fetchUnread()
+    const timer = setInterval(fetchUnread, 30000)
+    return () => clearInterval(timer)
   }, [isAuthenticated, role])
 
   if (isLoading) {
@@ -128,6 +141,7 @@ export default function CandidateLayout({ children }: { children: React.ReactNod
         <nav className="flex-1 py-4 px-3 space-y-0.5 overflow-y-auto">
           {navLinks.map((link) => {
             const isActive = pathname === link.href || pathname.startsWith(link.href + '/')
+            const isMessages = link.href === '/candidate/messages'
             return (
               <Link
                 key={link.href}
@@ -141,7 +155,21 @@ export default function CandidateLayout({ children }: { children: React.ReactNod
                 style={isActive ? { backgroundColor: '#033BB0' } : undefined}
               >
                 {link.icon}
-                {link.label}
+                <span className="flex-1">{link.label}</span>
+                {isMessages && unreadCount > 0 && (
+                  <span
+                    className="text-white font-bold rounded-full flex items-center justify-center shrink-0"
+                    style={{
+                      backgroundColor: '#ef4444',
+                      minWidth: 18,
+                      height: 18,
+                      fontSize: 10,
+                      padding: '0 4px',
+                    }}
+                  >
+                    {unreadCount > 9 ? '9+' : unreadCount}
+                  </span>
+                )}
               </Link>
             )
           })}

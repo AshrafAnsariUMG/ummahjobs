@@ -168,6 +168,36 @@ function AvatarDropdown() {
   )
 }
 
+function Messagesbell() {
+  const { role, unreadMessages } = useAuth()
+  const messagesHref = role === 'employer' ? '/employer/messages' : '/candidate/messages'
+  return (
+    <Link
+      href={messagesHref}
+      className="relative p-2 rounded-lg text-gray-500 hover:bg-gray-100 hover:text-gray-700 transition-colors"
+      aria-label="Messages"
+    >
+      <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+        <path strokeLinecap="round" strokeLinejoin="round" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" />
+      </svg>
+      {unreadMessages > 0 && (
+        <span
+          className="absolute -top-0.5 -right-0.5 flex items-center justify-center rounded-full text-white font-bold"
+          style={{
+            backgroundColor: '#ef4444',
+            minWidth: 16,
+            height: 16,
+            fontSize: 9,
+            padding: '0 3px',
+          }}
+        >
+          {unreadMessages > 9 ? '9+' : unreadMessages}
+        </span>
+      )}
+    </Link>
+  )
+}
+
 export default function Navbar() {
   const { isAuthenticated, isLoading, role } = useAuth()
   const [mobileOpen, setMobileOpen] = useState(false)
@@ -222,6 +252,7 @@ export default function Navbar() {
                     Post a Job
                   </Link>
                 )}
+                <Messagesbell />
                 <AvatarDropdown />
               </>
             )}

@@ -11,6 +11,7 @@ interface AuthContextValue {
   role: string | null
   isLoading: boolean
   isAuthenticated: boolean
+  unreadMessages: number
   login: (token: string, user: User) => void
   logout: () => void
 }
@@ -22,6 +23,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(null)
   const [token, setToken] = useState<string | null>(null)
   const [isLoading, setIsLoading] = useState(true)
+  const [unreadMessages, setUnreadMessages] = useState(0)
 
   useEffect(() => {
     const storedToken = localStorage.getItem('uj_token')
@@ -34,9 +36,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         setToken(storedToken)
 
         api.get('/api/auth/me')
-          .then((data: { user: User }) => {
+          .then((data: { user: User; unread_messages?: number }) => {
             setUser(data.user)
             localStorage.setItem('uj_user', JSON.stringify(data.user))
+            if (data.unread_messages !== undefined) {
+              setUnreadMessages(data.unread_messages)
+            }
           })
           .catch(() => {
             localStorage.removeItem('uj_token')
@@ -79,6 +84,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         role: user?.role ?? null,
         isLoading,
         isAuthenticated: !!user && !!token,
+        unreadMessages,
         login,
         logout,
       }}

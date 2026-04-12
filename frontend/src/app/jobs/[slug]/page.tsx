@@ -5,6 +5,7 @@ import type { Job } from '@/types'
 import BookmarkButton from '@/components/jobs/BookmarkButton'
 import ShareButtons from '@/components/jobs/ShareButtons'
 import AIMatchScore from '@/components/jobs/AIMatchScore'
+import MessageEmployerButton from '@/components/jobs/MessageEmployerButton'
 import { categoryIcons, defaultIcon } from '@/lib/categoryIcons'
 
 const API = process.env.NEXT_PUBLIC_API_URL
@@ -179,6 +180,8 @@ export default async function JobDetailPage({ params }: PageProps) {
                 Apply Now →
               </Link>
             )}
+
+            <MessageEmployerButton employerUserId={job.employer.user_id} />
 
             {job.expires_at && (
               <p className="text-xs text-gray-400 text-center mt-3">

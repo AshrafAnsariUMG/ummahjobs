@@ -202,6 +202,41 @@ export interface JobAnalytics {
   status: string
 }
 
+export interface MessageThread {
+  other_user_id: string
+  other_user: {
+    id: string
+    display_name: string
+    role: string
+    slug?: string
+    logo_path?: string
+    photo?: string
+    company_name?: string
+  }
+  latest_message: {
+    id: number
+    body: string
+    sent_at: string
+    is_mine: boolean
+    read_at: string | null
+  }
+  unread_count: number
+  job?: {
+    id: number
+    title: string
+    slug: string
+  } | null
+}
+
+export interface Message {
+  id: number
+  body: string
+  is_mine: boolean
+  job_id: number | null
+  read_at: string | null
+  sent_at: string
+}
+
 export interface Job {
   id: number
   title: string

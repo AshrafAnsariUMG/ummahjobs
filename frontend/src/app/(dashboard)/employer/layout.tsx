@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
 import { useAuth } from '@/context/AuthContext'
+import { api } from '@/lib/api'
 
 const navLinks = [
   {
@@ -85,12 +86,25 @@ export default function EmployerLayout({ children }: { children: React.ReactNode
   const router = useRouter()
   const pathname = usePathname()
   const [mobileOpen, setMobileOpen] = useState(false)
+  const [unreadCount, setUnreadCount] = useState(0)
 
   useEffect(() => {
     if (!isLoading && (!isAuthenticated || role !== 'employer')) {
       router.replace('/login')
     }
   }, [isLoading, isAuthenticated, role, router])
+
+  useEffect(() => {
+    if (!isAuthenticated || role !== 'employer') return
+    const fetchUnread = () => {
+      api.get('/api/messages/unread-count')
+        .then((d: { unread_count: number }) => setUnreadCount(d.unread_count))
+        .catch(() => {})
+    }
+    fetchUnread()
+    const timer = setInterval(fetchUnread, 30000)
+    return () => clearInterval(timer)
+  }, [isAuthenticated, role])
 
   if (isLoading) {
     return (
@@ -135,6 +149,7 @@ export default function EmployerLayout({ children }: { children: React.ReactNode
         <nav className="flex-1 py-4 px-3 space-y-0.5 overflow-y-auto">
           {navLinks.map((link) => {
             const isActive = pathname === link.href || pathname.startsWith(link.href + '/')
+            const isMessages = link.href === '/employer/messages'
             return (
               <Link
                 key={link.href}
@@ -148,7 +163,21 @@ export default function EmployerLayout({ children }: { children: React.ReactNode
                 style={isActive ? { backgroundColor: '#033BB0' } : undefined}
               >
                 {link.icon}
-                {link.label}
+                <span className="flex-1">{link.label}</span>
+                {isMessages && unreadCount > 0 && (
+                  <span
+                    className="text-white font-bold rounded-full flex items-center justify-center shrink-0"
+                    style={{
+                      backgroundColor: '#ef4444',
+                      minWidth: 18,
+                      height: 18,
+                      fontSize: 10,
+                      padding: '0 4px',
+                    }}
+                  >
+                    {unreadCount > 9 ? '9+' : unreadCount}
+                  </span>
+                )}
               </Link>
             )
           })}
