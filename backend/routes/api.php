@@ -3,6 +3,7 @@
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\BlogController;
 use App\Http\Controllers\Api\MessageController;
+use App\Http\Controllers\Api\Admin;
 use App\Http\Controllers\Api\Candidate;
 use App\Http\Controllers\Api\CategoryController;
 use App\Http\Controllers\Api\Employer;
@@ -10,6 +11,7 @@ use App\Http\Controllers\Api\EmployerController;
 use App\Http\Controllers\Api\JobController;
 use App\Http\Controllers\Api\PackageController;
 use App\Http\Controllers\Api\WebhookController;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
 // Public auth routes
@@ -116,6 +118,35 @@ Route::middleware('auth:sanctum')->prefix('candidate')->group(function () {
     Route::post('alerts', [Candidate\AlertController::class, 'store']);
     Route::put('alerts/{id}', [Candidate\AlertController::class, 'update']);
     Route::delete('alerts/{id}', [Candidate\AlertController::class, 'destroy']);
+});
+
+// Admin routes
+Route::middleware(['auth:sanctum', 'role:admin'])->prefix('admin')->group(function () {
+    // Users
+    Route::get('users', [Admin\UserController::class, 'index']);
+    Route::put('users/{id}/role', [Admin\UserController::class, 'updateRole']);
+    Route::put('users/{id}/status', [Admin\UserController::class, 'updateStatus']);
+    Route::delete('users/{id}', [Admin\UserController::class, 'destroy']);
+
+    // Stats
+    Route::get('stats', function () {
+        return response()->json([
+            'total_users'        => App\Models\User::count(),
+            'total_jobs'         => App\Models\Job::where('status', 'active')->count(),
+            'total_employers'    => App\Models\Employer::count(),
+            'total_candidates'   => App\Models\Candidate::count(),
+            'total_applications' => App\Models\JobApplication::count(),
+        ]);
+    });
+
+    // Audit log
+    Route::get('audit-log', function (Request $request) {
+        return response()->json(
+            App\Models\AdminAuditLog::with(['admin', 'targetUser'])
+                ->orderByDesc('created_at')
+                ->paginate($request->per_page ?? 20)
+        );
+    });
 });
 
 // Stripe webhook — no auth middleware
