@@ -19,6 +19,7 @@ export interface Candidate {
   experience_years: number | string | null
   qualification: string | null
   languages: string[] | null
+  skills: string[] | null
   job_category: string | null
   salary_type: string | null
   socials: { network: string; url: string }[] | null

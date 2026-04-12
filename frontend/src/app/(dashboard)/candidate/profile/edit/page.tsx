@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { api } from '@/lib/api'
 import { useToast } from '@/components/ui/Toast'
+import SkillsInput from '@/components/candidate/SkillsInput'
 import type { Candidate, JobCategory } from '@/types'
 
 const GENDER_OPTIONS = [
@@ -65,6 +66,7 @@ interface FormState {
   job_category: string
   salary_type: string
   languages: string[]
+  skills: string[]
   socials: { network: string; url: string }[]
   show_profile: boolean
 }
@@ -95,6 +97,7 @@ export default function CandidateProfileEditPage() {
     job_category: '',
     salary_type: '',
     languages: [],
+    skills: [],
     socials: [],
     show_profile: true,
   })
@@ -119,6 +122,7 @@ export default function CandidateProfileEditPage() {
           job_category: profile.job_category ?? '',
           salary_type: profile.salary_type ?? '',
           languages: profile.languages ?? [],
+          skills: profile.skills ?? [],
           socials: profile.socials ?? [],
           show_profile: profile.show_profile ?? true,
         })
@@ -438,7 +442,19 @@ export default function CandidateProfileEditPage() {
         </div>
       </div>
 
-      {/* Section 4: Languages */}
+      {/* Section 4: Skills */}
+      <div className="bg-white rounded-2xl border border-gray-200 p-5 mb-5">
+        <h2 className="font-semibold text-gray-900 text-sm mb-1">Skills</h2>
+        <p className="text-xs text-gray-400 mb-4">
+          Add your key skills — be specific. e.g. React, Laravel, Python, Figma, Google Ads
+        </p>
+        <SkillsInput
+          value={form.skills}
+          onChange={(skills) => set('skills', skills)}
+        />
+      </div>
+
+      {/* Section 5: Languages */}
       <div className="bg-white rounded-2xl border border-gray-200 p-5 mb-5">
         <h2 className="font-semibold text-gray-900 text-sm mb-4">Languages</h2>
 
@@ -495,7 +511,7 @@ export default function CandidateProfileEditPage() {
         </div>
       </div>
 
-      {/* Section 5: Social Links */}
+      {/* Section 6: Social Links */}
       <div className="bg-white rounded-2xl border border-gray-200 p-5 mb-5">
         <div className="flex items-center justify-between mb-4">
           <h2 className="font-semibold text-gray-900 text-sm">Social Links</h2>
@@ -542,7 +558,7 @@ export default function CandidateProfileEditPage() {
         )}
       </div>
 
-      {/* Section 6: CV */}
+      {/* Section 7: CV */}
       <div className="bg-white rounded-2xl border border-gray-200 p-5 mb-5">
         <h2 className="font-semibold text-gray-900 text-sm mb-4">CV / Resume</h2>
         <div className="flex items-start gap-4">
@@ -586,7 +602,7 @@ export default function CandidateProfileEditPage() {
         />
       </div>
 
-      {/* Section 7: Visibility */}
+      {/* Section 8: Visibility */}
       <div className="bg-white rounded-2xl border border-gray-200 p-5 mb-6">
         <label className="flex items-center gap-3 cursor-pointer">
           <input

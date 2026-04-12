@@ -88,6 +88,17 @@ export default function CandidateDashboardPage() {
               style={{ width: `${completionPct}%`, backgroundColor: '#033BB0' }}
             />
           </div>
+          {(!candidate.skills || candidate.skills.length === 0) && (
+            <p className="text-xs text-blue-700 mb-2">
+              <Link
+                href="/candidate/profile/edit"
+                className="font-semibold underline"
+                style={{ color: '#033BB0' }}
+              >
+                Add your skills to get better job matches →
+              </Link>
+            </p>
+          )}
           <Link
             href="/candidate/profile/edit"
             className="text-xs font-semibold underline"
