@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api\Candidate;
 
+use App\Models\JobMatchCache;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
@@ -52,6 +53,9 @@ class ProfileController
 
         $candidate->update($validated);
         $candidate->update(['profile_complete_pct' => $this->calcCompletion($candidate->fresh())]);
+
+        // Invalidate match cache so updated profile reflects immediately on next score request
+        JobMatchCache::where('candidate_id', $candidate->id)->delete();
 
         return response()->json($candidate->fresh());
     }

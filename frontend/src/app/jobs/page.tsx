@@ -1,9 +1,8 @@
 import { Suspense } from 'react'
 import Link from 'next/link'
 import type { Job, JobCategory, JobType, PaginatedResponse } from '@/types'
-import JobCard from '@/components/jobs/JobCard'
-import JobCardSkeleton from '@/components/ui/JobCardSkeleton'
 import FilterSidebar from '@/components/jobs/FilterSidebar'
+import JobListWithScores from '@/components/jobs/JobListWithScores'
 
 const API = process.env.NEXT_PUBLIC_API_URL
 
@@ -96,11 +95,7 @@ export default async function JobsPage({ searchParams }: PageProps) {
         <div className="flex-1 min-w-0">
           {jobs.length > 0 ? (
             <>
-              <div className="space-y-3">
-                {jobs.map((job) => (
-                  <JobCard key={job.id} job={job} variant="list" />
-                ))}
-              </div>
+              <JobListWithScores jobs={jobs} />
 
               {/* Pagination */}
               {meta.last_page > 1 && (

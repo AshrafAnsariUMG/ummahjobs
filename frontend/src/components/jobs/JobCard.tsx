@@ -5,6 +5,7 @@ import { timeAgo } from '@/lib/timeAgo'
 interface JobCardProps {
   job: Job
   variant?: 'list' | 'carousel'
+  matchScore?: number | null
 }
 
 function EmployerLogo({ name, logoPath }: { name: string; logoPath: string | null }) {
@@ -45,7 +46,30 @@ function LogoFallback({ name, size }: { name: string; size: 'sm' | 'md' }) {
   )
 }
 
-export default function JobCard({ job, variant = 'list' }: JobCardProps) {
+function MatchBadge({ score }: { score: number }) {
+  const { bg, color } =
+    score >= 75 ? { bg: '#DCFCE7', color: '#166534' } :
+    score >= 60 ? { bg: '#DBEAFE', color: '#1E40AF' } :
+    score >= 40 ? { bg: '#FEF9C3', color: '#854D0E' } :
+                  { bg: '#FEE2E2', color: '#991B1B' }
+  return (
+    <span
+      style={{
+        backgroundColor: bg,
+        color,
+        fontSize: 11,
+        fontWeight: 500,
+        padding: '2px 8px',
+        borderRadius: 20,
+        whiteSpace: 'nowrap',
+      }}
+    >
+      {score}% match
+    </span>
+  )
+}
+
+export default function JobCard({ job, variant = 'list', matchScore }: JobCardProps) {
   if (variant === 'carousel') {
     return (
       <Link
@@ -98,6 +122,7 @@ export default function JobCard({ job, variant = 'list' }: JobCardProps) {
               {job.job_type}
             </span>
           )}
+          {matchScore != null && <MatchBadge score={matchScore} />}
         </div>
       </Link>
     )
@@ -132,14 +157,17 @@ export default function JobCard({ job, variant = 'list' }: JobCardProps) {
               )}
             </p>
           </div>
-          {job.is_featured && (
-            <span
-              className="text-xs font-medium px-2 py-0.5 rounded-full text-white shrink-0"
-              style={{ backgroundColor: '#033BB0' }}
-            >
-              Featured
-            </span>
-          )}
+          <div className="flex items-center gap-1.5 shrink-0">
+            {matchScore != null && <MatchBadge score={matchScore} />}
+            {job.is_featured && (
+              <span
+                className="text-xs font-medium px-2 py-0.5 rounded-full text-white"
+                style={{ backgroundColor: '#033BB0' }}
+              >
+                Featured
+              </span>
+            )}
+          </div>
         </div>
 
         <div className="flex flex-wrap items-center gap-2 mt-2">
