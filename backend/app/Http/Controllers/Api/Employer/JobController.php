@@ -5,12 +5,37 @@ namespace App\Http\Controllers\Api\Employer;
 use App\Models\Job;
 use App\Models\JobApplication;
 use App\Services\EmployerPackageService;
+use App\Services\JDWriterService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 
 class JobController
 {
+    public function generateDescription(Request $request): JsonResponse
+    {
+        $request->validate([
+            'title'            => 'required|string|max:255',
+            'job_type'         => 'nullable|string',
+            'location'         => 'nullable|string',
+            'experience_level' => 'nullable|string',
+            'career_level'     => 'nullable|string',
+            'category'         => 'nullable|string',
+            'responsibilities' => 'required|string|max:3000',
+            'requirements'     => 'nullable|string|max:3000',
+            'salary_min'       => 'nullable|integer',
+            'salary_max'       => 'nullable|integer',
+            'salary_currency'  => 'nullable|string',
+            'salary_type'      => 'nullable|string',
+            'is_urgent'        => 'nullable|boolean',
+        ]);
+
+        $service     = new JDWriterService();
+        $description = $service->generate($request->all());
+
+        return response()->json(['description' => $description]);
+    }
+
     public function store(Request $request): JsonResponse
     {
         $employer = $request->user()->employer;

@@ -87,6 +87,8 @@ export default function PostJobPage() {
   const [categories, setCategories] = useState<JobCategory[]>([])
   const [balance, setBalance] = useState<CreditBalance | null>(null)
   const [submitting, setSubmitting] = useState(false)
+  const [generating, setGenerating] = useState(false)
+  const [responsibilities, setResponsibilities] = useState('')
   const [errors, setErrors] = useState<Record<string, string>>({})
 
   useEffect(() => {
@@ -117,6 +119,39 @@ export default function PostJobPage() {
     if (form.apply_type === 'external' && !form.apply_url.trim()) errs.apply_url = 'External URL is required.'
     setErrors(errs)
     return Object.keys(errs).length === 0
+  }
+
+  async function generateDescription() {
+    if (!responsibilities.trim()) {
+      showToast('Enter some key responsibilities first.', 'error')
+      return
+    }
+    setGenerating(true)
+    try {
+      const categoryName = categories.find((c) => String(c.id) === form.category_id)?.name ?? ''
+      const payload = {
+        title: form.title,
+        job_type: form.job_type || null,
+        location: form.location || null,
+        experience_level: form.experience_level || null,
+        career_level: form.career_level || null,
+        category: categoryName || null,
+        responsibilities,
+        requirements: null,
+        salary_min: form.salary_min ? Number(form.salary_min) : null,
+        salary_max: form.salary_max ? Number(form.salary_max) : null,
+        salary_currency: form.salary_currency || null,
+        salary_type: form.salary_type || null,
+        is_urgent: form.is_urgent,
+      }
+      const res = await api.post('/api/employer/jobs/generate-description', payload) as { description: string }
+      set('description', res.description)
+      showToast('Description generated! Review and edit as needed.', 'success')
+    } catch {
+      showToast('Failed to generate description. Please try again.', 'error')
+    } finally {
+      setGenerating(false)
+    }
   }
 
   async function handleSubmit() {
@@ -272,10 +307,57 @@ export default function PostJobPage() {
           <div className="space-y-5">
             <h2 className="font-semibold text-gray-900 mb-4">Job Details</h2>
 
+            {/* Key Responsibilities */}
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
-                Description <span className="text-red-500">*</span>
+                Key Responsibilities
               </label>
+              <p className="text-xs text-gray-400 mb-2">
+                Enter main responsibilities, one per line or comma-separated. These will shape the job description.
+              </p>
+              <textarea
+                value={responsibilities}
+                onChange={(e) => setResponsibilities(e.target.value)}
+                rows={4}
+                placeholder={"e.g. Manage a team of developers,\nReview and merge pull requests,\nCoordinate with product team..."}
+                className="w-full px-3 py-2.5 text-sm rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:border-transparent resize-none"
+                style={{ '--tw-ring-color': '#033BB0' } as React.CSSProperties}
+              />
+            </div>
+
+            {/* Generate Description button */}
+            <div>
+              <button
+                type="button"
+                onClick={generateDescription}
+                disabled={generating}
+                className="inline-flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium border transition-colors disabled:opacity-60"
+                style={{ borderColor: '#033BB0', color: '#033BB0' }}
+              >
+                {generating ? (
+                  <>
+                    <svg className="animate-spin h-4 w-4 shrink-0" fill="none" viewBox="0 0 24 24">
+                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z" />
+                    </svg>
+                    Generating...
+                  </>
+                ) : (
+                  <>
+                    ✨ Generate Description
+                  </>
+                )}
+              </button>
+            </div>
+
+            {/* Description */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Job Description <span className="text-red-500">*</span>
+              </label>
+              <p className="text-xs text-gray-400 mb-2">
+                Edit the generated description or write your own.
+              </p>
               <textarea
                 value={form.description}
                 onChange={(e) => set('description', e.target.value)}

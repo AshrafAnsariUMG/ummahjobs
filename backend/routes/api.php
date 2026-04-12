@@ -71,6 +71,7 @@ Route::middleware('auth:sanctum')->prefix('employer')->group(function () {
     Route::put('profile', [Employer\ProfileController::class, 'update']);
 
     // Jobs
+    Route::post('jobs/generate-description', [Employer\JobController::class, 'generateDescription']);
     Route::get('jobs', [Employer\JobController::class, 'index']);
     Route::post('jobs', [Employer\JobController::class, 'store']);
     Route::put('jobs/{id}', [Employer\JobController::class, 'update']);
