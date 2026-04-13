@@ -159,6 +159,14 @@ Route::middleware(['auth:sanctum', 'role:admin'])->prefix('admin')->group(functi
 
     // Candidates
     Route::get('candidates', [Admin\CandidateController::class, 'index']);
+
+    // Blog (upload-image before {slug} to avoid collision)
+    Route::get('blog', [Admin\BlogController::class, 'index']);
+    Route::post('blog', [Admin\BlogController::class, 'store']);
+    Route::post('blog/upload-image', [Admin\BlogController::class, 'uploadImage']);
+    Route::get('blog/{slug}', [Admin\BlogController::class, 'show']);
+    Route::put('blog/{slug}', [Admin\BlogController::class, 'update']);
+    Route::delete('blog/{slug}', [Admin\BlogController::class, 'destroy']);
 });
 
 // Stripe webhook — no auth middleware
