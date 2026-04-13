@@ -127,7 +127,9 @@ export default function SkillsInput({ value, onChange, maxSkills = 30 }: Props) 
                       : 'border-gray-300 text-gray-600 hover:border-blue-400 hover:text-blue-700 hover:bg-blue-50'
                   }`}
                 >
-                  {alreadyAdded ? '✓ ' : '+ '}{suggestion}
+                  {alreadyAdded
+                    ? <><svg className="inline w-3 h-3 mr-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}><path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" /></svg>{suggestion}</>
+                    : <>+ {suggestion}</>}
                 </button>
               )
             })}

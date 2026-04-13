@@ -344,7 +344,10 @@ export default function PostJobPage() {
                   </>
                 ) : (
                   <>
-                    ✨ Generate Description
+                    <svg viewBox="0 0 24 24" fill="currentColor" width={15} height={15} className="shrink-0">
+                      <path d="M12 2l2.4 7.4H22l-6.2 4.5 2.4 7.4L12 17l-6.2 4.3 2.4-7.4L2 9.4h7.6z" />
+                    </svg>
+                    Generate Description
                   </>
                 )}
               </button>
@@ -491,7 +494,10 @@ export default function PostJobPage() {
             <div className="rounded-xl border border-gray-200 p-5 bg-gray-50">
               <div className="flex flex-wrap gap-2 mb-3">
                 {form.is_urgent && (
-                  <span className="px-2 py-0.5 rounded-full text-xs font-semibold bg-red-100 text-red-700">🔥 Urgent</span>
+                  <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-semibold bg-red-100 text-red-700">
+                    <svg viewBox="0 0 24 24" fill="currentColor" width={12} height={12}><path d="M13 2L3 14h9l-1 8 10-12h-9z" /></svg>
+                    Urgent
+                  </span>
                 )}
                 {form.job_type && (
                   <span className="px-2 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-700">{form.job_type}</span>

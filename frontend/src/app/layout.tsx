@@ -12,8 +12,8 @@ const inter = Inter({
 })
 
 export const metadata: Metadata = {
-  title: 'UmmahJobs — Halal Employment Platform',
-  description: 'Connecting Muslim professionals with halal opportunities.',
+  title: 'UmmahJobs — Halal Jobs for Muslim Professionals',
+  description: 'Find halal jobs and connect with Muslim-friendly employers. Browse thousands of opportunities on UmmahJobs.com',
 }
 
 export default function RootLayout({

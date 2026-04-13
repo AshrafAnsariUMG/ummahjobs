@@ -51,14 +51,20 @@ const socialLinks = [
 
 export default function Footer() {
   return (
-    <footer style={{ backgroundColor: '#1a1a2e' }}>
+    <footer style={{ backgroundColor: '#1a1a2e', borderTop: '3px solid #0FBB0F' }}>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <div className="grid grid-cols-1 md:grid-cols-4 xl:grid-cols-5 gap-8 mb-10">
           {/* Column 1: Brand */}
           <div className="md:col-span-1">
             <div className="mb-3">
-              <span className="text-xl font-bold" style={{ color: '#033BB0' }}>Ummah</span>
-              <span className="text-xl font-bold text-white">Jobs.com</span>
+              <a href="/">
+                <img
+                  src="/images/logo.jpeg"
+                  alt="UmmahJobs"
+                  className="h-8 w-auto brightness-0 invert"
+                  style={{ maxHeight: '32px' }}
+                />
+              </a>
             </div>
             <p className="text-sm text-gray-400 mb-5 leading-relaxed">
               Connecting Muslim professionals with halal opportunities worldwide.

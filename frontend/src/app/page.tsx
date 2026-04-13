@@ -6,7 +6,7 @@ import HeroSearch from '@/components/home/HeroSearch'
 import FeaturedJobsCarousel from '@/components/home/FeaturedJobsCarousel'
 import StatsCounter from '@/components/home/StatsCounter'
 import NewsletterSignup from '@/components/home/NewsletterSignup'
-import { categoryIcons, defaultIcon } from '@/lib/categoryIcons'
+import CategoryGrid from '@/components/home/CategoryGrid'
 
 const API = process.env.NEXT_PUBLIC_API_URL
 
@@ -161,20 +161,7 @@ export default async function HomePage() {
             </Link>
           </div>
 
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-3">
-            {visibleCategories.map((cat) => (
-              <Link
-                key={cat.id}
-                href={`/jobs?category=${cat.slug}`}
-                className="flex flex-col items-center gap-2 bg-gray-50 hover:bg-blue-50 border border-gray-200 hover:border-blue-200 rounded-xl p-4 text-center transition-colors group"
-              >
-                <span className="text-2xl">{categoryIcons[cat.slug] ?? defaultIcon}</span>
-                <span className="text-xs font-medium text-gray-700 group-hover:text-blue-700 leading-snug">
-                  {cat.name}
-                </span>
-              </Link>
-            ))}
-          </div>
+          <CategoryGrid categories={visibleCategories} />
 
           {categories.length > 12 && (
             <div className="text-center mt-6">

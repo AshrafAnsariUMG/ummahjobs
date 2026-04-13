@@ -116,8 +116,9 @@ export default async function EmployerProfilePage({ params }: PageProps) {
               <div className="flex items-center gap-2 flex-wrap">
                 <h1 className="text-2xl font-extrabold text-gray-900">{employer.company_name}</h1>
                 {employer.is_verified && (
-                  <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-semibold text-white" style={{ backgroundColor: '#033BB0' }}>
-                    ✓ Verified
+                  <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-semibold border" style={{ backgroundColor: '#E6F9E6', color: '#0FBB0F', borderColor: '#0FBB0F' }}>
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.5} width={12} height={12}><path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" /></svg>
+                    Halal Verified
                   </span>
                 )}
               </div>

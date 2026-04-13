@@ -54,12 +54,12 @@ export default async function JobDetailPage({ params }: PageProps) {
   const logoSrc = job.employer.logo_path
   const jobUrl = `${SITE}/jobs/${job.slug}`
 
-  const badges: { label: string; icon: string }[] = [
-    ...(job.job_type ? [{ label: job.job_type, icon: '💼' }] : []),
-    ...(job.location ? [{ label: job.location, icon: '📍' }] : []),
-    ...(job.experience_level ? [{ label: job.experience_level, icon: '📊' }] : []),
-    ...(job.career_level ? [{ label: job.career_level, icon: '🎯' }] : []),
-    ...(salary ? [{ label: salary, icon: '💰' }] : []),
+  const badges: { label: string }[] = [
+    ...(job.job_type ? [{ label: job.job_type }] : []),
+    ...(job.location ? [{ label: job.location }] : []),
+    ...(job.experience_level ? [{ label: job.experience_level }] : []),
+    ...(job.career_level ? [{ label: job.career_level }] : []),
+    ...(salary ? [{ label: salary }] : []),
   ]
 
   return (
@@ -120,17 +120,19 @@ export default async function JobDetailPage({ params }: PageProps) {
               <div className="flex flex-wrap gap-2 mt-5">
                 {job.is_featured && (
                   <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold text-white" style={{ backgroundColor: '#033BB0' }}>
-                    ⭐ Featured
+                    <svg viewBox="0 0 24 24" fill="currentColor" width={12} height={12}><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" /></svg>
+                    Featured
                   </span>
                 )}
                 {job.is_urgent && (
                   <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold bg-red-100 text-red-700">
-                    🔥 Urgent
+                    <svg viewBox="0 0 24 24" fill="currentColor" width={12} height={12}><path d="M13 2L3 14h9l-1 8 10-12h-9z" /></svg>
+                    Urgent
                   </span>
                 )}
                 {badges.map((b) => (
                   <span key={b.label} className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-700">
-                    {b.icon} {b.label}
+                    {b.label}
                   </span>
                 ))}
               </div>

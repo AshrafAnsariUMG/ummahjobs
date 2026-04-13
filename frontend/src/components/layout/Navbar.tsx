@@ -208,8 +208,12 @@ export default function Navbar() {
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
           <Link href="/" className="flex items-center shrink-0">
-            <span className="text-xl font-bold" style={{ color: '#033BB0' }}>Ummah</span>
-            <span className="text-xl font-bold text-gray-500">Jobs</span>
+            <img
+              src="/images/logo.jpeg"
+              alt="UmmahJobs"
+              className="h-10 w-auto"
+              style={{ maxHeight: '40px' }}
+            />
           </Link>
 
           {/* Desktop nav links */}

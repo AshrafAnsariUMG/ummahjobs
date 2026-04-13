@@ -126,7 +126,7 @@ export default function AdminEmployersPage() {
     setEmployers((prev) => prev.map((e) => e.id === employer.id ? { ...e, is_verified: newVal } : e))
     try {
       await api.put(`/api/admin/employers/${employer.id}`, { is_verified: newVal })
-      showToast(newVal ? '✓ Halal Verified granted.' : 'Verified status removed.', 'success')
+      showToast(newVal ? 'Halal Verified granted.' : 'Verified status removed.', 'success')
     } catch {
       setEmployers((prev) => prev.map((e) => e.id === employer.id ? { ...e, is_verified: !newVal } : e))
       showToast('Failed to update employer.', 'error')
@@ -242,7 +242,7 @@ export default function AdminEmployersPage() {
                       {/* Halal Verified */}
                       <td className="px-4 py-3">
                         {emp.is_verified ? (
-                          <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold" style={{ backgroundColor: '#DCFCE7', color: '#166534' }}>
+                          <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold border" style={{ backgroundColor: '#E6F9E6', color: '#0FBB0F', borderColor: '#0FBB0F' }}>
                             <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>
                               <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
                             </svg>

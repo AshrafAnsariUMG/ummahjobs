@@ -45,11 +45,13 @@ export default function StatsCounter({ stats }: { stats: Stat[] }) {
     return () => observer.disconnect()
   }, [])
 
+  const STAT_COLORS = ['#033BB0', '#0FBB0F', '#033BB0', '#0FBB0F']
+
   return (
     <div ref={ref} className="grid grid-cols-2 md:grid-cols-4 gap-4">
-      {stats.map((stat) => (
+      {stats.map((stat, idx) => (
         <div key={stat.label} className="bg-white rounded-xl border border-gray-200 p-6 text-center">
-          <p className="text-3xl font-bold mb-1" style={{ color: '#033BB0' }}>
+          <p className="text-3xl font-bold mb-1" style={{ color: STAT_COLORS[idx % 4] }}>
             {visible ? <CountUp target={stat.value} /> : '0'}
             {stat.suffix}
           </p>

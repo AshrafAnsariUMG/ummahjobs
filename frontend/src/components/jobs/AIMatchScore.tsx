@@ -37,7 +37,7 @@ const DIMENSION_ORDER: (keyof Dimensions)[] = [
 ]
 
 function scoreColor(score: number): string {
-  if (score >= 90) return '#15803d'
+  if (score >= 90) return '#0FBB0F'
   if (score >= 75) return '#16a34a'
   if (score >= 60) return '#2563eb'
   if (score >= 40) return '#d97706'
