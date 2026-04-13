@@ -41,4 +41,9 @@ return [
         'webhook_secret' => env('STRIPE_WEBHOOK_SECRET'),
     ],
 
+    'flodesk' => [
+        'api_key'    => env('FLODESK_API_KEY'),
+        'segment_id' => env('FLODESK_SEGMENT_ID'),
+    ],
+
 ];

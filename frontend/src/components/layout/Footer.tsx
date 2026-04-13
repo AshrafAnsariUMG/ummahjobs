@@ -1,4 +1,5 @@
 import Link from 'next/link'
+import FooterNewsletter from './FooterNewsletter'
 
 const socialLinks = [
   {
@@ -52,7 +53,7 @@ export default function Footer() {
   return (
     <footer style={{ backgroundColor: '#1a1a2e' }}>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-8 mb-10">
+        <div className="grid grid-cols-1 md:grid-cols-4 xl:grid-cols-5 gap-8 mb-10">
           {/* Column 1: Brand */}
           <div className="md:col-span-1">
             <div className="mb-3">
@@ -131,6 +132,15 @@ export default function Footer() {
                 </li>
               ))}
             </ul>
+          </div>
+
+          {/* Column 5: Newsletter */}
+          <div>
+            <h3 className="text-sm font-semibold text-white mb-2">Job Alerts</h3>
+            <p className="text-xs text-gray-400 mb-3 leading-relaxed">
+              Get weekly halal job opportunities delivered to your inbox.
+            </p>
+            <FooterNewsletter />
           </div>
         </div>
 

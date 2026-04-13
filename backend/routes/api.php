@@ -3,6 +3,7 @@
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\BlogController;
 use App\Http\Controllers\Api\MessageController;
+use App\Http\Controllers\Api\NewsletterController;
 use App\Http\Controllers\Api\Admin;
 use App\Http\Controllers\Api\Candidate;
 use App\Http\Controllers\Api\CategoryController;
@@ -70,6 +71,10 @@ Route::prefix('blog')->group(function () {
     Route::get('/', [BlogController::class, 'index']);
     Route::get('/{slug}', [BlogController::class, 'show']);
 });
+
+// Newsletter
+Route::middleware('throttle:3,1')
+    ->post('newsletter/subscribe', [NewsletterController::class, 'subscribe']);
 
 // Employer authenticated routes
 Route::middleware('auth:sanctum')->prefix('employer')->group(function () {

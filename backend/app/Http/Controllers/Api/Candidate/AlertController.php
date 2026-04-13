@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api\Candidate;
 
 use App\Models\JobAlert;
+use App\Services\FlodeskService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
@@ -42,6 +43,14 @@ class AlertController
             'candidate_id' => $candidate->id,
             'frequency'    => $validated['frequency'] ?? 'daily',
         ]));
+
+        // Fire-and-forget Flodesk subscription
+        try {
+            $user = $request->user();
+            (new FlodeskService())->subscribe($user->email, $user->display_name ?? '');
+        } catch (\Throwable) {
+            // Never block alert creation due to Flodesk failure
+        }
 
         return response()->json($alert->load('category:id,name'), 201);
     }
