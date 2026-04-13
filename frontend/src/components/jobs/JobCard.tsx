@@ -1,3 +1,5 @@
+'use client'
+
 import Link from 'next/link'
 import type { Job } from '@/types'
 import { timeAgo } from '@/lib/timeAgo'
@@ -28,6 +30,13 @@ function EmployerLogo({ name, logoPath }: { name: string; logoPath: string | nul
   return null
 }
 
+const FALLBACK_PALETTES: { bg: string; color: string }[] = [
+  { bg: '#EEF2FF', color: '#3730A3' }, // A–F
+  { bg: '#F0FFF0', color: '#166534' }, // G–L
+  { bg: '#FFF7ED', color: '#9A3412' }, // M–R
+  { bg: '#FDF4FF', color: '#7E22CE' }, // S–Z
+]
+
 function LogoFallback({ name, size }: { name: string; size: 'sm' | 'md' }) {
   const initials = name
     .split(' ')
@@ -36,10 +45,16 @@ function LogoFallback({ name, size }: { name: string; size: 'sm' | 'md' }) {
     .join('')
     .toUpperCase()
   const dim = size === 'sm' ? 'w-10 h-10 text-xs' : 'w-14 h-14 text-sm'
+  const firstChar = name[0]?.toUpperCase() ?? 'A'
+  const paletteIdx =
+    firstChar <= 'F' ? 0 :
+    firstChar <= 'L' ? 1 :
+    firstChar <= 'R' ? 2 : 3
+  const { bg, color } = FALLBACK_PALETTES[paletteIdx]
   return (
     <div
-      className={`${dim} rounded-lg flex items-center justify-center font-bold text-white shrink-0`}
-      style={{ backgroundColor: '#033BB0' }}
+      className={`${dim} rounded-lg flex items-center justify-center font-bold shrink-0`}
+      style={{ backgroundColor: bg, color }}
     >
       {initials}
     </div>
@@ -132,7 +147,15 @@ export default function JobCard({ job, variant = 'list', matchScore }: JobCardPr
   return (
     <Link
       href={`/jobs/${job.slug}`}
-      className="flex items-center gap-4 bg-white rounded-xl border border-gray-200 p-4 hover:shadow-md hover:border-blue-200 transition-all"
+      className="flex items-center gap-4 bg-white rounded-xl border border-gray-200 p-4 hover:shadow-md transition-all"
+      onMouseEnter={(e) => {
+        e.currentTarget.style.borderLeftColor = '#033BB0'
+        e.currentTarget.style.borderLeftWidth = '3px'
+      }}
+      onMouseLeave={(e) => {
+        e.currentTarget.style.borderLeftColor = ''
+        e.currentTarget.style.borderLeftWidth = ''
+      }}
     >
       <div className="w-10 h-10 rounded-lg border border-gray-100 overflow-hidden flex items-center justify-center shrink-0">
         {job.employer.logo_path ? (

@@ -4,8 +4,6 @@ import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import type { JobCategory } from '@/types'
 
-const JOB_TYPES = ['Full Time', 'Part Time', 'Remote', 'Contract', 'Internship']
-
 interface HeroSearchProps {
   categories: JobCategory[]
 }
@@ -23,10 +21,6 @@ export default function HeroSearch({ categories }: HeroSearchProps) {
     if (location) params.set('location', location)
     if (category) params.set('category', category)
     router.push(`/jobs${params.toString() ? '?' + params.toString() : ''}`)
-  }
-
-  function handleQuickFilter(jobType: string) {
-    router.push(`/jobs?job_type=${encodeURIComponent(jobType)}`)
   }
 
   return (
@@ -97,19 +91,6 @@ export default function HeroSearch({ categories }: HeroSearchProps) {
         </div>
       </form>
 
-      {/* Quick filter pills */}
-      <div className="flex flex-wrap gap-2 mt-4">
-        <span className="text-sm text-gray-500 self-center">Quick:</span>
-        {JOB_TYPES.map((type) => (
-          <button
-            key={type}
-            onClick={() => handleQuickFilter(type)}
-            className="text-xs font-medium px-3 py-1.5 rounded-full border border-gray-300 text-gray-600 bg-white hover:border-blue-400 hover:text-blue-600 transition-colors"
-          >
-            {type}
-          </button>
-        ))}
-      </div>
     </div>
   )
 }

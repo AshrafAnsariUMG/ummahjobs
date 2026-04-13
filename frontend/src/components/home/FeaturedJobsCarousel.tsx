@@ -15,10 +15,15 @@ export default function FeaturedJobsCarousel({ jobs }: { jobs: Job[] }) {
 
   if (jobs.length === 0) {
     return (
-      <div className="bg-white rounded-xl border border-dashed border-gray-300 p-10 text-center">
-        <p className="text-gray-500 text-sm mb-2">No featured jobs yet.</p>
-        <Link href="/packages" className="text-sm font-medium" style={{ color: '#033BB0' }}>
-          Be the first to feature your listing → View packages
+      <div className="rounded-xl p-10 text-center" style={{ backgroundColor: '#F8F9FA', border: '2px dashed #E5E7EB' }}>
+        <p className="text-sm font-medium text-gray-700 mb-1">No featured jobs yet</p>
+        <p className="text-xs text-gray-400 mb-4">Be the first to feature your listing and reach more candidates</p>
+        <Link
+          href="/packages"
+          className="inline-block px-5 py-2 rounded-lg text-sm font-semibold text-white transition-opacity hover:opacity-90"
+          style={{ backgroundColor: '#033BB0' }}
+        >
+          View Packages
         </Link>
       </div>
     )

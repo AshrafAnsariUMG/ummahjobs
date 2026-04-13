@@ -2,7 +2,11 @@
 
 import { useState } from 'react'
 
-export default function NewsletterSignup() {
+interface Props {
+  dark?: boolean
+}
+
+export default function NewsletterSignup({ dark = false }: Props) {
   const [email, setEmail] = useState('')
   const [firstName, setFirstName] = useState('')
   const [submitted, setSubmitted] = useState(false)
@@ -37,7 +41,7 @@ export default function NewsletterSignup() {
   if (submitted) {
     return (
       <div className="text-center">
-        <div className="inline-flex items-center gap-2 bg-green-50 text-green-700 border border-green-200 rounded-xl px-5 py-3 text-sm font-medium">
+        <div className={`inline-flex items-center gap-2 rounded-xl px-5 py-3 text-sm font-medium ${dark ? 'bg-white/15 text-white border border-white/25' : 'bg-green-50 text-green-700 border border-green-200'}`}>
           <svg className="w-5 h-5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
           </svg>
@@ -47,6 +51,10 @@ export default function NewsletterSignup() {
     )
   }
 
+  const inputClass = dark
+    ? 'w-full px-4 py-2.5 rounded-xl border text-sm focus:outline-none focus:ring-2 focus:border-transparent bg-white/10 border-white/25 text-white placeholder-white/60'
+    : 'w-full px-4 py-2.5 rounded-xl border border-gray-300 text-sm focus:outline-none focus:ring-2 focus:border-transparent bg-white'
+
   return (
     <form onSubmit={handleSubmit} className="flex flex-col gap-3">
       <input
@@ -54,8 +62,8 @@ export default function NewsletterSignup() {
         value={firstName}
         onChange={(e) => setFirstName(e.target.value)}
         placeholder="Your first name (optional)"
-        className="w-full px-4 py-2.5 rounded-xl border border-gray-300 text-sm focus:outline-none focus:ring-2 focus:border-transparent bg-white"
-        style={{ '--tw-ring-color': '#033BB0' } as React.CSSProperties}
+        className={inputClass}
+        style={{ '--tw-ring-color': dark ? '#0FBB0F' : '#033BB0' } as React.CSSProperties}
       />
       <div className="flex flex-col sm:flex-row gap-3">
         <input
@@ -64,20 +72,20 @@ export default function NewsletterSignup() {
           value={email}
           onChange={(e) => setEmail(e.target.value)}
           placeholder="Your email address"
-          className="flex-1 px-4 py-2.5 rounded-xl border border-gray-300 text-sm focus:outline-none focus:ring-2 focus:border-transparent bg-white"
-          style={{ '--tw-ring-color': '#033BB0' } as React.CSSProperties}
+          className={`flex-1 px-4 py-2.5 rounded-xl border text-sm focus:outline-none focus:ring-2 focus:border-transparent ${dark ? 'bg-white/10 border-white/25 text-white placeholder-white/60' : 'border-gray-300 bg-white'}`}
+          style={{ '--tw-ring-color': dark ? '#0FBB0F' : '#033BB0' } as React.CSSProperties}
         />
         <button
           type="submit"
           disabled={isLoading}
           className="px-6 py-2.5 rounded-xl text-sm font-semibold text-white transition-opacity hover:opacity-90 disabled:opacity-70 shrink-0"
-          style={{ backgroundColor: '#033BB0' }}
+          style={{ backgroundColor: dark ? '#0FBB0F' : '#033BB0' }}
         >
-          {isLoading ? 'Subscribing…' : 'Subscribe'}
+          {isLoading ? 'Subscribing…' : 'Subscribe Free'}
         </button>
       </div>
       {error && (
-        <p className="text-xs text-red-600">{error}</p>
+        <p className={`text-xs ${dark ? 'text-red-300' : 'text-red-600'}`}>{error}</p>
       )}
     </form>
   )

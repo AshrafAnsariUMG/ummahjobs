@@ -18,16 +18,19 @@ export default function CategoryGrid({ categories }: Props) {
           <Link
             key={cat.id}
             href={`/jobs?category=${cat.slug}`}
-            className="flex flex-col items-center gap-2 bg-gray-50 border border-gray-200 rounded-xl p-4 text-center transition-colors group"
+            className="flex flex-col items-center gap-2 bg-gray-50 border border-gray-200 rounded-xl p-4 text-center group"
+            style={{ transition: 'background-color 0.15s, border-color 0.15s, transform 0.15s' }}
             onMouseEnter={(e) => {
               const el = e.currentTarget
               el.style.backgroundColor = isGreen ? '#E6F9E6' : '#E6EDFF'
               el.style.borderColor = iconColor
+              el.style.transform = 'scale(1.02)'
             }}
             onMouseLeave={(e) => {
               const el = e.currentTarget
               el.style.backgroundColor = ''
               el.style.borderColor = ''
+              el.style.transform = ''
             }}
           >
             <CategoryIcon
