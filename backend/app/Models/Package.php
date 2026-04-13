@@ -8,7 +8,7 @@ class Package extends Model
 {
     protected $fillable = [
         'name', 'price', 'post_count', 'post_type',
-        'duration_days', 'includes_newsletter', 'is_active',
+        'duration_days', 'includes_newsletter', 'is_active', 'description',
     ];
 
     protected function casts(): array

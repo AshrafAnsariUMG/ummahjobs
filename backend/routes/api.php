@@ -140,13 +140,7 @@ Route::middleware(['auth:sanctum', 'role:admin'])->prefix('admin')->group(functi
     });
 
     // Audit log
-    Route::get('audit-log', function (Request $request) {
-        return response()->json(
-            App\Models\AdminAuditLog::with(['admin', 'targetUser'])
-                ->orderByDesc('created_at')
-                ->paginate($request->per_page ?? 20)
-        );
-    });
+    Route::get('audit-log', [Admin\AuditLogController::class, 'index']);
 
     // Jobs
     Route::get('jobs', [Admin\JobController::class, 'index']);
@@ -159,6 +153,10 @@ Route::middleware(['auth:sanctum', 'role:admin'])->prefix('admin')->group(functi
 
     // Candidates
     Route::get('candidates', [Admin\CandidateController::class, 'index']);
+
+    // Packages (admin)
+    Route::get('packages', [Admin\PackageController::class, 'index']);
+    Route::put('packages/{id}', [Admin\PackageController::class, 'update']);
 
     // Blog (upload-image before {slug} to avoid collision)
     Route::get('blog', [Admin\BlogController::class, 'index']);
