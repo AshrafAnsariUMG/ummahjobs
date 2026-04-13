@@ -147,6 +147,18 @@ Route::middleware(['auth:sanctum', 'role:admin'])->prefix('admin')->group(functi
                 ->paginate($request->per_page ?? 20)
         );
     });
+
+    // Jobs
+    Route::get('jobs', [Admin\JobController::class, 'index']);
+    Route::put('jobs/{id}', [Admin\JobController::class, 'update']);
+    Route::delete('jobs/{id}', [Admin\JobController::class, 'destroy']);
+
+    // Employers
+    Route::get('employers', [Admin\EmployerController::class, 'index']);
+    Route::put('employers/{id}', [Admin\EmployerController::class, 'update']);
+
+    // Candidates
+    Route::get('candidates', [Admin\CandidateController::class, 'index']);
 });
 
 // Stripe webhook — no auth middleware
