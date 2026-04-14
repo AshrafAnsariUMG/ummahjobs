@@ -70,6 +70,15 @@ export default function AdminSettingsPage() {
       })
       setChanged({})
       setSavedAt(new Date())
+      // Trigger Next.js page cache revalidation so changes show within seconds
+      try {
+        await fetch(
+          `/api/revalidate?secret=${process.env.NEXT_PUBLIC_REVALIDATION_SECRET}`,
+          { method: 'POST' }
+        )
+      } catch {
+        // Non-critical — pages will update on next natural revalidation
+      }
     } catch {
       setError('Failed to save settings.')
     } finally {

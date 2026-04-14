@@ -12,7 +12,7 @@ const API = process.env.NEXT_PUBLIC_API_URL
 
 async function getSiteSettings(): Promise<Record<string, string>> {
   try {
-    const res = await fetch(`${API}/api/settings`, { next: { revalidate: 3600 } })
+    const res = await fetch(`${API}/api/settings`, { next: { revalidate: 60 } })
     if (!res.ok) return {}
     return res.json()
   } catch {
@@ -76,10 +76,13 @@ export default async function HomePage() {
     getSiteSettings(),
   ])
 
-  const heroLine1 = settings.hero_heading_line1 || 'Find Halal'
-  const heroLine2 = settings.hero_heading_line2 || 'Opportunity'
-  const heroSub   = settings.hero_subheading    || 'Connect with Muslim-friendly employers and build a career aligned with your values and faith.'
-  const statJobs  = settings.stat_jobs          || '247'
+  const heroLine1 = settings.hero_heading_line1 || 'Find Your Next'
+  const heroLine2Raw = settings.hero_heading_line2 || 'Halal Opportunity'
+  // Split line 2 so the first word is green, the rest is blue
+  const [heroLine2Green, ...heroLine2BlueParts] = heroLine2Raw.trim().split(' ')
+  const heroLine2Blue = heroLine2BlueParts.join(' ')
+  const heroSub  = settings.hero_subheading || 'Connect with Muslim-friendly employers and build a career aligned with your values and faith.'
+  const statJobs = settings.stat_jobs || '247'
 
   const visibleCategories = categories.slice(0, 12)
 
@@ -134,9 +137,12 @@ export default async function HomePage() {
             marginBottom: '16px',
             color: '#111827',
           }}>
-            <span style={{ color: '#0FBB0F' }}>{heroLine1}</span>
+            {heroLine1}
             <br />
-            <span style={{ color: '#033BB0' }}>{heroLine2}</span>
+            <span style={{ color: '#0FBB0F' }}>{heroLine2Green}</span>
+            {heroLine2Blue && (
+              <> <span style={{ color: '#033BB0' }}>{heroLine2Blue}</span></>
+            )}
           </h1>
 
           {/* Subheading */}

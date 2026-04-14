@@ -1,9 +1,9 @@
 import { notFound } from 'next/navigation'
 import Link from 'next/link'
-import Image from 'next/image'
 import type { BlogPost } from '@/types'
 import ShareButtons from '@/components/jobs/ShareButtons'
 import NewsletterSignup from '@/components/home/NewsletterSignup'
+import BlogFeaturedImage from '@/components/blog/BlogFeaturedImage'
 
 const API = process.env.NEXT_PUBLIC_API_URL
 const SITE = process.env.NEXT_PUBLIC_SITE_URL ?? 'https://ummahjobs.com'
@@ -78,17 +78,13 @@ export default async function BlogPostPage({ params }: PageProps) {
         {/* Article */}
         <article className="flex-1 min-w-0">
           {/* Featured image */}
-          {post.featured_image_path && (
-            <div className="relative w-full h-72 sm:h-96 rounded-2xl overflow-hidden mb-7">
-              <Image
-                src={post.featured_image_path}
-                alt={post.title}
-                fill
-                className="object-cover"
-                priority
-              />
-            </div>
-          )}
+          <div className="relative w-full h-72 sm:h-96 rounded-2xl overflow-hidden mb-7">
+            <BlogFeaturedImage
+              path={post.featured_image_path}
+              alt={post.title}
+              className="w-full h-full"
+            />
+          </div>
 
           {/* Meta */}
           <div className="flex flex-wrap items-center gap-3 mb-4">
