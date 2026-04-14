@@ -39,7 +39,7 @@ class ProfileController
             'phone'            => 'nullable|string|max:50',
             'gender'           => 'nullable|string|in:male,female,prefer_not_to_say',
             'age_range'        => 'nullable|string|max:20',
-            'experience_years' => 'nullable|integer|min:0|max:50',
+            'experience_years' => 'nullable|string|max:50',
             'qualification'    => 'nullable|string|max:255',
             'languages'        => 'nullable|array',
             'languages.*'      => 'string|max:100',
