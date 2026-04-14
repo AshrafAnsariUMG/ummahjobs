@@ -75,7 +75,7 @@ export default function Footer() {
             <div className="mb-3">
               <a href="/">
                 <img
-                  src={logoPath || '/images/logo.jpeg'}
+                  src={logoPath || '/images/logo.png'}
                   alt="UmmahJobs"
                   className="h-8 w-auto brightness-0 invert"
                   style={{ maxHeight: '32px' }}

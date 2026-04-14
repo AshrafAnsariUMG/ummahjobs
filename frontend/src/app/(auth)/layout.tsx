@@ -22,7 +22,7 @@ export default function AuthLayout({ children }: { children: ReactNode }) {
         {/* Logo */}
         <a href="/">
           <img
-            src="/images/logo.jpeg"
+            src="/images/logo.png"
             alt="UmmahJobs"
             style={{ height: '36px', width: 'auto', filter: 'brightness(0) invert(1)' }}
           />
@@ -122,7 +122,7 @@ export default function AuthLayout({ children }: { children: ReactNode }) {
         {/* Mobile logo */}
         <div className="lg:hidden" style={{ marginBottom: '32px' }}>
           <a href="/">
-            <img src="/images/logo.jpeg" alt="UmmahJobs" style={{ height: '32px' }} />
+            <img src="/images/logo.png" alt="UmmahJobs" style={{ height: '32px' }} />
           </a>
         </div>
 

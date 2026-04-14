@@ -221,7 +221,7 @@ export default function Navbar() {
           {/* Logo */}
           <Link href="/" className="flex items-center shrink-0">
             <img
-              src={logoPath || '/images/logo.jpeg'}
+              src={logoPath || '/images/logo.png'}
               alt="UmmahJobs"
               className="h-10 w-auto"
               style={{ maxHeight: '40px' }}
