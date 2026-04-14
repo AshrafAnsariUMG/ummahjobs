@@ -24,14 +24,173 @@ interface EmployersResponse {
 
 type VerifiedFilter = 'all' | 'verified' | 'unverified'
 
+interface Package {
+  id: number
+  name: string
+  price: number
+  post_count: number
+  duration_days: number
+}
+
+function GrantCreditsModal({
+  employer,
+  onClose,
+  onGranted,
+}: {
+  employer: AdminEmployer
+  onClose: () => void
+  onGranted: () => void
+}) {
+  const [packages, setPackages] = useState<Package[]>([])
+  const [packageId, setPackageId] = useState<number | ''>('')
+  const [credits, setCredits] = useState(1)
+  const [note, setNote] = useState('')
+  const [loading, setLoading] = useState(true)
+  const [saving, setSaving] = useState(false)
+  const [error, setError] = useState<string | null>(null)
+
+  useEffect(() => {
+    api.get('/api/packages')
+      .then((data: unknown) => {
+        const pkgs = data as Package[]
+        setPackages(pkgs)
+        if (pkgs.length > 0) setPackageId(pkgs[0].id)
+      })
+      .catch(() => setError('Failed to load packages.'))
+      .finally(() => setLoading(false))
+  }, [])
+
+  async function handleSubmit(e: React.FormEvent) {
+    e.preventDefault()
+    if (!packageId) return
+    setSaving(true)
+    setError(null)
+    try {
+      await api.post('/api/admin/credits/grant', {
+        employer_id: employer.id,
+        package_id: packageId,
+        credits,
+        note: note || undefined,
+      })
+      onGranted()
+    } catch (err: unknown) {
+      setError((err as { message?: string })?.message ?? 'Failed to grant credits.')
+    } finally {
+      setSaving(false)
+    }
+  }
+
+  const inputStyle: React.CSSProperties = {
+    width: '100%',
+    border: '1px solid #D1D5DB',
+    borderRadius: '8px',
+    padding: '8px 12px',
+    fontSize: '14px',
+    outline: 'none',
+    color: '#111827',
+    background: 'white',
+  }
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
+      <div className="bg-white rounded-2xl shadow-xl p-6 max-w-md w-full mx-4">
+        <div className="flex items-center justify-between mb-4">
+          <div>
+            <h3 className="font-bold text-gray-900 text-lg">Grant Credits</h3>
+            <p className="text-sm text-gray-500 mt-0.5">{employer.company_name}</p>
+          </div>
+          <button onClick={onClose} className="p-1.5 rounded-lg text-gray-400 hover:text-gray-700 hover:bg-gray-100">
+            <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
+        </div>
+
+        {error && (
+          <div className="mb-4 p-3 rounded-lg text-sm text-red-600 bg-red-50 border border-red-200">{error}</div>
+        )}
+
+        {loading ? (
+          <div className="py-8 flex justify-center">
+            <svg className="animate-spin h-6 w-6" style={{ color: '#033BB0' }} fill="none" viewBox="0 0 24 24">
+              <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+              <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z" />
+            </svg>
+          </div>
+        ) : (
+          <form onSubmit={handleSubmit}>
+            <div className="space-y-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Package</label>
+                <select
+                  value={packageId}
+                  onChange={(e) => setPackageId(Number(e.target.value))}
+                  style={{ ...inputStyle }}
+                  required
+                >
+                  {packages.map((pkg) => (
+                    <option key={pkg.id} value={pkg.id}>
+                      {pkg.name} — {pkg.post_count} posts · {pkg.duration_days}d
+                    </option>
+                  ))}
+                </select>
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Number of Credits</label>
+                <input
+                  type="number"
+                  value={credits}
+                  onChange={(e) => setCredits(Math.max(1, Math.min(50, Number(e.target.value))))}
+                  min={1}
+                  max={50}
+                  style={inputStyle}
+                  required
+                />
+                <p className="text-xs text-gray-400 mt-1">Maximum 50 credits per grant</p>
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Admin Note <span className="text-gray-400 font-normal">(optional)</span></label>
+                <textarea
+                  value={note}
+                  onChange={(e) => setNote(e.target.value)}
+                  rows={2}
+                  maxLength={500}
+                  placeholder="Reason for granting credits..."
+                  style={{ ...inputStyle, resize: 'vertical' }}
+                />
+              </div>
+            </div>
+
+            <div className="flex gap-3 justify-end mt-5">
+              <button type="button" onClick={onClose} className="px-4 py-2 text-sm font-medium rounded-lg border border-gray-300 text-gray-700 hover:bg-gray-50">
+                Cancel
+              </button>
+              <button
+                type="submit"
+                disabled={saving || !packageId}
+                className="px-4 py-2 text-sm font-medium rounded-lg text-white disabled:opacity-60"
+                style={{ backgroundColor: '#033BB0' }}
+              >
+                {saving ? 'Granting…' : 'Grant Credits'}
+              </button>
+            </div>
+          </form>
+        )}
+      </div>
+    </div>
+  )
+}
+
 function ActionsMenu({
   employer,
   onVerifyToggle,
   onProfileToggle,
+  onGrantCredits,
 }: {
   employer: AdminEmployer
   onVerifyToggle: () => void
   onProfileToggle: () => void
+  onGrantCredits: () => void
 }) {
   const [open, setOpen] = useState(false)
   const ref = useRef<HTMLDivElement>(null)
@@ -66,6 +225,12 @@ function ActionsMenu({
             View Profile ↗
           </a>
           <button
+            onClick={() => { setOpen(false); onGrantCredits() }}
+            className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-50"
+          >
+            Grant Credits
+          </button>
+          <button
             onClick={() => { setOpen(false); onVerifyToggle() }}
             className={`block w-full text-left px-4 py-2 text-sm hover:bg-gray-50 ${employer.is_verified ? 'text-red-600' : 'text-green-700'}`}
           >
@@ -99,6 +264,7 @@ export default function AdminEmployersPage() {
   const [debouncedSearch, setDebouncedSearch] = useState('')
   const [verifiedFilter, setVerifiedFilter] = useState<VerifiedFilter>('all')
   const [page, setPage] = useState(1)
+  const [grantCreditsTarget, setGrantCreditsTarget] = useState<AdminEmployer | null>(null)
 
   useEffect(() => {
     const t = setTimeout(() => setDebouncedSearch(search), 400)
@@ -150,6 +316,17 @@ export default function AdminEmployersPage() {
   }
 
   return (
+    <>
+    {grantCreditsTarget && (
+      <GrantCreditsModal
+        employer={grantCreditsTarget}
+        onClose={() => setGrantCreditsTarget(null)}
+        onGranted={() => {
+          setGrantCreditsTarget(null)
+          showToast('Credits granted successfully.', 'success')
+        }}
+      />
+    )}
     <div className="max-w-6xl mx-auto">
       {/* Header */}
       <div className="mb-6">
@@ -267,6 +444,7 @@ export default function AdminEmployersPage() {
                           employer={emp}
                           onVerifyToggle={() => handleVerifyToggle(emp)}
                           onProfileToggle={() => handleProfileToggle(emp)}
+                          onGrantCredits={() => setGrantCreditsTarget(emp)}
                         />
                       </td>
                     </tr>
@@ -287,5 +465,6 @@ export default function AdminEmployersPage() {
         )}
       </div>
     </div>
+    </>
   )
 }

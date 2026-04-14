@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from 'react'
 import { api } from '@/lib/api'
+import { useToast } from '@/components/ui/Toast'
 
 interface AdminUser {
   id: string
@@ -173,6 +174,151 @@ function RoleModal({
   )
 }
 
+const ADD_ROLE_OPTIONS: { key: 'candidate' | 'employer' | 'admin'; label: string; desc: string; color: string; bg: string }[] = [
+  { key: 'candidate', label: 'Candidate', desc: 'Job seeker', color: '#033BB0', bg: '#EFF6FF' },
+  { key: 'employer', label: 'Employer', desc: 'Company / recruiter', color: '#0FBB0F', bg: '#F0FFF0' },
+  { key: 'admin', label: 'Admin', desc: 'Full access', color: '#7c3aed', bg: '#F5F3FF' },
+]
+
+function AddUserModal({ onClose, onCreated }: { onClose: () => void; onCreated: (user: AdminUser) => void }) {
+  const [role, setRole] = useState<'candidate' | 'employer' | 'admin'>('candidate')
+  const [displayName, setDisplayName] = useState('')
+  const [email, setEmail] = useState('')
+  const [password, setPassword] = useState('')
+  const [companyName, setCompanyName] = useState('')
+  const [showPassword, setShowPassword] = useState(false)
+  const [saving, setSaving] = useState(false)
+  const [error, setError] = useState<string | null>(null)
+
+  const inputStyle: React.CSSProperties = {
+    width: '100%',
+    border: '1px solid #D1D5DB',
+    borderRadius: '8px',
+    padding: '8px 12px',
+    fontSize: '14px',
+    outline: 'none',
+    color: '#111827',
+    background: 'white',
+  }
+
+  async function handleSubmit(e: React.FormEvent) {
+    e.preventDefault()
+    setSaving(true)
+    setError(null)
+    try {
+      const body: Record<string, string> = { display_name: displayName, email, password, role }
+      if (role === 'employer') body.company_name = companyName
+      const data = await api.post('/api/admin/users', body) as { user: AdminUser; message: string }
+      onCreated(data.user)
+    } catch (err: unknown) {
+      setError((err as { message?: string })?.message ?? 'Failed to create user.')
+    } finally {
+      setSaving(false)
+    }
+  }
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
+      <div className="bg-white rounded-2xl shadow-xl p-6 max-w-md w-full mx-4 max-h-[90vh] overflow-y-auto">
+        <div className="flex items-center justify-between mb-4">
+          <h3 className="font-bold text-gray-900 text-lg">Add New User</h3>
+          <button onClick={onClose} className="p-1.5 rounded-lg text-gray-400 hover:text-gray-700 hover:bg-gray-100">
+            <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
+        </div>
+
+        {error && (
+          <div className="mb-4 p-3 rounded-lg text-sm text-red-600 bg-red-50 border border-red-200">{error}</div>
+        )}
+
+        <form onSubmit={handleSubmit}>
+          <p className="text-sm font-medium text-gray-700 mb-2">Account Type</p>
+          <div className="grid grid-cols-3 gap-2 mb-4">
+            {ADD_ROLE_OPTIONS.map((opt) => (
+              <button
+                key={opt.key}
+                type="button"
+                onClick={() => setRole(opt.key)}
+                className="p-3 rounded-xl border text-left transition-all"
+                style={role === opt.key
+                  ? { borderColor: opt.color, backgroundColor: opt.bg }
+                  : { borderColor: '#E5E7EB', backgroundColor: 'white' }
+                }
+              >
+                <p className="text-xs font-semibold" style={{ color: role === opt.key ? opt.color : '#374151' }}>{opt.label}</p>
+                <p className="text-xs text-gray-400 mt-0.5 leading-tight">{opt.desc}</p>
+              </button>
+            ))}
+          </div>
+
+          <div className="space-y-3">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Display Name</label>
+              <input type="text" value={displayName} onChange={(e) => setDisplayName(e.target.value)} style={inputStyle} required />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Email Address</label>
+              <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} style={inputStyle} required />
+            </div>
+            {role === 'employer' && (
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Company Name</label>
+                <input type="text" value={companyName} onChange={(e) => setCompanyName(e.target.value)} style={inputStyle} required />
+              </div>
+            )}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Password</label>
+              <div className="relative">
+                <input
+                  type={showPassword ? 'text' : 'password'}
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  style={{ ...inputStyle, paddingRight: '44px' }}
+                  required
+                  minLength={8}
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword((v) => !v)}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                >
+                  {showPassword ? (
+                    <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21" />
+                    </svg>
+                  ) : (
+                    <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                    </svg>
+                  )}
+                </button>
+              </div>
+              <p className="text-xs text-gray-400 mt-1">Minimum 8 characters</p>
+            </div>
+          </div>
+
+          <div className="flex gap-3 justify-end mt-5">
+            <button type="button" onClick={onClose} className="px-4 py-2 text-sm font-medium rounded-lg border border-gray-300 text-gray-700 hover:bg-gray-50">
+              Cancel
+            </button>
+            <button
+              type="submit"
+              disabled={saving}
+              className="px-4 py-2 text-sm font-medium rounded-lg text-white disabled:opacity-60"
+              style={{ backgroundColor: '#033BB0' }}
+            >
+              {saving ? 'Creating…' : 'Create User'}
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  )
+}
+
 function ActionsMenu({
   user,
   onRoleChange,
@@ -254,6 +400,7 @@ function ActionsMenu({
 }
 
 export default function AdminUsersPage() {
+  const { showToast } = useToast()
   const [users, setUsers] = useState<AdminUser[]>([])
   const [stats, setStats] = useState({ total: 0, active: 0, inactive: 0 })
   const [meta, setMeta] = useState({ current_page: 1, last_page: 1, total: 0 })
@@ -267,6 +414,7 @@ export default function AdminUsersPage() {
   const [page, setPage] = useState(1)
 
   // Modals
+  const [addUserOpen, setAddUserOpen] = useState(false)
   const [roleModal, setRoleModal] = useState<AdminUser | null>(null)
   const [deleteTarget, setDeleteTarget] = useState<AdminUser | null>(null)
   const [statusTarget, setStatusTarget] = useState<AdminUser | null>(null)
@@ -306,6 +454,13 @@ export default function AdminUsersPage() {
       })
       .finally(() => setLoading(false))
   }, [page, debouncedSearch, roleFilter, statusFilter])
+
+  function handleUserCreated(user: AdminUser) {
+    setAddUserOpen(false)
+    setUsers((prev) => [user, ...prev])
+    setStats((s) => ({ ...s, total: s.total + 1, active: user.is_active ? s.active + 1 : s.active }))
+    showToast(`${user.display_name} created successfully.`, 'success')
+  }
 
   async function handleRoleChange(userId: string, newRole: AdminUser['role']) {
     try {
@@ -349,6 +504,9 @@ export default function AdminUsersPage() {
   return (
     <>
       {/* Modals */}
+      {addUserOpen && (
+        <AddUserModal onClose={() => setAddUserOpen(false)} onCreated={handleUserCreated} />
+      )}
       {roleModal && (
         <RoleModal
           user={roleModal}
@@ -379,9 +537,21 @@ export default function AdminUsersPage() {
 
       <div className="max-w-6xl mx-auto">
         {/* Header */}
-        <div className="mb-6">
-          <h1 className="text-2xl font-extrabold text-gray-900">Users</h1>
-          <p className="text-sm text-gray-500 mt-1">Manage all platform users</p>
+        <div className="flex items-center justify-between mb-6">
+          <div>
+            <h1 className="text-2xl font-extrabold text-gray-900">Users</h1>
+            <p className="text-sm text-gray-500 mt-1">Manage all platform users</p>
+          </div>
+          <button
+            onClick={() => setAddUserOpen(true)}
+            className="flex items-center gap-2 px-4 py-2 text-sm font-semibold rounded-lg text-white"
+            style={{ backgroundColor: '#033BB0' }}
+          >
+            <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m8-8H4" />
+            </svg>
+            Add User
+          </button>
         </div>
 
         {/* Mock data banner */}

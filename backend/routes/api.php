@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Api\Admin\CreditsController;
 use App\Http\Controllers\Api\Admin\SiteSettingsController;
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\BlogController;
@@ -128,11 +129,20 @@ Route::middleware('auth:sanctum')->prefix('candidate')->group(function () {
 
 // Admin routes
 Route::middleware(['auth:sanctum', 'role:admin'])->prefix('admin')->group(function () {
-    // Users
+    // Admin own profile
+    Route::get('profile', [Admin\UserController::class, 'showProfile']);
+    Route::put('profile', [Admin\UserController::class, 'updateOwnProfile']);
+
+    // Users (create before {id} routes)
+    Route::post('users', [Admin\UserController::class, 'store']);
     Route::get('users', [Admin\UserController::class, 'index']);
     Route::put('users/{id}/role', [Admin\UserController::class, 'updateRole']);
     Route::put('users/{id}/status', [Admin\UserController::class, 'updateStatus']);
     Route::delete('users/{id}', [Admin\UserController::class, 'destroy']);
+
+    // Credits
+    Route::post('credits/grant', [CreditsController::class, 'grant']);
+    Route::get('credits/history', [CreditsController::class, 'history']);
 
     // Stats
     Route::get('stats', function () {
