@@ -35,6 +35,15 @@ class EmployerController extends Controller
         ]);
     }
 
+    public function search(Request $request)
+    {
+        $employers = Employer::where('company_name', 'like', '%' . $request->q . '%')
+            ->limit(10)
+            ->get(['id', 'company_name', 'slug', 'logo_path']);
+
+        return response()->json(['employers' => $employers]);
+    }
+
     public function update(Request $request, string $id)
     {
         $request->validate([

@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect, useRef, useState } from 'react'
+import Link from 'next/link'
 import { api } from '@/lib/api'
 import { useToast } from '@/components/ui/Toast'
 
@@ -241,15 +242,27 @@ export default function AdminJobsPage() {
             <h1 className="text-2xl font-extrabold text-gray-900">Jobs</h1>
             <p className="text-sm text-gray-500 mt-1">Manage all job listings · {meta.total.toLocaleString()} total</p>
           </div>
-          <button
-            onClick={() => setPage((p) => p)}
-            className="flex items-center gap-2 px-3 py-2 text-sm font-medium rounded-lg border border-gray-200 hover:bg-gray-50 text-gray-700"
-          >
-            <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-              <path strokeLinecap="round" strokeLinejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
-            </svg>
-            Refresh
-          </button>
+          <div className="flex items-center gap-2">
+            <button
+              onClick={() => setPage((p) => p)}
+              className="flex items-center gap-2 px-3 py-2 text-sm font-medium rounded-lg border border-gray-200 hover:bg-gray-50 text-gray-700"
+            >
+              <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+              </svg>
+              Refresh
+            </button>
+            <Link
+              href="/admin/jobs/post"
+              className="flex items-center gap-2 px-4 py-2 text-sm font-semibold rounded-lg text-white"
+              style={{ backgroundColor: '#033BB0' }}
+            >
+              <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m8-8H4" />
+              </svg>
+              Post a Job
+            </Link>
+          </div>
         </div>
 
         {/* Filter bar */}

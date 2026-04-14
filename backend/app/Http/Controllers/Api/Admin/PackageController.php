@@ -30,6 +30,71 @@ class PackageController extends Controller
         return response()->json(['packages' => $packages]);
     }
 
+    public function store(Request $request)
+    {
+        $request->validate([
+            'name'                => 'required|string|max:100|unique:packages,name',
+            'price'               => 'required|numeric|min:0',
+            'post_count'          => 'required|integer|min:1',
+            'duration_days'       => 'required|integer|min:1',
+            'post_type'           => 'required|in:regular,featured',
+            'includes_newsletter' => 'boolean',
+            'is_active'           => 'boolean',
+            'description'         => 'nullable|string|max:500',
+        ]);
+
+        $package = Package::create([
+            'name'                => $request->name,
+            'price'               => $request->price,
+            'post_count'          => $request->post_count,
+            'duration_days'       => $request->duration_days,
+            'post_type'           => $request->post_type,
+            'includes_newsletter' => $request->includes_newsletter ?? false,
+            'is_active'           => $request->is_active ?? true,
+            'description'         => $request->description,
+        ]);
+
+        DB::table('admin_audit_log')->insert([
+            'admin_id'   => $request->user()->id,
+            'action'     => 'create_package',
+            'notes'      => 'Created package: ' . $package->name,
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]);
+
+        return response()->json(['package' => $package], 201);
+    }
+
+    public function destroy(Request $request, string $id)
+    {
+        $package = Package::findOrFail($id);
+
+        $activeCredits = DB::table('employer_packages')
+            ->where('package_id', $id)
+            ->where('credits_remaining', '>', 0)
+            ->count();
+
+        if ($activeCredits > 0) {
+            return response()->json([
+                'message'        => 'Cannot delete this package. ' . $activeCredits . ' employer(s) still have active credits. Deactivate it instead.',
+                'active_credits' => $activeCredits,
+            ], 422);
+        }
+
+        $name = $package->name;
+        $package->delete();
+
+        DB::table('admin_audit_log')->insert([
+            'admin_id'   => $request->user()->id,
+            'action'     => 'delete_package',
+            'notes'      => 'Deleted package: ' . $name,
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]);
+
+        return response()->json(['message' => 'Package deleted.']);
+    }
+
     public function update(Request $request, string $id)
     {
         $package = Package::findOrFail($id);

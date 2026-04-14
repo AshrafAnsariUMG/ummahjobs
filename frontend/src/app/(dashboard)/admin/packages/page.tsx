@@ -47,13 +47,199 @@ function ToggleSwitch({
   )
 }
 
+function CreatePackageModal({ onClose, onCreated }: { onClose: () => void; onCreated: (pkg: AdminPackage) => void }) {
+  const { showToast } = useToast()
+  const [name, setName] = useState('')
+  const [price, setPrice] = useState('')
+  const [postCount, setPostCount] = useState('1')
+  const [durationDays, setDurationDays] = useState('40')
+  const [postType, setPostType] = useState<'regular' | 'featured'>('regular')
+  const [includesNewsletter, setIncludesNewsletter] = useState(false)
+  const [isActive, setIsActive] = useState(true)
+  const [description, setDescription] = useState('')
+  const [saving, setSaving] = useState(false)
+  const [error, setError] = useState<string | null>(null)
+
+  const inputClass = 'w-full px-3 py-2 text-sm rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:border-transparent'
+  const ringStyle = { '--tw-ring-color': '#033BB0' } as React.CSSProperties
+
+  async function handleSubmit(e: React.FormEvent) {
+    e.preventDefault()
+    setSaving(true)
+    setError(null)
+    try {
+      const res = await api.post('/api/admin/packages', {
+        name,
+        price: parseFloat(price),
+        post_count: parseInt(postCount),
+        duration_days: parseInt(durationDays),
+        post_type: postType,
+        includes_newsletter: includesNewsletter,
+        is_active: isActive,
+        description: description || null,
+      }) as { package: AdminPackage }
+      onCreated({ ...res.package, total_purchases: 0, total_revenue: 0 })
+      showToast(`Package '${res.package.name}' created!`, 'success')
+    } catch (err: unknown) {
+      setError((err as { message?: string })?.message ?? 'Failed to create package.')
+    } finally {
+      setSaving(false)
+    }
+  }
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
+      <div className="bg-white rounded-2xl shadow-xl p-6 max-w-lg w-full mx-4 max-h-[90vh] overflow-y-auto">
+        <div className="flex items-center justify-between mb-5">
+          <h3 className="font-bold text-gray-900 text-lg">Create New Package</h3>
+          <button onClick={onClose} className="p-1.5 rounded-lg text-gray-400 hover:text-gray-700 hover:bg-gray-100">
+            <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
+        </div>
+
+        {error && (
+          <div className="mb-4 p-3 rounded-lg text-sm text-red-600 bg-red-50 border border-red-200">{error}</div>
+        )}
+
+        <form onSubmit={handleSubmit} className="space-y-4">
+          <div>
+            <label className="block text-xs font-medium text-gray-700 mb-1">Package Name *</label>
+            <input
+              type="text"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              className={inputClass}
+              style={ringStyle}
+              placeholder='e.g. Premium, Enterprise'
+              required
+            />
+          </div>
+
+          <div className="grid grid-cols-3 gap-3">
+            <div>
+              <label className="block text-xs font-medium text-gray-700 mb-1">Price ($) *</label>
+              <input
+                type="number"
+                value={price}
+                onChange={(e) => setPrice(e.target.value)}
+                className={inputClass}
+                style={ringStyle}
+                placeholder="0.00"
+                step="0.01"
+                min="0"
+                required
+              />
+            </div>
+            <div>
+              <label className="block text-xs font-medium text-gray-700 mb-1">Job Posts *</label>
+              <input
+                type="number"
+                value={postCount}
+                onChange={(e) => setPostCount(e.target.value)}
+                className={inputClass}
+                style={ringStyle}
+                placeholder="1"
+                min="1"
+                required
+              />
+            </div>
+            <div>
+              <label className="block text-xs font-medium text-gray-700 mb-1">Duration (days) *</label>
+              <input
+                type="number"
+                value={durationDays}
+                onChange={(e) => setDurationDays(e.target.value)}
+                className={inputClass}
+                style={ringStyle}
+                placeholder="40"
+                min="1"
+                required
+              />
+            </div>
+          </div>
+
+          <div>
+            <label className="block text-xs font-medium text-gray-700 mb-2">Post Type *</label>
+            <div className="grid grid-cols-2 gap-3">
+              <button
+                type="button"
+                onClick={() => setPostType('regular')}
+                className="p-3 rounded-xl border text-left transition-all"
+                style={postType === 'regular' ? { borderColor: '#033BB0', backgroundColor: '#EFF6FF' } : { borderColor: '#E5E7EB' }}
+              >
+                <p className="text-sm font-semibold" style={{ color: postType === 'regular' ? '#033BB0' : '#374151' }}>Regular</p>
+                <p className="text-xs text-gray-400 mt-0.5">Standard listing</p>
+              </button>
+              <button
+                type="button"
+                onClick={() => setPostType('featured')}
+                className="p-3 rounded-xl border text-left transition-all"
+                style={postType === 'featured' ? { borderColor: '#F59E0B', backgroundColor: '#FFFBEB' } : { borderColor: '#E5E7EB' }}
+              >
+                <p className="text-sm font-semibold" style={{ color: postType === 'featured' ? '#D97706' : '#374151' }}>Featured</p>
+                <p className="text-xs text-gray-400 mt-0.5">Featured carousel + top results</p>
+              </button>
+            </div>
+          </div>
+
+          <div className="flex items-center justify-between p-3 rounded-xl border border-gray-200">
+            <div>
+              <p className="text-sm font-medium text-gray-700">Includes Newsletter</p>
+              <p className="text-xs text-gray-400 mt-0.5">Job included in weekly Flodesk newsletter send</p>
+            </div>
+            <ToggleSwitch checked={includesNewsletter} onChange={setIncludesNewsletter} label="Newsletter inclusion" />
+          </div>
+
+          <div className="flex items-center justify-between p-3 rounded-xl border border-gray-200">
+            <div>
+              <p className="text-sm font-medium text-gray-700">Active (available for purchase)</p>
+            </div>
+            <ToggleSwitch checked={isActive} onChange={setIsActive} label="Active" />
+          </div>
+
+          <div>
+            <label className="block text-xs font-medium text-gray-700 mb-1">Description <span className="text-gray-400 font-normal">(optional)</span></label>
+            <textarea
+              value={description}
+              onChange={(e) => setDescription(e.target.value.slice(0, 500))}
+              rows={3}
+              placeholder="Optional description shown to employers..."
+              className={`${inputClass} resize-vertical`}
+              style={ringStyle}
+            />
+            <p className="text-xs text-gray-400 mt-0.5 text-right">{description.length}/500</p>
+          </div>
+
+          <div className="flex gap-3 justify-end pt-1">
+            <button type="button" onClick={onClose} className="px-4 py-2 text-sm font-medium rounded-lg border border-gray-300 text-gray-700 hover:bg-gray-50">
+              Cancel
+            </button>
+            <button
+              type="submit"
+              disabled={saving}
+              className="px-4 py-2 text-sm font-semibold rounded-lg text-white disabled:opacity-60"
+              style={{ backgroundColor: '#033BB0' }}
+            >
+              {saving ? 'Creating…' : 'Create Package'}
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  )
+}
+
 function PackageCard({
-  pkg, onUpdated,
-}: { pkg: AdminPackage; onUpdated: (updated: AdminPackage) => void }) {
+  pkg, onUpdated, onDeleted,
+}: { pkg: AdminPackage; onUpdated: (updated: AdminPackage) => void; onDeleted: (id: number) => void }) {
   const { showToast } = useToast()
   const [editing, setEditing] = useState(false)
   const [saving, setSaving] = useState(false)
   const [toggling, setToggling] = useState(false)
+  const [confirmDelete, setConfirmDelete] = useState(false)
+  const [deleting, setDeleting] = useState(false)
   const [edit, setEdit] = useState<EditState>({
     price: pkg.price,
     post_count: String(pkg.post_count),
@@ -83,6 +269,25 @@ function PackageCard({
       showToast('Failed to update package.', 'error')
     } finally {
       setToggling(false)
+    }
+  }
+
+  async function handleDelete() {
+    setDeleting(true)
+    try {
+      await api.delete(`/api/admin/packages/${pkg.id}`)
+      onDeleted(pkg.id)
+      showToast(`Package '${pkg.name}' deleted.`, 'success')
+    } catch (err: unknown) {
+      const activeCredits = (err as { active_credits?: number })?.active_credits
+      if (activeCredits) {
+        showToast(`Cannot delete — ${activeCredits} employer(s) have active credits. Deactivate instead.`, 'error')
+      } else {
+        showToast('Failed to delete package.', 'error')
+      }
+    } finally {
+      setDeleting(false)
+      setConfirmDelete(false)
     }
   }
 
@@ -240,34 +445,68 @@ function PackageCard({
       </div>
 
       {/* Footer actions */}
-      <div className="px-5 py-3 border-t border-gray-100 flex items-center justify-end gap-2">
-        {!editing ? (
-          <button
-            onClick={startEdit}
-            className="px-4 py-2 text-xs font-semibold rounded-lg border border-gray-200 text-gray-700 hover:bg-gray-50 transition-colors"
-          >
-            Edit
-          </button>
-        ) : (
-          <>
+      <div className="px-5 py-3 border-t border-gray-100 flex items-center justify-between gap-2">
+        <button
+          onClick={() => setConfirmDelete(true)}
+          disabled={editing || deleting}
+          className="px-3 py-1.5 text-xs font-medium rounded-lg border border-red-200 text-red-600 hover:bg-red-50 disabled:opacity-40 transition-colors"
+        >
+          Delete
+        </button>
+        <div className="flex items-center gap-2">
+          {!editing ? (
             <button
-              onClick={() => setEditing(false)}
-              disabled={saving}
-              className="px-4 py-2 text-xs font-semibold rounded-lg border border-gray-200 text-gray-700 hover:bg-gray-50 disabled:opacity-40"
+              onClick={startEdit}
+              className="px-4 py-2 text-xs font-semibold rounded-lg border border-gray-200 text-gray-700 hover:bg-gray-50 transition-colors"
             >
-              Cancel
+              Edit
             </button>
-            <button
-              onClick={handleSave}
-              disabled={saving}
-              className="px-4 py-2 text-xs font-semibold rounded-lg text-white disabled:opacity-40 hover:opacity-90 transition-opacity"
-              style={{ backgroundColor: '#033BB0' }}
-            >
-              {saving ? 'Saving…' : 'Save Changes'}
-            </button>
-          </>
-        )}
+          ) : (
+            <>
+              <button
+                onClick={() => setEditing(false)}
+                disabled={saving}
+                className="px-4 py-2 text-xs font-semibold rounded-lg border border-gray-200 text-gray-700 hover:bg-gray-50 disabled:opacity-40"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleSave}
+                disabled={saving}
+                className="px-4 py-2 text-xs font-semibold rounded-lg text-white disabled:opacity-40 hover:opacity-90 transition-opacity"
+                style={{ backgroundColor: '#033BB0' }}
+              >
+                {saving ? 'Saving…' : 'Save Changes'}
+              </button>
+            </>
+          )}
+        </div>
       </div>
+
+      {/* Delete confirm overlay */}
+      {confirmDelete && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
+          <div className="bg-white rounded-2xl shadow-xl p-6 max-w-sm w-full mx-4">
+            <h3 className="font-bold text-gray-900 mb-2">Delete {pkg.name}?</h3>
+            <p className="text-sm text-gray-600 mb-5">
+              If employers have active credits for this package, deletion will be blocked.
+              You can deactivate it instead to prevent new purchases without affecting existing credits.
+            </p>
+            <div className="flex gap-3 justify-end">
+              <button onClick={() => setConfirmDelete(false)} className="px-4 py-2 text-sm font-medium rounded-lg border border-gray-300 text-gray-700 hover:bg-gray-50">
+                Cancel
+              </button>
+              <button
+                onClick={handleDelete}
+                disabled={deleting}
+                className="px-4 py-2 text-sm font-medium rounded-lg text-white bg-red-600 hover:bg-red-700 disabled:opacity-60"
+              >
+                {deleting ? 'Deleting…' : 'Delete Package'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   )
 }
@@ -276,6 +515,7 @@ export default function AdminPackagesPage() {
   const { showToast } = useToast()
   const [packages, setPackages] = useState<AdminPackage[]>([])
   const [loading, setLoading] = useState(true)
+  const [createOpen, setCreateOpen] = useState(false)
 
   useEffect(() => {
     api.get('/api/admin/packages')
@@ -288,15 +528,40 @@ export default function AdminPackagesPage() {
     setPackages((prev) => prev.map((p) => (p.id === updated.id ? { ...p, ...updated } : p)))
   }
 
+  function handleCreated(pkg: AdminPackage) {
+    setPackages((prev) => [...prev, pkg])
+    setCreateOpen(false)
+  }
+
+  function handleDeleted(id: number) {
+    setPackages((prev) => prev.filter((p) => p.id !== id))
+  }
+
   const totalRevenue = packages.reduce((sum, p) => sum + Number(p.total_revenue), 0)
   const totalPurchases = packages.reduce((sum, p) => sum + p.total_purchases, 0)
 
   return (
+    <>
+    {createOpen && (
+      <CreatePackageModal onClose={() => setCreateOpen(false)} onCreated={handleCreated} />
+    )}
     <div className="max-w-5xl mx-auto">
       {/* Header */}
-      <div className="mb-6">
-        <h1 className="text-2xl font-extrabold text-gray-900">Packages</h1>
-        <p className="text-sm text-gray-500 mt-1">Manage job posting packages and pricing</p>
+      <div className="flex items-center justify-between mb-6">
+        <div>
+          <h1 className="text-2xl font-extrabold text-gray-900">Packages</h1>
+          <p className="text-sm text-gray-500 mt-1">Manage job posting packages and pricing</p>
+        </div>
+        <button
+          onClick={() => setCreateOpen(true)}
+          className="flex items-center gap-2 px-4 py-2 text-sm font-semibold rounded-lg text-white"
+          style={{ backgroundColor: '#033BB0' }}
+        >
+          <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+            <path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m8-8H4" />
+          </svg>
+          New Package
+        </button>
       </div>
 
       {loading ? (
@@ -308,7 +573,7 @@ export default function AdminPackagesPage() {
           {/* Packages grid */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-5 mb-6">
             {packages.map((pkg) => (
-              <PackageCard key={pkg.id} pkg={pkg} onUpdated={handleUpdated} />
+              <PackageCard key={pkg.id} pkg={pkg} onUpdated={handleUpdated} onDeleted={handleDeleted} />
             ))}
           </div>
 
@@ -335,5 +600,6 @@ export default function AdminPackagesPage() {
         </>
       )}
     </div>
+    </>
   )
 }

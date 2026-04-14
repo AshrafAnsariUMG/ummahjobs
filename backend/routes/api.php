@@ -158,21 +158,25 @@ Route::middleware(['auth:sanctum', 'role:admin'])->prefix('admin')->group(functi
     // Audit log
     Route::get('audit-log', [Admin\AuditLogController::class, 'index']);
 
-    // Jobs
+    // Jobs (post before {id} routes)
+    Route::post('jobs', [Admin\JobController::class, 'store']);
     Route::get('jobs', [Admin\JobController::class, 'index']);
     Route::put('jobs/{id}', [Admin\JobController::class, 'update']);
     Route::delete('jobs/{id}', [Admin\JobController::class, 'destroy']);
 
-    // Employers
+    // Employers (search before {id} to avoid collision)
+    Route::get('employers/search', [Admin\EmployerController::class, 'search']);
     Route::get('employers', [Admin\EmployerController::class, 'index']);
     Route::put('employers/{id}', [Admin\EmployerController::class, 'update']);
 
     // Candidates
     Route::get('candidates', [Admin\CandidateController::class, 'index']);
 
-    // Packages (admin)
+    // Packages (admin — store/destroy before {id} routes)
+    Route::post('packages', [Admin\PackageController::class, 'store']);
     Route::get('packages', [Admin\PackageController::class, 'index']);
     Route::put('packages/{id}', [Admin\PackageController::class, 'update']);
+    Route::delete('packages/{id}', [Admin\PackageController::class, 'destroy']);
 
     // Blog (upload-image before {slug} to avoid collision)
     Route::get('blog', [Admin\BlogController::class, 'index']);
