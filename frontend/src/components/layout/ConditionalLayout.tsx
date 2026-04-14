@@ -3,6 +3,7 @@
 import { usePathname } from 'next/navigation'
 import Navbar from './Navbar'
 import Footer from './Footer'
+import AnnouncementBar from './AnnouncementBar'
 
 const NO_CHROME_PATHS = [
   '/login',
@@ -25,6 +26,7 @@ export default function ConditionalLayout({ children }: { children: React.ReactN
 
   return (
     <>
+      <AnnouncementBar />
       <Navbar />
       <main className="min-h-screen">{children}</main>
       <Footer />

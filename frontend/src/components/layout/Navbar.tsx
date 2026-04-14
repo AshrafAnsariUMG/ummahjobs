@@ -198,9 +198,21 @@ function Messagesbell() {
   )
 }
 
+const API = process.env.NEXT_PUBLIC_API_URL
+
 export default function Navbar() {
   const { isAuthenticated, isLoading, role } = useAuth()
   const [mobileOpen, setMobileOpen] = useState(false)
+  const [logoPath, setLogoPath] = useState('')
+
+  useEffect(() => {
+    fetch(`${API}/api/settings`)
+      .then((r) => r.json())
+      .then((data: { logo_path?: string }) => {
+        if (data.logo_path) setLogoPath(data.logo_path)
+      })
+      .catch(() => {/* use default */})
+  }, [])
 
   return (
     <nav className="bg-white border-b border-gray-200 sticky top-0 z-40">
@@ -209,7 +221,7 @@ export default function Navbar() {
           {/* Logo */}
           <Link href="/" className="flex items-center shrink-0">
             <img
-              src="/images/logo.jpeg"
+              src={logoPath || '/images/logo.jpeg'}
               alt="UmmahJobs"
               className="h-10 w-auto"
               style={{ maxHeight: '40px' }}

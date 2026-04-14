@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Api\Admin\SiteSettingsController;
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\BlogController;
 use App\Http\Controllers\Api\MessageController;
@@ -171,6 +172,16 @@ Route::middleware(['auth:sanctum', 'role:admin'])->prefix('admin')->group(functi
     Route::put('blog/{slug}', [Admin\BlogController::class, 'update']);
     Route::delete('blog/{slug}', [Admin\BlogController::class, 'destroy']);
 });
+
+// Site settings (admin)
+Route::middleware(['auth:sanctum', 'role:admin'])->prefix('admin')->group(function () {
+    Route::get('settings', [SiteSettingsController::class, 'index']);
+    Route::post('settings', [SiteSettingsController::class, 'update']);
+    Route::post('settings/logo', [SiteSettingsController::class, 'uploadLogo']);
+});
+
+// Public settings endpoint (no auth)
+Route::get('settings', [SiteSettingsController::class, 'publicSettings']);
 
 // Stripe webhook — no auth middleware
 Route::post('webhooks/stripe', [WebhookController::class, 'handleStripe']);

@@ -14,9 +14,11 @@ const POPULAR_SEARCHES = [
 
 interface HeroSearchProps {
   categories: JobCategory[]
+  statCandidates?: string
+  statEmployers?: string
 }
 
-export default function HeroSearch({ categories }: HeroSearchProps) {
+export default function HeroSearch({ categories, statCandidates = '2,000+', statEmployers = '100+' }: HeroSearchProps) {
   const router = useRouter()
   const [search, setSearch] = useState('')
   const [location, setLocation] = useState('')
@@ -157,9 +159,9 @@ export default function HeroSearch({ categories }: HeroSearchProps) {
         color: '#6B7280',
         flexWrap: 'wrap',
       }}>
-        <span>2,000+ Candidates</span>
+        <span>{statCandidates} Candidates</span>
         <span style={{ color: '#D1D5DB' }}>•</span>
-        <span>100+ Employers</span>
+        <span>{statEmployers} Employers</span>
         <span style={{ color: '#D1D5DB' }}>•</span>
         <span>Free to Register</span>
       </div>

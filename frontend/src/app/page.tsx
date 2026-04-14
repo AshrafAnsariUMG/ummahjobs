@@ -10,6 +10,16 @@ import CategoryGrid from '@/components/home/CategoryGrid'
 
 const API = process.env.NEXT_PUBLIC_API_URL
 
+async function getSiteSettings(): Promise<Record<string, string>> {
+  try {
+    const res = await fetch(`${API}/api/settings`, { next: { revalidate: 3600 } })
+    if (!res.ok) return {}
+    return res.json()
+  } catch {
+    return {}
+  }
+}
+
 async function getFeaturedJobs(): Promise<Job[]> {
   try {
     const res = await fetch(`${API}/api/jobs/featured`, { next: { revalidate: 300 } })
@@ -58,12 +68,18 @@ async function getStats(): Promise<{
 
 
 export default async function HomePage() {
-  const [featuredJobs, latestJobs, categories, stats] = await Promise.all([
+  const [featuredJobs, latestJobs, categories, stats, settings] = await Promise.all([
     getFeaturedJobs(),
     getLatestJobs(),
     getCategories(),
     getStats(),
+    getSiteSettings(),
   ])
+
+  const heroLine1 = settings.hero_heading_line1 || 'Find Halal'
+  const heroLine2 = settings.hero_heading_line2 || 'Opportunity'
+  const heroSub   = settings.hero_subheading    || 'Connect with Muslim-friendly employers and build a career aligned with your values and faith.'
+  const statJobs  = settings.stat_jobs          || '247'
 
   const visibleCategories = categories.slice(0, 12)
 
@@ -118,10 +134,9 @@ export default async function HomePage() {
             marginBottom: '16px',
             color: '#111827',
           }}>
-            Find Your Next<br />
-            <span style={{ color: '#0FBB0F' }}>Halal</span>
-            {' '}
-            <span style={{ color: '#033BB0' }}>Opportunity</span>
+            <span style={{ color: '#0FBB0F' }}>{heroLine1}</span>
+            <br />
+            <span style={{ color: '#033BB0' }}>{heroLine2}</span>
           </h1>
 
           {/* Subheading */}
@@ -132,11 +147,15 @@ export default async function HomePage() {
             maxWidth: '560px',
             margin: '0 auto 32px',
           }}>
-            Connect with Muslim-friendly employers and build a career aligned with your values and faith.
+            {heroSub}
           </p>
 
           {/* Search bar + stats + popular pills */}
-          <HeroSearch categories={categories} />
+          <HeroSearch
+            categories={categories}
+            statCandidates={settings.stat_candidates}
+            statEmployers={settings.stat_employers}
+          />
         </div>
 
         {/* Full-width illustration — outside centered container */}
@@ -183,7 +202,7 @@ export default async function HomePage() {
               background: '#0FBB0F',
               flexShrink: 0,
             }} />
-            247 New Jobs This Week
+            {statJobs} New Jobs This Week
           </div>
         </div>
       </section>

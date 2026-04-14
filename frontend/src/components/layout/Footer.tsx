@@ -1,5 +1,10 @@
+'use client'
+
+import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import FooterNewsletter from './FooterNewsletter'
+
+const API = process.env.NEXT_PUBLIC_API_URL
 
 const socialLinks = [
   {
@@ -50,6 +55,17 @@ const socialLinks = [
 ]
 
 export default function Footer() {
+  const [logoPath, setLogoPath] = useState('')
+
+  useEffect(() => {
+    fetch(`${API}/api/settings`)
+      .then((r) => r.json())
+      .then((data: { logo_path?: string }) => {
+        if (data.logo_path) setLogoPath(data.logo_path)
+      })
+      .catch(() => {/* use default */})
+  }, [])
+
   return (
     <footer style={{ backgroundColor: '#1a1a2e', borderTop: '3px solid #0FBB0F' }}>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
@@ -59,7 +75,7 @@ export default function Footer() {
             <div className="mb-3">
               <a href="/">
                 <img
-                  src="/images/logo.jpeg"
+                  src={logoPath || '/images/logo.jpeg'}
                   alt="UmmahJobs"
                   className="h-8 w-auto brightness-0 invert"
                   style={{ maxHeight: '32px' }}
