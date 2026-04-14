@@ -5,6 +5,7 @@ import BookmarkButton from '@/components/jobs/BookmarkButton'
 import ShareButtons from '@/components/jobs/ShareButtons'
 import AIMatchScore from '@/components/jobs/AIMatchScore'
 import MessageEmployerButton from '@/components/jobs/MessageEmployerButton'
+import { ErrorBoundary } from '@/components/ui/ErrorBoundary'
 import { categoryIcons, defaultIcon } from '@/lib/categoryIcons'
 
 const API = process.env.NEXT_PUBLIC_API_URL
@@ -109,7 +110,9 @@ export default async function JobDetailPage({ params }: PageProps) {
                     </Link>
                   </div>
                   <div className="flex items-center gap-2 shrink-0">
-                    <BookmarkButton jobId={job.id} />
+                    <ErrorBoundary>
+                      <BookmarkButton jobId={job.id} />
+                    </ErrorBoundary>
                   </div>
                 </div>
               </div>
@@ -140,12 +143,16 @@ export default async function JobDetailPage({ params }: PageProps) {
 
             {/* Share */}
             <div className="mt-5 pt-5 border-t border-gray-100">
-              <ShareButtons title={`${job.title} at ${job.employer.company_name}`} url={jobUrl} />
+              <ErrorBoundary>
+                <ShareButtons title={`${job.title} at ${job.employer.company_name}`} url={jobUrl} />
+              </ErrorBoundary>
             </div>
           </div>
 
           {/* AI Match Score (client, token-aware) */}
-          <AIMatchScore jobSlug={job.slug} />
+          <ErrorBoundary>
+            <AIMatchScore jobSlug={job.slug} />
+          </ErrorBoundary>
 
           {/* Description */}
           <div className="bg-white rounded-2xl border border-gray-200 p-6">
@@ -183,7 +190,9 @@ export default async function JobDetailPage({ params }: PageProps) {
               </Link>
             )}
 
-            <MessageEmployerButton employerUserId={job.employer.user_id} />
+            <ErrorBoundary>
+              <MessageEmployerButton employerUserId={job.employer.user_id} />
+            </ErrorBoundary>
 
             {job.expires_at && (
               <p className="text-xs text-gray-400 text-center mt-3">

@@ -71,7 +71,14 @@ export default function AIMatchScore({ jobSlug }: Props) {
     })
       .then((r) => (r.ok ? r.json() : null))
       .then((data) => {
-        if (data && data.score != null) setResult(data)
+        if (data && data.score != null) {
+          setResult({
+            ...data,
+            reasons: Array.isArray(data.reasons) ? data.reasons : [],
+            missing: Array.isArray(data.missing) ? data.missing : [],
+            dimensions: data.dimensions ?? {},
+          })
+        }
       })
       .catch(() => null)
       .finally(() => setLoading(false))
@@ -119,7 +126,7 @@ export default function AIMatchScore({ jobSlug }: Props) {
       </div>
 
       {/* Reasons */}
-      {result.reasons.length > 0 && (
+      {(result.reasons?.length ?? 0) > 0 && (
         <div className="px-5 pt-4">
           <ul className="space-y-1.5">
             {result.reasons.map((r, i) => (
@@ -135,7 +142,7 @@ export default function AIMatchScore({ jobSlug }: Props) {
       )}
 
       {/* Missing / gaps */}
-      {result.missing.length > 0 && (
+      {(result.missing?.length ?? 0) > 0 && (
         <div className="px-5 pt-3">
           <ul className="space-y-1.5">
             {result.missing.map((m, i) => (
