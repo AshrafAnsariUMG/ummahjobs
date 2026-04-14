@@ -168,9 +168,15 @@ Route::middleware(['auth:sanctum', 'role:admin'])->prefix('admin')->group(functi
     Route::get('employers/search', [Admin\EmployerController::class, 'search']);
     Route::get('employers', [Admin\EmployerController::class, 'index']);
     Route::put('employers/{id}', [Admin\EmployerController::class, 'update']);
+    Route::put('employers/{id}/profile', [Admin\EmployerController::class, 'updateProfile']);
+    Route::post('employers/{id}/logo', [Admin\EmployerController::class, 'uploadEmployerLogo']);
+    Route::post('employers/{id}/cover', [Admin\EmployerController::class, 'uploadEmployerCover']);
 
     // Candidates
     Route::get('candidates', [Admin\CandidateController::class, 'index']);
+    Route::put('candidates/{id}/profile', [Admin\CandidateController::class, 'updateProfile']);
+    Route::post('candidates/{id}/photo', [Admin\CandidateController::class, 'uploadCandidatePhoto']);
+    Route::post('candidates/{id}/cv', [Admin\CandidateController::class, 'uploadCandidateCV']);
 
     // Packages (admin — store/destroy before {id} routes)
     Route::post('packages', [Admin\PackageController::class, 'store']);

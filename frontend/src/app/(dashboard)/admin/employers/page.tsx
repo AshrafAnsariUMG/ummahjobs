@@ -9,7 +9,15 @@ interface AdminEmployer {
   company_name: string
   slug: string
   category: string | null
+  description: string | null
+  email: string | null
+  phone: string | null
+  address: string | null
+  socials: Array<{ platform: string; url: string }> | Record<string, string> | null
   logo_path: string | null
+  cover_photo_path: string | null
+  map_lat: number | string | null
+  map_lng: number | string | null
   is_verified: boolean
   show_profile: boolean
   views_count: number
@@ -30,6 +38,17 @@ interface Package {
   price: number
   post_count: number
   duration_days: number
+}
+
+type SocialEntry = { platform: string; url: string }
+
+function normalizeSocials(raw: AdminEmployer['socials']): SocialEntry[] {
+  if (!raw) return []
+  if (Array.isArray(raw)) return raw as SocialEntry[]
+  if (typeof raw === 'object') {
+    return Object.entries(raw).map(([platform, url]) => ({ platform, url: String(url) }))
+  }
+  return []
 }
 
 function GrantCreditsModal({
@@ -181,16 +200,405 @@ function GrantCreditsModal({
   )
 }
 
+function EditEmployerModal({
+  employer,
+  onClose,
+  onSaved,
+}: {
+  employer: AdminEmployer
+  onClose: () => void
+  onSaved: (updated: AdminEmployer) => void
+}) {
+  const [tab, setTab] = useState<'info' | 'media'>('info')
+  const [form, setForm] = useState({
+    company_name: employer.company_name ?? '',
+    category: employer.category ?? '',
+    description: employer.description ?? '',
+    email: employer.email ?? '',
+    phone: employer.phone ?? '',
+    address: employer.address ?? '',
+    map_lat: String(employer.map_lat ?? ''),
+    map_lng: String(employer.map_lng ?? ''),
+    is_verified: employer.is_verified,
+    show_profile: employer.show_profile,
+  })
+  const [socials, setSocials] = useState<SocialEntry[]>(normalizeSocials(employer.socials))
+  const [saving, setSaving] = useState(false)
+  const [error, setError] = useState<string | null>(null)
+
+  // Media state
+  const logoInputRef = useRef<HTMLInputElement>(null)
+  const coverInputRef = useRef<HTMLInputElement>(null)
+  const [logoPreview, setLogoPreview] = useState<string | null>(null)
+  const [coverPreview, setCoverPreview] = useState<string | null>(null)
+  const [logoFile, setLogoFile] = useState<File | null>(null)
+  const [coverFile, setCoverFile] = useState<File | null>(null)
+  const [uploadingLogo, setUploadingLogo] = useState(false)
+  const [uploadingCover, setUploadingCover] = useState(false)
+  const [mediaSuccess, setMediaSuccess] = useState<string | null>(null)
+
+  const inputCls = 'w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:border-transparent'
+  const inputStyle = { '--tw-ring-color': '#033BB0' } as React.CSSProperties
+
+  function set(field: string, value: string | boolean) {
+    setForm((f) => ({ ...f, [field]: value }))
+  }
+
+  async function handleSaveInfo(e: React.FormEvent) {
+    e.preventDefault()
+    setSaving(true)
+    setError(null)
+    try {
+      const payload = {
+        ...form,
+        map_lat: form.map_lat ? parseFloat(form.map_lat) : null,
+        map_lng: form.map_lng ? parseFloat(form.map_lng) : null,
+        socials: socials.filter((s) => s.platform && s.url),
+      }
+      const updated = await api.put(`/api/admin/employers/${employer.id}/profile`, payload) as AdminEmployer
+      onSaved(updated)
+    } catch (err: unknown) {
+      setError((err as { message?: string })?.message ?? 'Failed to save.')
+    } finally {
+      setSaving(false)
+    }
+  }
+
+  async function handleUploadLogo() {
+    if (!logoFile) return
+    const token = typeof window !== 'undefined' ? localStorage.getItem('uj_token') : null
+    if (!token) return
+    setUploadingLogo(true)
+    setMediaSuccess(null)
+    try {
+      const fd = new FormData()
+      fd.append('logo', logoFile)
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/admin/employers/${employer.id}/logo`, {
+        method: 'POST',
+        headers: { Authorization: `Bearer ${token}`, Accept: 'application/json' },
+        body: fd,
+      })
+      if (!res.ok) throw new Error('Upload failed')
+      const data = await res.json() as { logo_url: string }
+      setMediaSuccess('Logo uploaded successfully.')
+      setLogoFile(null)
+      setLogoPreview(null)
+      onSaved({ ...employer, logo_path: data.logo_url })
+    } catch {
+      setError('Logo upload failed.')
+    } finally {
+      setUploadingLogo(false)
+    }
+  }
+
+  async function handleUploadCover() {
+    if (!coverFile) return
+    const token = typeof window !== 'undefined' ? localStorage.getItem('uj_token') : null
+    if (!token) return
+    setUploadingCover(true)
+    setMediaSuccess(null)
+    try {
+      const fd = new FormData()
+      fd.append('cover', coverFile)
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/admin/employers/${employer.id}/cover`, {
+        method: 'POST',
+        headers: { Authorization: `Bearer ${token}`, Accept: 'application/json' },
+        body: fd,
+      })
+      if (!res.ok) throw new Error('Upload failed')
+      const data = await res.json() as { cover_url: string }
+      setMediaSuccess('Cover photo uploaded successfully.')
+      setCoverFile(null)
+      setCoverPreview(null)
+      onSaved({ ...employer, cover_photo_path: data.cover_url })
+    } catch {
+      setError('Cover upload failed.')
+    } finally {
+      setUploadingCover(false)
+    }
+  }
+
+  function handleLogoChange(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0]
+    if (!file) return
+    setLogoFile(file)
+    setLogoPreview(URL.createObjectURL(file))
+  }
+
+  function handleCoverChange(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0]
+    if (!file) return
+    setCoverFile(file)
+    setCoverPreview(URL.createObjectURL(file))
+  }
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4">
+      <div className="bg-white rounded-2xl shadow-xl w-full max-w-2xl max-h-[90vh] flex flex-col">
+        {/* Header */}
+        <div className="flex items-center justify-between px-6 py-4 border-b border-gray-100 shrink-0">
+          <div>
+            <h3 className="font-bold text-gray-900 text-lg">Edit Employer</h3>
+            <p className="text-sm text-gray-500 mt-0.5">{employer.company_name}</p>
+          </div>
+          <button onClick={onClose} className="p-1.5 rounded-lg text-gray-400 hover:text-gray-700 hover:bg-gray-100">
+            <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
+        </div>
+
+        {/* Tabs */}
+        <div className="flex border-b border-gray-100 px-6 shrink-0">
+          {(['info', 'media'] as const).map((t) => (
+            <button
+              key={t}
+              onClick={() => { setTab(t); setError(null); setMediaSuccess(null) }}
+              className="px-4 py-2.5 text-sm font-medium border-b-2 transition-colors capitalize"
+              style={tab === t
+                ? { borderColor: '#033BB0', color: '#033BB0' }
+                : { borderColor: 'transparent', color: '#6b7280' }}
+            >
+              {t === 'info' ? 'Company Info' : 'Media'}
+            </button>
+          ))}
+        </div>
+
+        {/* Content */}
+        <div className="overflow-y-auto flex-1 px-6 py-5">
+          {error && (
+            <div className="mb-4 p-3 rounded-lg text-sm text-red-600 bg-red-50 border border-red-200">{error}</div>
+          )}
+          {mediaSuccess && (
+            <div className="mb-4 p-3 rounded-lg text-sm text-green-700 bg-green-50 border border-green-200">{mediaSuccess}</div>
+          )}
+
+          {tab === 'info' && (
+            <form id="employer-info-form" onSubmit={handleSaveInfo}>
+              <div className="space-y-4">
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-xs font-medium text-gray-700 mb-1">Company Name</label>
+                    <input value={form.company_name} onChange={(e) => set('company_name', e.target.value)} className={inputCls} style={inputStyle} />
+                  </div>
+                  <div>
+                    <label className="block text-xs font-medium text-gray-700 mb-1">Category</label>
+                    <input value={form.category} onChange={(e) => set('category', e.target.value)} className={inputCls} style={inputStyle} placeholder="e.g. Technology" />
+                  </div>
+                </div>
+                <div>
+                  <label className="block text-xs font-medium text-gray-700 mb-1">Description</label>
+                  <textarea value={form.description} onChange={(e) => set('description', e.target.value)} rows={3} className={inputCls} style={inputStyle} />
+                </div>
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-xs font-medium text-gray-700 mb-1">Email</label>
+                    <input type="email" value={form.email} onChange={(e) => set('email', e.target.value)} className={inputCls} style={inputStyle} />
+                  </div>
+                  <div>
+                    <label className="block text-xs font-medium text-gray-700 mb-1">Phone</label>
+                    <input value={form.phone} onChange={(e) => set('phone', e.target.value)} className={inputCls} style={inputStyle} />
+                  </div>
+                </div>
+                <div>
+                  <label className="block text-xs font-medium text-gray-700 mb-1">Address</label>
+                  <input value={form.address} onChange={(e) => set('address', e.target.value)} className={inputCls} style={inputStyle} />
+                </div>
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-xs font-medium text-gray-700 mb-1">Map Latitude</label>
+                    <input type="number" step="any" value={form.map_lat} onChange={(e) => set('map_lat', e.target.value)} className={inputCls} style={inputStyle} placeholder="e.g. 51.5074" />
+                  </div>
+                  <div>
+                    <label className="block text-xs font-medium text-gray-700 mb-1">Map Longitude</label>
+                    <input type="number" step="any" value={form.map_lng} onChange={(e) => set('map_lng', e.target.value)} className={inputCls} style={inputStyle} placeholder="e.g. -0.1278" />
+                  </div>
+                </div>
+
+                {/* Social links */}
+                <div>
+                  <div className="flex items-center justify-between mb-2">
+                    <label className="text-xs font-medium text-gray-700">Social Links</label>
+                    <button
+                      type="button"
+                      onClick={() => setSocials((s) => [...s, { platform: '', url: '' }])}
+                      className="text-xs font-medium hover:underline"
+                      style={{ color: '#033BB0' }}
+                    >
+                      + Add
+                    </button>
+                  </div>
+                  {socials.length === 0 && (
+                    <p className="text-xs text-gray-400">No social links added.</p>
+                  )}
+                  {socials.map((s, i) => (
+                    <div key={i} className="flex gap-2 mb-2">
+                      <input
+                        value={s.platform}
+                        onChange={(e) => setSocials((prev) => prev.map((x, j) => j === i ? { ...x, platform: e.target.value } : x))}
+                        placeholder="Platform (e.g. LinkedIn)"
+                        className="w-32 border border-gray-200 rounded-lg px-2 py-1.5 text-xs focus:outline-none"
+                      />
+                      <input
+                        value={s.url}
+                        onChange={(e) => setSocials((prev) => prev.map((x, j) => j === i ? { ...x, url: e.target.value } : x))}
+                        placeholder="https://..."
+                        className="flex-1 border border-gray-200 rounded-lg px-2 py-1.5 text-xs focus:outline-none"
+                      />
+                      <button
+                        type="button"
+                        onClick={() => setSocials((prev) => prev.filter((_, j) => j !== i))}
+                        className="p-1.5 text-gray-400 hover:text-red-500"
+                      >
+                        <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                          <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+                        </svg>
+                      </button>
+                    </div>
+                  ))}
+                </div>
+
+                {/* Toggles */}
+                <div className="flex items-center gap-6 pt-1">
+                  <label className="flex items-center gap-2 cursor-pointer">
+                    <input type="checkbox" checked={form.is_verified} onChange={(e) => set('is_verified', e.target.checked)} className="sr-only" />
+                    <div
+                      className="relative w-9 h-5 rounded-full transition-colors"
+                      style={{ backgroundColor: form.is_verified ? '#0FBB0F' : '#D1D5DB' }}
+                      onClick={() => set('is_verified', !form.is_verified)}
+                    >
+                      <div className={`absolute top-0.5 w-4 h-4 bg-white rounded-full shadow transition-transform ${form.is_verified ? 'translate-x-4' : 'translate-x-0.5'}`} />
+                    </div>
+                    <span className="text-xs font-medium text-gray-700">Halal Verified</span>
+                  </label>
+                  <label className="flex items-center gap-2 cursor-pointer">
+                    <div
+                      className="relative w-9 h-5 rounded-full transition-colors"
+                      style={{ backgroundColor: form.show_profile ? '#033BB0' : '#D1D5DB' }}
+                      onClick={() => set('show_profile', !form.show_profile)}
+                    >
+                      <div className={`absolute top-0.5 w-4 h-4 bg-white rounded-full shadow transition-transform ${form.show_profile ? 'translate-x-4' : 'translate-x-0.5'}`} />
+                    </div>
+                    <span className="text-xs font-medium text-gray-700">Profile Visible</span>
+                  </label>
+                </div>
+              </div>
+            </form>
+          )}
+
+          {tab === 'media' && (
+            <div className="space-y-6">
+              {/* Logo */}
+              <div>
+                <h4 className="text-sm font-semibold text-gray-900 mb-3">Company Logo</h4>
+                <div className="flex items-start gap-4">
+                  <div className="w-16 h-16 rounded-xl border border-gray-200 bg-gray-50 overflow-hidden shrink-0 flex items-center justify-center">
+                    {(logoPreview ?? employer.logo_path) ? (
+                      <img src={logoPreview ?? employer.logo_path!} alt="" className="w-full h-full object-contain" />
+                    ) : (
+                      <span className="text-lg font-bold" style={{ color: '#033BB0' }}>{employer.company_name.charAt(0)}</span>
+                    )}
+                  </div>
+                  <div className="flex-1">
+                    <input ref={logoInputRef} type="file" accept="image/jpeg,image/png,image/webp,image/svg+xml" className="hidden" onChange={handleLogoChange} />
+                    <button
+                      type="button"
+                      onClick={() => logoInputRef.current?.click()}
+                      className="px-3 py-1.5 text-xs font-medium rounded-lg border border-gray-300 text-gray-700 hover:bg-gray-50 mb-2"
+                    >
+                      Choose Logo
+                    </button>
+                    {logoFile && (
+                      <div className="flex items-center gap-2 mt-1">
+                        <p className="text-xs text-gray-600 truncate max-w-[200px]">{logoFile.name}</p>
+                        <button
+                          type="button"
+                          onClick={handleUploadLogo}
+                          disabled={uploadingLogo}
+                          className="px-3 py-1.5 text-xs font-semibold rounded-lg text-white disabled:opacity-60"
+                          style={{ backgroundColor: '#033BB0' }}
+                        >
+                          {uploadingLogo ? 'Uploading…' : 'Upload'}
+                        </button>
+                      </div>
+                    )}
+                    <p className="text-xs text-gray-400 mt-1">PNG, JPG, WebP or SVG · max 2MB</p>
+                  </div>
+                </div>
+              </div>
+
+              {/* Cover photo */}
+              <div>
+                <h4 className="text-sm font-semibold text-gray-900 mb-3">Cover Photo</h4>
+                {(coverPreview ?? employer.cover_photo_path) && (
+                  <div className="w-full h-28 rounded-xl overflow-hidden border border-gray-200 bg-gray-100 mb-3">
+                    <img src={coverPreview ?? employer.cover_photo_path!} alt="" className="w-full h-full object-cover" />
+                  </div>
+                )}
+                <div className="flex items-center gap-3">
+                  <input ref={coverInputRef} type="file" accept="image/jpeg,image/png,image/webp" className="hidden" onChange={handleCoverChange} />
+                  <button
+                    type="button"
+                    onClick={() => coverInputRef.current?.click()}
+                    className="px-3 py-1.5 text-xs font-medium rounded-lg border border-gray-300 text-gray-700 hover:bg-gray-50"
+                  >
+                    Choose Cover
+                  </button>
+                  {coverFile && (
+                    <>
+                      <p className="text-xs text-gray-600 truncate max-w-[180px]">{coverFile.name}</p>
+                      <button
+                        type="button"
+                        onClick={handleUploadCover}
+                        disabled={uploadingCover}
+                        className="px-3 py-1.5 text-xs font-semibold rounded-lg text-white disabled:opacity-60"
+                        style={{ backgroundColor: '#033BB0' }}
+                      >
+                        {uploadingCover ? 'Uploading…' : 'Upload'}
+                      </button>
+                    </>
+                  )}
+                </div>
+                <p className="text-xs text-gray-400 mt-1">PNG, JPG or WebP · max 5MB · recommended 1200×300px</p>
+              </div>
+            </div>
+          )}
+        </div>
+
+        {/* Footer */}
+        <div className="flex items-center justify-end gap-3 px-6 py-4 border-t border-gray-100 shrink-0">
+          <button type="button" onClick={onClose} className="px-4 py-2 text-sm font-medium rounded-lg border border-gray-300 text-gray-700 hover:bg-gray-50">
+            Close
+          </button>
+          {tab === 'info' && (
+            <button
+              type="submit"
+              form="employer-info-form"
+              disabled={saving}
+              className="px-4 py-2 text-sm font-semibold rounded-lg text-white disabled:opacity-60"
+              style={{ backgroundColor: '#033BB0' }}
+            >
+              {saving ? 'Saving…' : 'Save Changes'}
+            </button>
+          )}
+        </div>
+      </div>
+    </div>
+  )
+}
+
 function ActionsMenu({
   employer,
   onVerifyToggle,
   onProfileToggle,
   onGrantCredits,
+  onEditProfile,
 }: {
   employer: AdminEmployer
   onVerifyToggle: () => void
   onProfileToggle: () => void
   onGrantCredits: () => void
+  onEditProfile: () => void
 }) {
   const [open, setOpen] = useState(false)
   const ref = useRef<HTMLDivElement>(null)
@@ -214,7 +622,7 @@ function ActionsMenu({
         </svg>
       </button>
       {open && (
-        <div className="absolute right-0 mt-1 w-48 bg-white rounded-xl shadow-lg border border-gray-100 py-1 z-30">
+        <div className="absolute right-0 mt-1 w-52 bg-white rounded-xl shadow-lg border border-gray-100 py-1 z-30">
           <a
             href={`/employers/${employer.slug}`}
             target="_blank"
@@ -224,6 +632,12 @@ function ActionsMenu({
           >
             View Profile ↗
           </a>
+          <button
+            onClick={() => { setOpen(false); onEditProfile() }}
+            className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-50"
+          >
+            Edit Profile
+          </button>
           <button
             onClick={() => { setOpen(false); onGrantCredits() }}
             className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-50"
@@ -265,6 +679,7 @@ export default function AdminEmployersPage() {
   const [verifiedFilter, setVerifiedFilter] = useState<VerifiedFilter>('all')
   const [page, setPage] = useState(1)
   const [grantCreditsTarget, setGrantCreditsTarget] = useState<AdminEmployer | null>(null)
+  const [editTarget, setEditTarget] = useState<AdminEmployer | null>(null)
 
   useEffect(() => {
     const t = setTimeout(() => setDebouncedSearch(search), 400)
@@ -311,6 +726,12 @@ export default function AdminEmployersPage() {
     }
   }
 
+  function handleEmployerSaved(updated: AdminEmployer) {
+    setEmployers((prev) => prev.map((e) => e.id === updated.id ? { ...e, ...updated } : e))
+    if (editTarget?.id === updated.id) setEditTarget((prev) => prev ? { ...prev, ...updated } : prev)
+    showToast('Employer profile updated.', 'success')
+  }
+
   function formatDate(d: string) {
     return new Date(d).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })
   }
@@ -325,6 +746,13 @@ export default function AdminEmployersPage() {
           setGrantCreditsTarget(null)
           showToast('Credits granted successfully.', 'success')
         }}
+      />
+    )}
+    {editTarget && (
+      <EditEmployerModal
+        employer={editTarget}
+        onClose={() => setEditTarget(null)}
+        onSaved={handleEmployerSaved}
       />
     )}
     <div className="max-w-6xl mx-auto">
@@ -445,6 +873,7 @@ export default function AdminEmployersPage() {
                           onVerifyToggle={() => handleVerifyToggle(emp)}
                           onProfileToggle={() => handleProfileToggle(emp)}
                           onGrantCredits={() => setGrantCreditsTarget(emp)}
+                          onEditProfile={() => setEditTarget(emp)}
                         />
                       </td>
                     </tr>
