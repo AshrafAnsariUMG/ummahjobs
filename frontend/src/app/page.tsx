@@ -56,13 +56,6 @@ async function getStats(): Promise<{
   }
 }
 
-const POPULAR_SEARCHES = [
-  { label: 'Remote Jobs', query: 'remote' },
-  { label: 'IT & Tech', query: 'IT' },
-  { label: 'Healthcare', query: 'healthcare' },
-  { label: 'Islamic Studies', query: 'islamic studies' },
-  { label: 'Nonprofit', query: 'nonprofit' },
-]
 
 export default async function HomePage() {
   const [featuredJobs, latestJobs, categories, stats] = await Promise.all([
@@ -87,89 +80,110 @@ export default async function HomePage() {
     <div>
       {/* ── Hero ── */}
       <section
-        className="border-b border-gray-100 overflow-hidden"
         style={{
-          background: 'linear-gradient(135deg, #F0F4FF 0%, #FFFFFF 60%, #F0FFF0 100%)',
+          background: 'linear-gradient(160deg, #F0F4FF 0%, #FFFFFF 50%, #F0FFF0 100%)',
+          paddingTop: '64px',
+          paddingBottom: 0,
+          borderBottom: '1px solid #F3F4F6',
+          overflow: 'hidden',
         }}
       >
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 lg:py-16">
-          <div className="flex flex-col lg:flex-row items-center gap-10 lg:gap-16">
+        {/* Centered content */}
+        <div style={{ maxWidth: '860px', margin: '0 auto', padding: '0 24px', textAlign: 'center' }}>
 
-            {/* Left column — text + search */}
-            <div className="flex-1 lg:w-[55%] w-full">
-              {/* Badge */}
-              <div className="inline-flex items-center gap-2 mb-6 px-3 py-1.5 rounded-full border text-xs font-semibold"
-                style={{ backgroundColor: '#E6EDFF', color: '#033BB0', borderColor: '#C7D2FE' }}>
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.75} width={14} height={14}>
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
-                </svg>
-                The #1 Halal Job Platform
-              </div>
+          {/* Badge */}
+          <div style={{
+            display: 'inline-flex',
+            alignItems: 'center',
+            gap: '6px',
+            background: '#E6EDFF',
+            border: '1px solid #C7D2FE',
+            borderRadius: '20px',
+            padding: '4px 14px',
+            fontSize: '13px',
+            color: '#033BB0',
+            marginBottom: '20px',
+          }}>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.75} width={14} height={14}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
+            </svg>
+            The #1 Halal Job Platform
+          </div>
 
-              {/* Heading */}
-              <h1 className="font-bold leading-tight mb-5"
-                style={{ fontSize: 'clamp(34px, 5vw, 52px)', lineHeight: 1.15 }}>
-                <span className="text-gray-900">Find Your Next</span>
-                <br />
-                <span style={{ color: '#0FBB0F' }}>Halal </span>
-                <span style={{ color: '#033BB0' }}>Opportunity</span>
-              </h1>
+          {/* Heading */}
+          <h1 style={{
+            fontSize: 'clamp(36px, 5vw, 58px)',
+            fontWeight: 800,
+            lineHeight: 1.1,
+            marginBottom: '16px',
+            color: '#111827',
+          }}>
+            Find Your Next<br />
+            <span style={{ color: '#0FBB0F' }}>Halal</span>
+            {' '}
+            <span style={{ color: '#033BB0' }}>Opportunity</span>
+          </h1>
 
-              {/* Subheading */}
-              <p className="mb-8 max-w-[480px]"
-                style={{ color: '#6B7280', fontSize: 18 }}>
-                Connect with Muslim-friendly employers and build a career aligned with your values and faith.
-              </p>
+          {/* Subheading */}
+          <p style={{
+            fontSize: '18px',
+            color: '#6B7280',
+            lineHeight: 1.6,
+            maxWidth: '560px',
+            margin: '0 auto 32px',
+          }}>
+            Connect with Muslim-friendly employers and build a career aligned with your values and faith.
+          </p>
 
-              {/* Search bar */}
-              <div className="mb-5">
-                <HeroSearch categories={categories} />
-              </div>
+          {/* Search bar + stats + popular pills */}
+          <HeroSearch categories={categories} />
+        </div>
 
-              {/* Quick stats */}
-              <p className="text-sm mb-4" style={{ color: '#6B7280' }}>
-                2,000+ Candidates&nbsp;&nbsp;·&nbsp;&nbsp;100+ Employers&nbsp;&nbsp;·&nbsp;&nbsp;Free to Register
-              </p>
-
-              {/* Popular search pills */}
-              <div className="flex flex-wrap items-center gap-2">
-                <span className="text-sm font-medium" style={{ color: '#6B7280' }}>Popular:</span>
-                {POPULAR_SEARCHES.map((s) => (
-                  <Link
-                    key={s.label}
-                    href={`/jobs?search=${encodeURIComponent(s.query)}`}
-                    className="text-xs px-3 py-1.5 rounded-full border transition-colors"
-                    style={{ backgroundColor: '#F9FAFB', borderColor: '#E5E7EB', color: '#374151' }}
-                    onMouseEnter={undefined}
-                  >
-                    {s.label}
-                  </Link>
-                ))}
-              </div>
-            </div>
-
-            {/* Right column — illustration */}
-            <div className="hidden lg:flex lg:w-[45%] justify-center items-end relative">
-              <div className="relative w-full max-w-[480px]">
-                <img
-                  src="/images/illustration.webp"
-                  alt="Muslim professionals"
-                  className="w-full h-auto"
-                  style={{ maxHeight: 480, objectFit: 'contain', objectPosition: 'bottom' }}
-                />
-                {/* Floating stat card */}
-                <div
-                  className="absolute bottom-4 left-0 flex items-center gap-2.5 rounded-xl shadow-lg px-4 py-2.5"
-                  style={{ backgroundColor: '#fff', border: '1px solid #F3F4F6' }}
-                >
-                  <span
-                    className="rounded-full shrink-0"
-                    style={{ width: 8, height: 8, backgroundColor: '#0FBB0F', display: 'inline-block' }}
-                  />
-                  <span className="text-sm font-semibold text-gray-800 whitespace-nowrap">247 New Jobs This Week</span>
-                </div>
-              </div>
-            </div>
+        {/* Full-width illustration — outside centered container */}
+        <div style={{
+          width: '100%',
+          marginTop: '48px',
+          position: 'relative',
+          overflow: 'hidden',
+          lineHeight: 0,
+        }}>
+          <img
+            src="/images/illustration.webp"
+            alt="Muslim professionals"
+            style={{
+              width: '100%',
+              maxHeight: '220px',
+              objectFit: 'cover',
+              objectPosition: 'center top',
+              display: 'block',
+            }}
+          />
+          {/* Floating stat card */}
+          <div style={{
+            position: 'absolute',
+            bottom: '20px',
+            left: '50%',
+            transform: 'translateX(-50%)',
+            background: 'white',
+            borderRadius: '12px',
+            boxShadow: '0 4px 16px rgba(0,0,0,0.12)',
+            padding: '10px 20px',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '8px',
+            whiteSpace: 'nowrap',
+            fontSize: '14px',
+            fontWeight: 500,
+            color: '#111827',
+          }}>
+            <div style={{
+              width: '8px',
+              height: '8px',
+              borderRadius: '50%',
+              background: '#0FBB0F',
+              flexShrink: 0,
+            }} />
+            247 New Jobs This Week
           </div>
         </div>
       </section>

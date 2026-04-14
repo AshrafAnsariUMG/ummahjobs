@@ -1,11 +1,24 @@
 'use client'
 
 import { useState } from 'react'
-import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { api } from '@/lib/api'
 import { useAuth } from '@/context/AuthContext'
 import type { AuthResponse } from '@/types'
+
+const inputStyle = (focused: boolean): React.CSSProperties => ({
+  width: '100%',
+  height: '44px',
+  border: focused ? '1px solid #033BB0' : '1px solid #D1D5DB',
+  borderRadius: '8px',
+  padding: '0 12px',
+  fontSize: '15px',
+  outline: 'none',
+  transition: 'border-color 0.15s, box-shadow 0.15s',
+  boxShadow: focused ? '0 0 0 3px rgba(3,59,176,0.1)' : 'none',
+  background: 'transparent',
+  color: '#111827',
+})
 
 export default function LoginPage() {
   const router = useRouter()
@@ -13,9 +26,11 @@ export default function LoginPage() {
 
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
+  const [showPassword, setShowPassword] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [legacyMessage, setLegacyMessage] = useState<string | null>(null)
+  const [focused, setFocused] = useState<string | null>(null)
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
@@ -43,24 +58,52 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-8">
-      <div className="mb-8 text-center">
-        <h1 className="text-3xl font-bold" style={{ color: '#033BB0' }}>UmmahJobs</h1>
-        <p className="mt-2 text-sm text-gray-500">
-          Connecting Muslim professionals with halal opportunities
+    <>
+      {/* Heading */}
+      <div style={{ marginBottom: '28px' }}>
+        <h1 style={{ fontSize: '26px', fontWeight: '700', color: '#111827', marginBottom: '6px' }}>
+          Welcome back
+        </h1>
+        <p style={{ fontSize: '14px', color: '#6B7280' }}>
+          Sign in to your UmmahJobs account
         </p>
       </div>
 
+      {/* Legacy password info */}
       {legacyMessage && (
-        <div className="mb-5 rounded-lg border border-green-200 bg-green-50 p-4 text-sm text-green-800">
-          <p className="font-medium mb-1">We&apos;ve upgraded our platform.</p>
+        <div style={{
+          background: '#EFF6FF',
+          border: '1px solid #BFDBFE',
+          borderRadius: '8px',
+          padding: '12px 16px',
+          color: '#1E40AF',
+          fontSize: '14px',
+          marginBottom: '16px',
+        }}>
+          <p style={{ fontWeight: '600', marginBottom: '4px' }}>Platform upgrade</p>
           <p>{legacyMessage}</p>
         </div>
       )}
 
-      <form onSubmit={handleSubmit} className="space-y-4">
+      {/* Error */}
+      {error && (
+        <div style={{
+          background: '#FEF2F2',
+          border: '1px solid #FECACA',
+          borderRadius: '8px',
+          padding: '10px 14px',
+          color: '#DC2626',
+          fontSize: '14px',
+          marginBottom: '16px',
+        }}>
+          {error}
+        </div>
+      )}
+
+      <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+        {/* Email */}
         <div>
-          <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">
+          <label htmlFor="email" style={{ fontSize: '14px', fontWeight: '500', color: '#374151', marginBottom: '6px', display: 'block' }}>
             Email address
           </label>
           <input
@@ -69,43 +112,99 @@ export default function LoginPage() {
             required
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            className="w-full rounded-lg border border-gray-300 px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#033BB0] focus:border-transparent"
+            onFocus={() => setFocused('email')}
+            onBlur={() => setFocused(null)}
             placeholder="you@example.com"
+            style={inputStyle(focused === 'email')}
           />
         </div>
 
+        {/* Password */}
         <div>
-          <div className="flex items-center justify-between mb-1">
-            <label htmlFor="password" className="block text-sm font-medium text-gray-700">
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '6px' }}>
+            <label htmlFor="password" style={{ fontSize: '14px', fontWeight: '500', color: '#374151' }}>
               Password
             </label>
-            <Link href="/forgot-password" className="text-xs text-gray-500 hover:text-[#033BB0]">
+            <a href="/forgot-password" style={{ fontSize: '13px', color: '#033BB0', textDecoration: 'none' }}
+              onMouseEnter={(e) => e.currentTarget.style.textDecoration = 'underline'}
+              onMouseLeave={(e) => e.currentTarget.style.textDecoration = 'none'}
+            >
               Forgot password?
-            </Link>
+            </a>
           </div>
-          <input
-            id="password"
-            type="password"
-            required
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            className="w-full rounded-lg border border-gray-300 px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#033BB0] focus:border-transparent"
-            placeholder="••••••••"
-          />
+          <div style={{ position: 'relative' }}>
+            <input
+              id="password"
+              type={showPassword ? 'text' : 'password'}
+              required
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              onFocus={() => setFocused('password')}
+              onBlur={() => setFocused(null)}
+              placeholder="••••••••"
+              style={{ ...inputStyle(focused === 'password'), paddingRight: '44px' }}
+            />
+            <button
+              type="button"
+              onClick={() => setShowPassword((v) => !v)}
+              style={{
+                position: 'absolute',
+                right: '12px',
+                top: '50%',
+                transform: 'translateY(-50%)',
+                background: 'none',
+                border: 'none',
+                cursor: 'pointer',
+                color: '#9CA3AF',
+                padding: 0,
+                display: 'flex',
+                alignItems: 'center',
+              }}
+              onMouseEnter={(e) => (e.currentTarget.style.color = '#374151')}
+              onMouseLeave={(e) => (e.currentTarget.style.color = '#9CA3AF')}
+            >
+              {showPassword ? (
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} width={16} height={16}>
+                  <path d="M17.94 17.94A10.07 10.07 0 0112 20c-7 0-11-8-11-8a18.45 18.45 0 015.06-5.94M9.9 4.24A9.12 9.12 0 0112 4c7 0 11 8 11 8a18.5 18.5 0 01-2.16 3.19m-6.72-1.07a3 3 0 11-4.24-4.24" strokeLinecap="round" strokeLinejoin="round" />
+                  <line x1="1" y1="1" x2="23" y2="23" strokeLinecap="round" />
+                </svg>
+              ) : (
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} width={16} height={16}>
+                  <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" strokeLinecap="round" strokeLinejoin="round" />
+                  <circle cx="12" cy="12" r="3" />
+                </svg>
+              )}
+            </button>
+          </div>
         </div>
 
-        {error && (
-          <p className="text-sm text-red-600">{error}</p>
-        )}
-
+        {/* Submit */}
         <button
           type="submit"
           disabled={isLoading}
-          className="w-full flex items-center justify-center gap-2 rounded-lg py-2.5 px-4 text-sm font-medium text-white transition-opacity disabled:opacity-70"
-          style={{ backgroundColor: '#033BB0' }}
+          style={{
+            width: '100%',
+            height: '44px',
+            background: isLoading ? '#0256CC' : '#033BB0',
+            color: 'white',
+            border: 'none',
+            borderRadius: '8px',
+            fontSize: '15px',
+            fontWeight: '600',
+            cursor: isLoading ? 'not-allowed' : 'pointer',
+            marginTop: '8px',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            gap: '8px',
+            transition: 'background 0.15s',
+            opacity: isLoading ? 0.8 : 1,
+          }}
+          onMouseEnter={(e) => { if (!isLoading) e.currentTarget.style.background = '#0256CC' }}
+          onMouseLeave={(e) => { if (!isLoading) e.currentTarget.style.background = '#033BB0' }}
         >
           {isLoading && (
-            <svg className="animate-spin h-4 w-4 text-white" fill="none" viewBox="0 0 24 24">
+            <svg className="animate-spin" style={{ width: 16, height: 16 }} fill="none" viewBox="0 0 24 24">
               <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
               <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z" />
             </svg>
@@ -114,26 +213,41 @@ export default function LoginPage() {
         </button>
       </form>
 
-      <div className="my-5 flex items-center gap-3">
-        <div className="flex-1 h-px bg-gray-200" />
-        <span className="text-xs text-gray-400">or</span>
-        <div className="flex-1 h-px bg-gray-200" />
+      {/* Divider */}
+      <div style={{ display: 'flex', alignItems: 'center', gap: '12px', margin: '20px 0' }}>
+        <div style={{ flex: 1, height: '1px', background: '#E5E7EB' }} />
+        <span style={{ color: '#9CA3AF', fontSize: '13px' }}>or</span>
+        <div style={{ flex: 1, height: '1px', background: '#E5E7EB' }} />
       </div>
 
+      {/* UmmahPass button */}
       <button
         disabled
-        className="w-full flex items-center justify-center gap-2 rounded-lg border border-gray-300 py-2.5 px-4 text-sm text-gray-400 cursor-not-allowed"
+        style={{
+          width: '100%',
+          height: '44px',
+          border: '1px solid #D1D5DB',
+          borderRadius: '8px',
+          background: 'white',
+          color: '#9CA3AF',
+          fontSize: '15px',
+          cursor: 'not-allowed',
+          opacity: 0.65,
+        }}
       >
-        Continue with UmmahPass
-        <span className="text-xs bg-gray-100 text-gray-400 px-1.5 py-0.5 rounded">coming soon</span>
+        Continue with UmmahPass (coming soon)
       </button>
 
-      <p className="mt-6 text-center text-sm text-gray-500">
+      {/* Bottom link */}
+      <p style={{ textAlign: 'center', marginTop: '20px', fontSize: '14px', color: '#6B7280' }}>
         Don&apos;t have an account?{' '}
-        <Link href="/register" className="font-medium hover:underline" style={{ color: '#033BB0' }}>
-          Register here
-        </Link>
+        <a href="/register" style={{ color: '#033BB0', fontWeight: '500', textDecoration: 'none' }}
+          onMouseEnter={(e) => e.currentTarget.style.textDecoration = 'underline'}
+          onMouseLeave={(e) => e.currentTarget.style.textDecoration = 'none'}
+        >
+          Create one free →
+        </a>
       </p>
-    </div>
+    </>
   )
 }

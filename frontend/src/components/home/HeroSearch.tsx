@@ -4,6 +4,14 @@ import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import type { JobCategory } from '@/types'
 
+const POPULAR_SEARCHES = [
+  'Remote Jobs',
+  'IT & Tech',
+  'Healthcare',
+  'Islamic Studies',
+  'Nonprofit',
+]
+
 interface HeroSearchProps {
   categories: JobCategory[]
 }
@@ -14,8 +22,7 @@ export default function HeroSearch({ categories }: HeroSearchProps) {
   const [location, setLocation] = useState('')
   const [category, setCategory] = useState('')
 
-  function handleSubmit(e: React.FormEvent) {
-    e.preventDefault()
+  function handleSearch() {
     const params = new URLSearchParams()
     if (search) params.set('search', search)
     if (location) params.set('location', location)
@@ -23,74 +30,179 @@ export default function HeroSearch({ categories }: HeroSearchProps) {
     router.push(`/jobs${params.toString() ? '?' + params.toString() : ''}`)
   }
 
+  function handleKeyDown(e: React.KeyboardEvent) {
+    if (e.key === 'Enter') handleSearch()
+  }
+
   return (
-    <div className="w-full">
-      <form onSubmit={handleSubmit}>
-        <div className="flex flex-col md:flex-row gap-2 bg-white rounded-2xl shadow-lg border border-gray-200 p-2">
-          {/* Search input */}
-          <div className="flex items-center gap-2 flex-1 px-3">
-            <svg className="w-5 h-5 text-gray-400 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
-                d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-            </svg>
-            <input
-              type="text"
-              placeholder="Job title, keywords..."
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              className="flex-1 py-3 text-sm outline-none bg-transparent placeholder-gray-400"
-            />
-          </div>
-
-          <div className="hidden md:block w-px bg-gray-200 my-2" />
-
-          {/* Location */}
-          <div className="flex items-center gap-2 flex-1 px-3">
-            <svg className="w-5 h-5 text-gray-400 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
-                d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
-                d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
-            </svg>
-            <input
-              type="text"
-              placeholder="State or Country"
-              value={location}
-              onChange={(e) => setLocation(e.target.value)}
-              className="flex-1 py-3 text-sm outline-none bg-transparent placeholder-gray-400"
-            />
-          </div>
-
-          <div className="hidden md:block w-px bg-gray-200 my-2" />
-
-          {/* Category dropdown */}
-          <div className="flex items-center gap-2 flex-1 px-3">
-            <svg className="w-5 h-5 text-gray-400 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
-                d="M4 6h16M4 10h16M4 14h16M4 18h16" />
-            </svg>
-            <select
-              value={category}
-              onChange={(e) => setCategory(e.target.value)}
-              className="flex-1 py-3 text-sm outline-none bg-transparent text-gray-500"
-            >
-              <option value="">All Categories</option>
-              {categories.map((cat) => (
-                <option key={cat.id} value={cat.slug}>{cat.name}</option>
-              ))}
-            </select>
-          </div>
-
-          <button
-            type="submit"
-            className="py-3 px-6 rounded-xl text-sm font-semibold text-white transition-opacity hover:opacity-90 shrink-0"
-            style={{ backgroundColor: '#033BB0' }}
-          >
-            Find Jobs
-          </button>
+    <div style={{ width: '100%' }}>
+      {/* Unified search bar */}
+      <div
+        className="flex flex-col sm:flex-row sm:items-center"
+        style={{
+          background: 'white',
+          borderRadius: '16px',
+          boxShadow: '0 4px 24px rgba(0,0,0,0.10)',
+          border: '1px solid #E5E7EB',
+          padding: '8px',
+          maxWidth: '780px',
+          margin: '0 auto',
+          width: '100%',
+          gap: '4px',
+        }}
+      >
+        {/* Search input */}
+        <div
+          className="flex items-center gap-2 px-3 py-3 sm:py-0 sm:border-r border-gray-200"
+          style={{ flex: 2 }}
+        >
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#9CA3AF" strokeWidth={2} style={{ flexShrink: 0 }}>
+            <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+          </svg>
+          <input
+            type="text"
+            placeholder="Job title, keywords..."
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            onKeyDown={handleKeyDown}
+            style={{
+              border: 'none',
+              outline: 'none',
+              fontSize: '15px',
+              width: '100%',
+              color: '#111827',
+              background: 'transparent',
+            }}
+          />
         </div>
-      </form>
 
+        {/* Location input */}
+        <div
+          className="flex items-center gap-2 px-3 py-3 sm:py-0 sm:border-r border-gray-200"
+          style={{ flex: 1.5 }}
+        >
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#9CA3AF" strokeWidth={2} style={{ flexShrink: 0 }}>
+            <path strokeLinecap="round" strokeLinejoin="round" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+            <path strokeLinecap="round" strokeLinejoin="round" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+          </svg>
+          <input
+            type="text"
+            placeholder="Location..."
+            value={location}
+            onChange={(e) => setLocation(e.target.value)}
+            onKeyDown={handleKeyDown}
+            style={{
+              border: 'none',
+              outline: 'none',
+              fontSize: '15px',
+              width: '100%',
+              color: '#111827',
+              background: 'transparent',
+            }}
+          />
+        </div>
+
+        {/* Category select */}
+        <div
+          className="flex items-center px-3 py-3 sm:py-0"
+          style={{ flex: 1.5 }}
+        >
+          <select
+            value={category}
+            onChange={(e) => setCategory(e.target.value)}
+            style={{
+              border: 'none',
+              outline: 'none',
+              fontSize: '15px',
+              width: '100%',
+              color: '#6B7280',
+              background: 'transparent',
+              cursor: 'pointer',
+            }}
+          >
+            <option value="">All Categories</option>
+            {categories.map((cat) => (
+              <option key={cat.id} value={cat.slug}>{cat.name}</option>
+            ))}
+          </select>
+        </div>
+
+        {/* Find Jobs button — inside the bar */}
+        <button
+          onClick={handleSearch}
+          className="w-full sm:w-auto shrink-0"
+          style={{
+            background: '#033BB0',
+            color: 'white',
+            border: 'none',
+            borderRadius: '10px',
+            padding: '12px 28px',
+            fontSize: '15px',
+            fontWeight: '600',
+            cursor: 'pointer',
+            whiteSpace: 'nowrap',
+          }}
+        >
+          Find Jobs
+        </button>
+      </div>
+
+      {/* Stats row */}
+      <div style={{
+        display: 'flex',
+        justifyContent: 'center',
+        gap: '24px',
+        marginTop: '16px',
+        fontSize: '14px',
+        color: '#6B7280',
+        flexWrap: 'wrap',
+      }}>
+        <span>2,000+ Candidates</span>
+        <span style={{ color: '#D1D5DB' }}>•</span>
+        <span>100+ Employers</span>
+        <span style={{ color: '#D1D5DB' }}>•</span>
+        <span>Free to Register</span>
+      </div>
+
+      {/* Popular searches */}
+      <div style={{
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
+        gap: '8px',
+        marginTop: '12px',
+        flexWrap: 'wrap',
+      }}>
+        <span style={{ fontSize: '13px', color: '#9CA3AF' }}>Popular:</span>
+        {POPULAR_SEARCHES.map((term) => (
+          <a
+            key={term}
+            href={`/jobs?search=${encodeURIComponent(term)}`}
+            style={{
+              fontSize: '13px',
+              padding: '4px 12px',
+              borderRadius: '20px',
+              border: '1px solid #E5E7EB',
+              color: '#374151',
+              background: 'white',
+              textDecoration: 'none',
+              transition: '0.15s',
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.background = '#033BB0'
+              e.currentTarget.style.color = 'white'
+              e.currentTarget.style.borderColor = '#033BB0'
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.background = 'white'
+              e.currentTarget.style.color = '#374151'
+              e.currentTarget.style.borderColor = '#E5E7EB'
+            }}
+          >
+            {term}
+          </a>
+        ))}
+      </div>
     </div>
   )
 }
