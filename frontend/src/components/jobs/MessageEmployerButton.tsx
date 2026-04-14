@@ -4,12 +4,14 @@ import { useRouter } from 'next/navigation'
 import { useAuth } from '@/context/AuthContext'
 
 interface Props {
-  employerUserId: string
+  employerUserId?: string
 }
 
 export default function MessageEmployerButton({ employerUserId }: Props) {
   const { isAuthenticated, role } = useAuth()
   const router = useRouter()
+
+  if (!employerUserId) return null
 
   function handleClick() {
     if (isAuthenticated && role === 'candidate') {

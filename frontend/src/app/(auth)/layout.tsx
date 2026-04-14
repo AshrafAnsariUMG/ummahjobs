@@ -121,13 +121,41 @@ export default function AuthLayout({ children }: { children: ReactNode }) {
       }}>
         {/* Mobile logo */}
         <div className="lg:hidden" style={{ marginBottom: '32px' }}>
+          <a href="/" style={{
+            display: 'inline-flex',
+            alignItems: 'center',
+            gap: '6px',
+            fontSize: '14px',
+            color: '#6B7280',
+            textDecoration: 'none',
+            marginBottom: '16px',
+          }}>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} width={16} height={16}>
+              <path d="M19 12H5M12 5l-7 7 7 7" />
+            </svg>
+            Back to Home
+          </a>
           <a href="/">
-            <img src="/images/logo.png" alt="UmmahJobs" style={{ height: '32px' }} />
+            <img src="/images/logo.png" alt="UmmahJobs" style={{ height: '32px', display: 'block' }} />
           </a>
         </div>
 
         {/* Form container */}
         <div style={{ width: '100%', maxWidth: '400px' }}>
+          <a href="/" style={{
+            display: 'inline-flex',
+            alignItems: 'center',
+            gap: '6px',
+            fontSize: '14px',
+            color: '#6B7280',
+            textDecoration: 'none',
+            marginBottom: '24px',
+          }}>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} width={16} height={16}>
+              <path d="M19 12H5M12 5l-7 7 7 7" />
+            </svg>
+            Back to Home
+          </a>
           {children}
         </div>
       </div>

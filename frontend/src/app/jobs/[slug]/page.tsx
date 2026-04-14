@@ -1,6 +1,5 @@
 import { notFound } from 'next/navigation'
 import Link from 'next/link'
-import Image from 'next/image'
 import type { Job } from '@/types'
 import BookmarkButton from '@/components/jobs/BookmarkButton'
 import ShareButtons from '@/components/jobs/ShareButtons'
@@ -40,8 +39,8 @@ export async function generateMetadata({ params }: PageProps) {
   const job = await getJob(slug)
   if (!job) return {}
   return {
-    title: `${job.title} at ${job.employer.company_name} | UmmahJobs`,
-    description: job.description.slice(0, 155),
+    title: `${job.title} at ${job.employer.company_name ?? 'UmmahJobs'} | UmmahJobs`,
+    description: job.description?.slice(0, 155) ?? '',
   }
 }
 
@@ -88,10 +87,11 @@ export default async function JobDetailPage({ params }: PageProps) {
               {/* Logo */}
               <div className="w-16 h-16 rounded-xl border border-gray-100 overflow-hidden shrink-0 flex items-center justify-center bg-gray-50">
                 {logoSrc ? (
-                  <Image src={logoSrc} alt={job.employer.company_name} width={64} height={64} className="object-contain" />
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img src={logoSrc} alt={job.employer.company_name ?? ''} width={64} height={64} className="object-contain" />
                 ) : (
                   <span className="text-xl font-bold" style={{ color: '#033BB0' }}>
-                    {job.employer.company_name.charAt(0).toUpperCase()}
+                    {job.employer.company_name?.charAt(0)?.toUpperCase() ?? '?'}
                   </span>
                 )}
               </div>
@@ -241,10 +241,11 @@ export default async function JobDetailPage({ params }: PageProps) {
             <div className="flex items-center gap-3 mb-3">
               <div className="w-10 h-10 rounded-lg border border-gray-100 overflow-hidden flex items-center justify-center bg-gray-50 shrink-0">
                 {logoSrc ? (
-                  <Image src={logoSrc} alt={job.employer.company_name} width={40} height={40} className="object-contain" />
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img src={logoSrc} alt={job.employer.company_name ?? ''} width={40} height={40} className="object-contain" />
                 ) : (
                   <span className="text-sm font-bold" style={{ color: '#033BB0' }}>
-                    {job.employer.company_name.charAt(0).toUpperCase()}
+                    {job.employer.company_name?.charAt(0)?.toUpperCase() ?? '?'}
                   </span>
                 )}
               </div>
