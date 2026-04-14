@@ -197,6 +197,15 @@ class SiteSettingsSeeder extends Seeder
                 'label'       => 'Facebook URL',
                 'description' => 'Full URL to the Facebook page',
             ],
+            // General — maintenance
+            [
+                'key'         => 'maintenance_mode',
+                'value'       => '0',
+                'type'        => 'boolean',
+                'group'       => 'general',
+                'label'       => 'Maintenance Mode',
+                'description' => 'When enabled, the site displays a maintenance page to visitors',
+            ],
         ];
 
         foreach ($settings as $setting) {

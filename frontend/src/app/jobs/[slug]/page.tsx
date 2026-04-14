@@ -5,6 +5,7 @@ import BookmarkButton from '@/components/jobs/BookmarkButton'
 import ShareButtons from '@/components/jobs/ShareButtons'
 import AIMatchScore from '@/components/jobs/AIMatchScore'
 import MessageEmployerButton from '@/components/jobs/MessageEmployerButton'
+import ApplySection from '@/components/jobs/ApplySection'
 import { ErrorBoundary } from '@/components/ui/ErrorBoundary'
 import { categoryIcons, defaultIcon } from '@/lib/categoryIcons'
 
@@ -170,25 +171,13 @@ export default async function JobDetailPage({ params }: PageProps) {
           <div className="bg-white rounded-2xl border border-gray-200 p-6 sticky top-24">
             <h3 className="font-bold text-gray-900 mb-4">Apply for this role</h3>
 
-            {job.apply_type === 'external' && job.apply_url ? (
-              <a
-                href={job.apply_url}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="block w-full text-center px-5 py-3 rounded-xl text-sm font-semibold text-white transition-opacity hover:opacity-90"
-                style={{ backgroundColor: '#033BB0' }}
-              >
-                Apply Now →
-              </a>
-            ) : (
-              <Link
-                href={`/jobs/${job.slug}/apply`}
-                className="block w-full text-center px-5 py-3 rounded-xl text-sm font-semibold text-white transition-opacity hover:opacity-90"
-                style={{ backgroundColor: '#033BB0' }}
-              >
-                Apply Now →
-              </Link>
-            )}
+            <ErrorBoundary>
+              <ApplySection
+                jobId={job.id}
+                applyType={job.apply_type}
+                applyUrl={job.apply_url}
+              />
+            </ErrorBoundary>
 
             <ErrorBoundary>
               <MessageEmployerButton employerUserId={job.employer.user_id} />
