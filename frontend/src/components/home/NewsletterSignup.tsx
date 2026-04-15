@@ -65,25 +65,23 @@ export default function NewsletterSignup({ dark = false }: Props) {
         className={inputClass}
         style={{ '--tw-ring-color': dark ? '#0FBB0F' : '#033BB0' } as React.CSSProperties}
       />
-      <div className="flex flex-col sm:flex-row gap-3">
-        <input
-          type="email"
-          required
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          placeholder="Your email address"
-          className={`flex-1 px-4 py-2.5 rounded-xl border text-sm focus:outline-none focus:ring-2 focus:border-transparent ${dark ? 'bg-white/10 border-white/25 text-white placeholder-white/60' : 'border-gray-300 bg-white'}`}
-          style={{ '--tw-ring-color': dark ? '#0FBB0F' : '#033BB0' } as React.CSSProperties}
-        />
-        <button
-          type="submit"
-          disabled={isLoading}
-          className="px-6 py-2.5 rounded-xl text-sm font-semibold text-white transition-opacity hover:opacity-90 disabled:opacity-70 shrink-0"
-          style={{ backgroundColor: dark ? '#0FBB0F' : '#033BB0' }}
-        >
-          {isLoading ? 'Subscribing…' : 'Subscribe Free'}
-        </button>
-      </div>
+      <input
+        type="email"
+        required
+        value={email}
+        onChange={(e) => setEmail(e.target.value)}
+        placeholder="Your email address"
+        className={`w-full px-4 py-2.5 rounded-xl border text-sm focus:outline-none focus:ring-2 focus:border-transparent ${dark ? 'bg-white/10 border-white/25 text-white placeholder-white/60' : 'border-gray-300 bg-white'}`}
+        style={{ '--tw-ring-color': dark ? '#0FBB0F' : '#033BB0' } as React.CSSProperties}
+      />
+      <button
+        type="submit"
+        disabled={isLoading}
+        className="w-full px-6 py-2.5 rounded-xl text-sm font-semibold text-white transition-opacity hover:opacity-90 disabled:opacity-70"
+        style={{ backgroundColor: dark ? '#0FBB0F' : '#033BB0' }}
+      >
+        {isLoading ? 'Subscribing…' : 'Subscribe Free'}
+      </button>
       {error && (
         <p className={`text-xs ${dark ? 'text-red-300' : 'text-red-600'}`}>{error}</p>
       )}

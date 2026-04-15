@@ -1,6 +1,6 @@
 import { notFound } from 'next/navigation'
 import Link from 'next/link'
-import type { Employer, EmployerReview, Job, PaginatedResponse } from '@/types'
+import type { Employer, EmployerReview, Job } from '@/types'
 import JobCard from '@/components/jobs/JobCard'
 
 const API = process.env.NEXT_PUBLIC_API_URL
@@ -12,26 +12,33 @@ function getImageUrl(path: string | null): string | null {
   return (API ?? '') + '/storage/' + path
 }
 
-async function getEmployer(slug: string): Promise<Employer | null> {
+interface EmployerData {
+  employer: Employer
+  jobs: Job[]
+  jobsCount: number
+}
+
+async function getEmployerData(slug: string): Promise<EmployerData | null> {
   try {
     const res = await fetch(`${API}/api/employers/${slug}`, { next: { revalidate: 300 } })
     if (res.status === 404) return null
     if (!res.ok) return null
     const data = await res.json()
-    return data.employer ?? data
+    const employer = data.employer ?? data
+    if (!employer?.id) return null
+    // Jobs embedded in the employer response omit the nested employer object
+    // (redundant data). JobCard requires job.employer, so inject it here.
+    const jobs: Job[] = (data.jobs ?? []).map((job: Job) => ({
+      ...job,
+      employer: job.employer ?? employer,
+    }))
+    return {
+      employer,
+      jobs,
+      jobsCount: data.jobs_count ?? jobs.length,
+    }
   } catch {
     return null
-  }
-}
-
-async function getEmployerJobs(slug: string): Promise<Job[]> {
-  try {
-    const res = await fetch(`${API}/api/jobs?employer=${slug}&per_page=6`, { next: { revalidate: 300 } })
-    if (!res.ok) return []
-    const data: PaginatedResponse<Job> = await res.json()
-    return data.data ?? []
-  } catch {
-    return []
   }
 }
 
@@ -69,23 +76,24 @@ function StarRating({ rating }: { rating: number }) {
 
 export async function generateMetadata({ params }: PageProps) {
   const { slug } = await params
-  const employer = await getEmployer(slug)
-  if (!employer) return {}
+  const data = await getEmployerData(slug)
+  if (!data) return {}
   return {
-    title: `${employer.company_name} | UmmahJobs`,
-    description: employer.description?.slice(0, 155) ?? `Jobs at ${employer.company_name}`,
+    title: `${data.employer.company_name} | UmmahJobs`,
+    description: data.employer.description?.slice(0, 155) ?? `Jobs at ${data.employer.company_name}`,
   }
 }
 
 export default async function EmployerProfilePage({ params }: PageProps) {
   const { slug } = await params
-  const [employer, jobs, reviews] = await Promise.all([
-    getEmployer(slug),
-    getEmployerJobs(slug),
+  const [employerData, reviews] = await Promise.all([
+    getEmployerData(slug),
     getEmployerReviews(slug),
   ])
 
-  if (!employer) notFound()
+  if (!employerData) notFound()
+
+  const { employer, jobs } = employerData
 
   const avgRating =
     reviews.length > 0 ? reviews.reduce((sum, r) => sum + r.rating, 0) / reviews.length : null
@@ -243,7 +251,7 @@ export default async function EmployerProfilePage({ params }: PageProps) {
             <section>
               <div className="flex items-center justify-between mb-4">
                 <h2 className="text-lg font-bold text-gray-900">Open Positions ({jobs.length})</h2>
-                <Link href={`/jobs?employer=${employer.slug}`} className="text-sm font-medium hover:underline" style={{ color: '#033BB0' }}>
+                <Link href="/jobs" className="text-sm font-medium hover:underline" style={{ color: '#033BB0' }}>
                   View all →
                 </Link>
               </div>
