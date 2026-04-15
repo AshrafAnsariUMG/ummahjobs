@@ -26,13 +26,23 @@ const AGE_RANGE_OPTIONS = [
 
 const EXPERIENCE_OPTIONS = [
   { value: '', label: 'Select experience' },
-  { value: '0', label: 'Fresh Graduate' },
-  { value: '1', label: '1 Year' },
-  { value: '2', label: '2 Years' },
-  { value: '3', label: '3 Years' },
-  { value: '4', label: '4 Years' },
-  { value: '5', label: '5+ Years' },
+  { value: 'Fresh', label: 'Fresh Graduate' },
+  { value: '1 Year', label: '1 Year' },
+  { value: '2 Year', label: '2 Years' },
+  { value: '3 Year', label: '3 Years' },
+  { value: '4 Year', label: '4 Years' },
+  { value: '5+ Year', label: '5+ Years' },
 ]
+
+// Map legacy numeric strings stored in DB to current string values
+const LEGACY_EXP_MAP: Record<string, string> = {
+  '0': 'Fresh',
+  '1': '1 Year',
+  '2': '2 Year',
+  '3': '3 Year',
+  '4': '4 Year',
+  '5': '5+ Year',
+}
 
 const QUALIFICATION_OPTIONS = [
   { value: '', label: 'Select qualification' },
@@ -117,7 +127,11 @@ export default function CandidateProfileEditPage() {
           phone: profile.phone ?? '',
           gender: profile.gender ?? '',
           age_range: profile.age_range ?? '',
-          experience_years: profile.experience_years != null ? String(profile.experience_years) : '',
+          experience_years: (() => {
+            if (profile.experience_years == null) return ''
+            const raw = String(profile.experience_years)
+            return LEGACY_EXP_MAP[raw] ?? raw
+          })(),
           qualification: profile.qualification ?? '',
           job_category: profile.job_category ?? '',
           salary_type: profile.salary_type ?? '',
@@ -213,7 +227,7 @@ export default function CandidateProfileEditPage() {
     try {
       const updated: Candidate = await api.put('/api/candidate/profile', {
         ...form,
-        experience_years: form.experience_years !== '' ? Number(form.experience_years) : null,
+        experience_years: form.experience_years !== '' ? form.experience_years : null,
         socials: form.socials.filter((s) => s.url.trim()),
       })
       setCandidate(updated)

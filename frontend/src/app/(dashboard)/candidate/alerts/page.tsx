@@ -34,6 +34,92 @@ function alertSummary(alert: JobAlert, categories: JobCategory[]): string {
   return parts.join(' · ')
 }
 
+const INPUT_CLS = 'w-full px-3 py-2 text-sm rounded-lg border border-gray-300 bg-white focus:outline-none focus:ring-1'
+const INPUT_STYLE = { '--tw-ring-color': '#033BB0' } as React.CSSProperties
+
+function AlertFormFields({
+  vals,
+  onChange,
+  categories,
+  jobTypes,
+  compact = false,
+}: {
+  vals: AlertForm
+  onChange: (k: keyof AlertForm, v: string) => void
+  categories: JobCategory[]
+  jobTypes: JobType[]
+  compact?: boolean
+}) {
+  return (
+    <div className={`grid gap-3 ${compact ? 'grid-cols-1' : 'sm:grid-cols-2'}`}>
+      <div>
+        <label className="block text-xs font-medium text-gray-600 mb-1">Keyword / Job Title *</label>
+        <input
+          type="text"
+          value={vals.keyword}
+          onChange={(e) => onChange('keyword', e.target.value)}
+          placeholder="e.g. Frontend Developer"
+          className={INPUT_CLS}
+          style={INPUT_STYLE}
+        />
+      </div>
+      <div>
+        <label className="block text-xs font-medium text-gray-600 mb-1">Category</label>
+        <select
+          value={vals.category_id}
+          onChange={(e) => onChange('category_id', e.target.value)}
+          className={INPUT_CLS}
+          style={INPUT_STYLE}
+        >
+          <option value="">Any category</option>
+          {categories.map((c) => <option key={c.id} value={c.id}>{c.name}</option>)}
+        </select>
+      </div>
+      <div>
+        <label className="block text-xs font-medium text-gray-600 mb-1">Location</label>
+        <input
+          type="text"
+          value={vals.location}
+          onChange={(e) => onChange('location', e.target.value)}
+          placeholder="e.g. London, Remote"
+          className={INPUT_CLS}
+          style={INPUT_STYLE}
+        />
+      </div>
+      <div>
+        <label className="block text-xs font-medium text-gray-600 mb-1">Job Type</label>
+        <select
+          value={vals.job_type}
+          onChange={(e) => onChange('job_type', e.target.value)}
+          className={INPUT_CLS}
+          style={INPUT_STYLE}
+        >
+          <option value="">Any type</option>
+          {jobTypes.map((t) => <option key={t.id} value={t.name}>{t.name}</option>)}
+        </select>
+      </div>
+      <div>
+        <label className="block text-xs font-medium text-gray-600 mb-2">Frequency</label>
+        <div className="flex gap-4">
+          {(['daily', 'weekly'] as const).map((freq) => (
+            <label key={freq} className="flex items-center gap-2 cursor-pointer">
+              <input
+                type="radio"
+                name={`freq-${compact ? 'edit' : 'create'}`}
+                value={freq}
+                checked={vals.frequency === freq}
+                onChange={() => onChange('frequency', freq)}
+                className="accent-[#033BB0]"
+              />
+              <span className="text-sm text-gray-700 capitalize">{freq}</span>
+            </label>
+          ))}
+        </div>
+      </div>
+    </div>
+  )
+}
+
 export default function CandidateAlertsPage() {
   const { showToast } = useToast()
   const [alerts, setAlerts] = useState<JobAlert[]>([])
@@ -140,86 +226,6 @@ export default function CandidateAlertsPage() {
     }
   }
 
-  const inputCls = 'w-full px-3 py-2 text-sm rounded-lg border border-gray-300 bg-white focus:outline-none focus:ring-1'
-  const inputStyle = { '--tw-ring-color': '#033BB0' } as React.CSSProperties
-
-  function AlertFormFields({
-    vals, onChange, compact = false,
-  }: {
-    vals: AlertForm
-    onChange: (k: keyof AlertForm, v: string) => void
-    compact?: boolean
-  }) {
-    return (
-      <div className={`grid gap-3 ${compact ? 'grid-cols-1' : 'sm:grid-cols-2'}`}>
-        <div>
-          <label className="block text-xs font-medium text-gray-600 mb-1">Keyword / Job Title *</label>
-          <input
-            type="text"
-            value={vals.keyword}
-            onChange={(e) => onChange('keyword', e.target.value)}
-            placeholder="e.g. Frontend Developer"
-            className={inputCls}
-            style={inputStyle}
-          />
-        </div>
-        <div>
-          <label className="block text-xs font-medium text-gray-600 mb-1">Category</label>
-          <select
-            value={vals.category_id}
-            onChange={(e) => onChange('category_id', e.target.value)}
-            className={inputCls}
-            style={inputStyle}
-          >
-            <option value="">Any category</option>
-            {categories.map((c) => <option key={c.id} value={c.id}>{c.name}</option>)}
-          </select>
-        </div>
-        <div>
-          <label className="block text-xs font-medium text-gray-600 mb-1">Location</label>
-          <input
-            type="text"
-            value={vals.location}
-            onChange={(e) => onChange('location', e.target.value)}
-            placeholder="e.g. London, Remote"
-            className={inputCls}
-            style={inputStyle}
-          />
-        </div>
-        <div>
-          <label className="block text-xs font-medium text-gray-600 mb-1">Job Type</label>
-          <select
-            value={vals.job_type}
-            onChange={(e) => onChange('job_type', e.target.value)}
-            className={inputCls}
-            style={inputStyle}
-          >
-            <option value="">Any type</option>
-            {jobTypes.map((t) => <option key={t.id} value={t.name}>{t.name}</option>)}
-          </select>
-        </div>
-        <div>
-          <label className="block text-xs font-medium text-gray-600 mb-2">Frequency</label>
-          <div className="flex gap-4">
-            {(['daily', 'weekly'] as const).map((freq) => (
-              <label key={freq} className="flex items-center gap-2 cursor-pointer">
-                <input
-                  type="radio"
-                  name={`freq-${compact ? 'edit' : 'create'}`}
-                  value={freq}
-                  checked={vals.frequency === freq}
-                  onChange={() => onChange('frequency', freq)}
-                  className="accent-[#033BB0]"
-                />
-                <span className="text-sm text-gray-700 capitalize">{freq}</span>
-              </label>
-            ))}
-          </div>
-        </div>
-      </div>
-    )
-  }
-
   return (
     <div className="max-w-3xl mx-auto">
       <div className="mb-6">
@@ -230,7 +236,7 @@ export default function CandidateAlertsPage() {
       {/* Create alert form */}
       <section className="bg-white rounded-2xl border border-gray-200 p-5 mb-8">
         <h2 className="font-semibold text-gray-900 text-sm mb-4">Create New Alert</h2>
-        <AlertFormFields vals={form} onChange={setF} />
+        <AlertFormFields vals={form} onChange={setF} categories={categories} jobTypes={jobTypes} />
         <div className="mt-4 flex justify-end">
           <button
             onClick={handleCreate}
@@ -259,7 +265,7 @@ export default function CandidateAlertsPage() {
               <div key={alert.id} className="bg-white rounded-xl border border-gray-200 p-4">
                 {editingId === alert.id ? (
                   <>
-                    <AlertFormFields vals={editForm} onChange={setEF} compact />
+                    <AlertFormFields vals={editForm} onChange={setEF} categories={categories} jobTypes={jobTypes} compact />
                     <div className="flex gap-2 mt-4 justify-end">
                       <button
                         onClick={() => setEditingId(null)}
