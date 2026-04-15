@@ -8,6 +8,7 @@ import MessageEmployerButton from '@/components/jobs/MessageEmployerButton'
 import ApplySection from '@/components/jobs/ApplySection'
 import { ErrorBoundary } from '@/components/ui/ErrorBoundary'
 import { categoryIcons, defaultIcon } from '@/lib/categoryIcons'
+import { formatJobDescription } from '@/lib/formatJobDescription'
 
 const API = process.env.NEXT_PUBLIC_API_URL
 const SITE = process.env.NEXT_PUBLIC_SITE_URL ?? 'https://ummahjobs.com'
@@ -55,9 +56,13 @@ export default async function JobDetailPage({ params }: PageProps) {
   const logoSrc = job.employer.logo_path
   const jobUrl = `${SITE}/jobs/${job.slug}`
 
+  // Suppress WP term IDs (pure numbers) that weren't resolved during migration
+  const displayLocation =
+    job.location && isNaN(Number(job.location)) ? job.location : null
+
   const badges: { label: string }[] = [
     ...(job.job_type ? [{ label: job.job_type }] : []),
-    ...(job.location ? [{ label: job.location }] : []),
+    ...(displayLocation ? [{ label: displayLocation }] : []),
     ...(job.experience_level ? [{ label: job.experience_level }] : []),
     ...(job.career_level ? [{ label: job.career_level }] : []),
     ...(salary ? [{ label: salary }] : []),
@@ -159,8 +164,9 @@ export default async function JobDetailPage({ params }: PageProps) {
           <div className="bg-white rounded-2xl border border-gray-200 p-6">
             <h2 className="text-lg font-bold text-gray-900 mb-4">Job Description</h2>
             <div
-              className="prose prose-sm max-w-none text-gray-700 leading-relaxed"
-              dangerouslySetInnerHTML={{ __html: job.description }}
+              className="job-description"
+              style={{ fontSize: '15px', lineHeight: '1.75', color: '#374151' }}
+              dangerouslySetInnerHTML={{ __html: formatJobDescription(job.description) }}
             />
           </div>
         </main>
@@ -206,10 +212,10 @@ export default async function JobDetailPage({ params }: PageProps) {
                   <dd className="text-gray-900 font-medium">{job.job_type}</dd>
                 </div>
               )}
-              {job.location && (
+              {displayLocation && (
                 <div className="flex justify-between text-sm">
                   <dt className="text-gray-500">Location</dt>
-                  <dd className="text-gray-900 font-medium">{job.location}</dd>
+                  <dd className="text-gray-900 font-medium">{displayLocation}</dd>
                 </div>
               )}
               {salary && (

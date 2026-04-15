@@ -70,3 +70,34 @@ body {
   border-radius: 0.75rem;
   margin: 1.5rem 0;
 }
+
+/* Job description prose styles */
+.job-description p {
+  margin-bottom: 12px;
+  line-height: 1.75;
+}
+
+.job-description h2,
+.job-description h3,
+.job-description h4 {
+  font-weight: 600;
+  color: #111827;
+  margin: 20px 0 8px;
+}
+
+.job-description ul,
+.job-description ol {
+  padding-left: 24px;
+  margin: 12px 0;
+}
+
+.job-description li {
+  margin-bottom: 6px;
+  line-height: 1.7;
+}
+
+.job-description strong,
+.job-description b {
+  font-weight: 600;
+  color: #111827;
+}
