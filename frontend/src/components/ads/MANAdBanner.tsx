@@ -1,6 +1,7 @@
 'use client'
 
-import { useEffect, useRef } from 'react'
+import { useEffect, useState } from 'react'
+import { usePathname } from 'next/navigation'
 
 interface MANAdProps {
   size: 'leaderboard' | 'mobile-banner' | 'sidebar-wide' | 'rectangle'
@@ -16,17 +17,16 @@ const adConfig = {
 
 export default function MANAd({ size, className }: MANAdProps) {
   const config = adConfig[size]
-  const ref = useRef<HTMLDivElement>(null)
+  const pathname = usePathname()
+  const [adKey, setAdKey] = useState(0)
 
   useEffect(() => {
-    if (typeof window !== 'undefined' && (window as unknown as Record<string, unknown>).__adPush) {
-      try { ((window as unknown as Record<string, unknown>).__adPush as (arg: unknown) => void)({}) } catch { /* ignore */ }
-    }
-  }, [])
+    setAdKey((prev) => prev + 1)
+  }, [pathname])
 
   return (
     <div
-      ref={ref}
+      key={adKey}
       className={className}
       style={{
         display: 'flex',

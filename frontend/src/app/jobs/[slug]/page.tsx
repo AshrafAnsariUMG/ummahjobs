@@ -175,7 +175,7 @@ export default async function JobDetailPage({ params }: PageProps) {
         {/* Sidebar */}
         <aside className="w-full lg:w-72 shrink-0 space-y-4">
           {/* Apply card */}
-          <div className="bg-white rounded-2xl border border-gray-200 p-6 sticky top-24">
+          <div className="bg-white rounded-2xl border border-gray-200 p-6">
             <h3 className="font-bold text-gray-900 mb-4">Apply for this role</h3>
 
             <ErrorBoundary>

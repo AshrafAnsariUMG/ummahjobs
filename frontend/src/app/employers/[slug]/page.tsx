@@ -1,6 +1,5 @@
 import { notFound } from 'next/navigation'
 import Link from 'next/link'
-import Image from 'next/image'
 import type { Employer, EmployerReview, Job, PaginatedResponse } from '@/types'
 import JobCard from '@/components/jobs/JobCard'
 
@@ -11,7 +10,8 @@ async function getEmployer(slug: string): Promise<Employer | null> {
     const res = await fetch(`${API}/api/employers/${slug}`, { next: { revalidate: 300 } })
     if (res.status === 404) return null
     if (!res.ok) return null
-    return res.json()
+    const data = await res.json()
+    return data.employer ?? data
   } catch {
     return null
   }
@@ -32,7 +32,8 @@ async function getEmployerReviews(slug: string): Promise<EmployerReview[]> {
   try {
     const res = await fetch(`${API}/api/employers/${slug}/reviews`, { next: { revalidate: 300 } })
     if (!res.ok) return []
-    return res.json()
+    const data = await res.json()
+    return Array.isArray(data) ? data : (data.reviews ?? data.data ?? [])
   } catch {
     return []
   }
@@ -105,10 +106,11 @@ export default async function EmployerProfilePage({ params }: PageProps) {
           <div className="flex items-end gap-5 -mt-10 mb-4">
             <div className="w-20 h-20 rounded-2xl border-4 border-white bg-white shadow-md overflow-hidden flex items-center justify-center shrink-0">
               {employer.logo_path ? (
-                <Image src={employer.logo_path} alt={employer.company_name} width={80} height={80} className="object-contain" />
+                // eslint-disable-next-line @next/next/no-img-element
+                <img src={employer.logo_path} alt={employer.company_name ?? ''} width={80} height={80} className="object-contain" />
               ) : (
                 <span className="text-2xl font-bold" style={{ color: '#033BB0' }}>
-                  {employer.company_name.charAt(0).toUpperCase()}
+                  {employer.company_name?.charAt(0)?.toUpperCase() ?? '?'}
                 </span>
               )}
             </div>
@@ -244,7 +246,7 @@ export default async function EmployerProfilePage({ params }: PageProps) {
               </div>
               <div className="flex justify-between text-sm">
                 <dt className="text-gray-500">Profile views</dt>
-                <dd className="font-semibold text-gray-900">{employer.views_count.toLocaleString()}</dd>
+                <dd className="font-semibold text-gray-900">{(employer.views_count ?? 0).toLocaleString()}</dd>
               </div>
               {avgRating !== null && (
                 <div className="flex justify-between text-sm">
