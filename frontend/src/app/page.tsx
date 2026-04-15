@@ -178,8 +178,8 @@ export default async function HomePage() {
             style={{
               width: '100%',
               maxHeight: '220px',
-              objectFit: 'cover',
-              objectPosition: 'center top',
+              objectFit: 'contain',
+              objectPosition: 'center center',
               display: 'block',
             }}
           />
