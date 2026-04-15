@@ -104,27 +104,28 @@ export default async function EmployerProfilePage({ params }: PageProps) {
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
       {/* Cover + overlapping logo header */}
-      <div className="bg-white rounded-2xl border border-gray-200 overflow-visible mb-8">
-        {/* Cover photo */}
-        <div style={{
-          width: '100%',
-          height: '200px',
-          position: 'relative',
-          background: coverUrl ? 'none' : 'linear-gradient(135deg, #033BB0, #0256CC)',
-          borderRadius: '12px 12px 0 0',
-          overflow: 'hidden',
-          marginBottom: '60px',
-        }}>
-          {coverUrl && (
-            // eslint-disable-next-line @next/next/no-img-element
-            <img
-              src={coverUrl}
-              alt="Cover"
-              style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-            />
-          )}
+      <div className="bg-white rounded-2xl border border-gray-200 overflow-hidden mb-8">
+        {/* Outer wrapper: position relative, overflow visible so logo can hang below */}
+        <div style={{ position: 'relative', marginBottom: '50px' }}>
+          {/* Image container — overflow hidden for border-radius clipping */}
+          <div style={{
+            width: '100%',
+            height: '200px',
+            borderRadius: '12px 12px 0 0',
+            overflow: 'hidden',
+            background: 'linear-gradient(135deg, #033BB0, #0256CC)',
+          }}>
+            {coverUrl && (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img
+                src={coverUrl}
+                alt="Cover"
+                style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+              />
+            )}
+          </div>
 
-          {/* Logo overlapping bottom of cover */}
+          {/* Logo — absolutely positioned, NOT inside the clipped container */}
           <div style={{
             position: 'absolute',
             bottom: '-40px',
@@ -134,11 +135,12 @@ export default async function EmployerProfilePage({ params }: PageProps) {
             borderRadius: '12px',
             background: 'white',
             border: '3px solid white',
-            boxShadow: '0 2px 8px rgba(0,0,0,0.12)',
+            boxShadow: '0 2px 8px rgba(0,0,0,0.15)',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
             overflow: 'hidden',
+            zIndex: 10,
           }}>
             {logoUrl ? (
               // eslint-disable-next-line @next/next/no-img-element
@@ -156,7 +158,7 @@ export default async function EmployerProfilePage({ params }: PageProps) {
         </div>
 
         {/* Employer name + details */}
-        <div style={{ paddingLeft: '32px', paddingRight: '24px', paddingBottom: '24px' }}>
+        <div style={{ paddingLeft: '32px', paddingRight: '24px', paddingBottom: '24px', paddingTop: '8px' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '12px', flexWrap: 'wrap' }}>
             <h1 style={{ fontSize: '24px', fontWeight: '700', color: '#111827', margin: 0 }}>
               {employer.company_name}
