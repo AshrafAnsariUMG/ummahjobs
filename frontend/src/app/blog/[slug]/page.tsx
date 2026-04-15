@@ -4,6 +4,7 @@ import type { BlogPost } from '@/types'
 import ShareButtons from '@/components/jobs/ShareButtons'
 import NewsletterSignup from '@/components/home/NewsletterSignup'
 import BlogFeaturedImage from '@/components/blog/BlogFeaturedImage'
+import MANAd from '@/components/ads/MANAdBanner'
 
 const API = process.env.NEXT_PUBLIC_API_URL
 const SITE = process.env.NEXT_PUBLIC_SITE_URL ?? 'https://ummahjobs.com'
@@ -148,6 +149,12 @@ export default async function BlogPostPage({ params }: PageProps) {
             >
               Browse Jobs →
             </Link>
+          </div>
+
+          {/* Advertisement */}
+          <div>
+            <p style={{ fontSize: '10px', color: '#9CA3AF', textAlign: 'center', marginBottom: '4px' }}>Advertisement</p>
+            <MANAd size="rectangle" />
           </div>
 
           {/* Recent posts */}

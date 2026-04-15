@@ -3,6 +3,7 @@ import Link from 'next/link'
 import type { Job, JobCategory, JobType, PaginatedResponse } from '@/types'
 import FilterSidebar from '@/components/jobs/FilterSidebar'
 import JobListWithScores from '@/components/jobs/JobListWithScores'
+import MANLeaderboard from '@/components/ads/MANLeaderboard'
 
 const API = process.env.NEXT_PUBLIC_API_URL
 
@@ -71,6 +72,11 @@ export default async function JobsPage({ searchParams }: PageProps) {
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+      {/* MAN Leaderboard Ad */}
+      <div className="mb-6 -mx-4 sm:-mx-6 lg:-mx-8">
+        <MANLeaderboard />
+      </div>
+
       {/* Header */}
       <div className="mb-8">
         <h1 className="text-3xl font-extrabold text-gray-900 mb-1">

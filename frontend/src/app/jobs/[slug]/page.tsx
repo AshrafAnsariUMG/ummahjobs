@@ -9,6 +9,7 @@ import ApplySection from '@/components/jobs/ApplySection'
 import { ErrorBoundary } from '@/components/ui/ErrorBoundary'
 import { categoryIcons, defaultIcon } from '@/lib/categoryIcons'
 import { formatJobDescription } from '@/lib/formatJobDescription'
+import MANAd from '@/components/ads/MANAdBanner'
 
 const API = process.env.NEXT_PUBLIC_API_URL
 const SITE = process.env.NEXT_PUBLIC_SITE_URL ?? 'https://ummahjobs.com'
@@ -237,6 +238,12 @@ export default async function JobDetailPage({ params }: PageProps) {
                 </dd>
               </div>
             </dl>
+          </div>
+
+          {/* Advertisement */}
+          <div>
+            <p style={{ fontSize: '10px', color: '#9CA3AF', textAlign: 'center', marginBottom: '4px' }}>Advertisement</p>
+            <MANAd size="rectangle" />
           </div>
 
           {/* Employer mini-card */}

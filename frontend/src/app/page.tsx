@@ -1,7 +1,7 @@
 import Link from 'next/link'
 import type { Job, JobCategory } from '@/types'
 import JobCard from '@/components/jobs/JobCard'
-import MANAdBanner from '@/components/ads/MANAdBanner'
+import MANLeaderboard from '@/components/ads/MANLeaderboard'
 import HeroSearch from '@/components/home/HeroSearch'
 import FeaturedJobsCarousel from '@/components/home/FeaturedJobsCarousel'
 import StatsCounter from '@/components/home/StatsCounter'
@@ -213,10 +213,8 @@ export default async function HomePage() {
         </div>
       </section>
 
-      {/* ── MAN Ad Banner ── */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-5">
-        <MANAdBanner size="banner" />
-      </div>
+      {/* ── MAN Leaderboard Ad ── */}
+      <MANLeaderboard />
 
       {/* ── Featured Jobs ── */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">

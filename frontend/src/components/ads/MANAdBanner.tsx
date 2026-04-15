@@ -1,24 +1,44 @@
-interface MANAdBannerProps {
-  size?: 'banner' | 'sidebar' | 'inline'
+'use client'
+
+import { useEffect, useRef } from 'react'
+
+interface MANAdProps {
+  size: 'leaderboard' | 'mobile-banner' | 'sidebar-wide' | 'rectangle'
+  className?: string
 }
 
-export default function MANAdBanner({ size = 'banner' }: MANAdBannerProps) {
-  const heightClass =
-    size === 'banner' ? 'h-[70px] md:h-[100px]' :
-    size === 'sidebar' ? 'h-[260px]' :
-    'h-[90px]'
+const adConfig = {
+  'leaderboard':    { key: 'db61a89ffa214858c2e9102633e15f2d', width: 728, height: 90 },
+  'mobile-banner':  { key: '5da772e096950ac945b62dcd00c35f1e', width: 320, height: 50 },
+  'sidebar-wide':   { key: '3aaec945943b89c3bb72d07c12eb7221', width: 160, height: 600 },
+  'rectangle':      { key: 'ebd2f090d0060710b08c920e1b1687d0', width: 300, height: 250 },
+}
+
+export default function MANAd({ size, className }: MANAdProps) {
+  const config = adConfig[size]
+  const ref = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    if (typeof window !== 'undefined' && (window as unknown as Record<string, unknown>).__adPush) {
+      try { ((window as unknown as Record<string, unknown>).__adPush as (arg: unknown) => void)({}) } catch { /* ignore */ }
+    }
+  }, [])
 
   return (
     <div
-      className={`w-full ${heightClass} flex flex-col items-center justify-center rounded-xl gap-1`}
-      style={{ backgroundColor: '#F8F9FA', border: '1px solid #E5E7EB' }}
-    >
-      <p className="font-medium text-gray-500" style={{ fontSize: 13 }}>
-        Muslim Ad Network — Reaching 2M+ Muslim Consumers
-      </p>
-      <p style={{ fontSize: 10, color: '#9CA3AF', letterSpacing: '0.05em', textTransform: 'uppercase' }}>
-        Advertisement
-      </p>
-    </div>
+      ref={ref}
+      className={className}
+      style={{
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
+        width: '100%',
+        minHeight: config.height,
+        overflow: 'hidden',
+      }}
+      dangerouslySetInnerHTML={{
+        __html: `<ins class="bbbac5e5" data-key="${config.key}"></ins>`,
+      }}
+    />
   )
 }
