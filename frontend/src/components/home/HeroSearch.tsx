@@ -1,15 +1,56 @@
 'use client'
 
-import { useState } from 'react'
+import React, { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import type { JobCategory } from '@/types'
 
-const POPULAR_SEARCHES = [
-  'Remote Jobs',
-  'IT & Tech',
-  'Healthcare',
-  'Islamic Studies',
-  'Nonprofit',
+const POPULAR_SEARCHES: { term: string; icon: React.ReactNode }[] = [
+  {
+    term: 'Remote Jobs',
+    icon: (
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} width={14} height={14}>
+        <circle cx="12" cy="12" r="10"/>
+        <line x1="2" y1="12" x2="22" y2="12"/>
+        <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/>
+      </svg>
+    ),
+  },
+  {
+    term: 'IT & Tech',
+    icon: (
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} width={14} height={14}>
+        <polyline points="16 18 22 12 16 6"/>
+        <polyline points="8 6 2 12 8 18"/>
+      </svg>
+    ),
+  },
+  {
+    term: 'Healthcare',
+    icon: (
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} width={14} height={14}>
+        <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
+      </svg>
+    ),
+  },
+  {
+    term: 'Islamic Studies',
+    icon: (
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} width={14} height={14}>
+        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
+      </svg>
+    ),
+  },
+  {
+    term: 'Nonprofit',
+    icon: (
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} width={14} height={14}>
+        <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+        <circle cx="9" cy="7" r="4"/>
+        <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
+        <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+      </svg>
+    ),
+  },
 ]
 
 interface HeroSearchProps {
@@ -176,19 +217,22 @@ export default function HeroSearch({ categories, statCandidates = '2,000+', stat
         flexWrap: 'wrap',
       }}>
         <span style={{ fontSize: '13px', color: '#9CA3AF' }}>Popular:</span>
-        {POPULAR_SEARCHES.map((term) => (
+        {POPULAR_SEARCHES.map(({ term, icon }) => (
           <a
             key={term}
             href={`/jobs?search=${encodeURIComponent(term)}`}
             style={{
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: '5px',
               fontSize: '13px',
-              padding: '4px 12px',
+              padding: '5px 12px',
               borderRadius: '20px',
               border: '1px solid #E5E7EB',
               color: '#374151',
               background: 'white',
               textDecoration: 'none',
-              transition: '0.15s',
+              transition: 'all 0.15s',
             }}
             onMouseEnter={(e) => {
               e.currentTarget.style.background = '#033BB0'
@@ -201,6 +245,7 @@ export default function HeroSearch({ categories, statCandidates = '2,000+', stat
               e.currentTarget.style.borderColor = '#E5E7EB'
             }}
           >
+            {icon}
             {term}
           </a>
         ))}
