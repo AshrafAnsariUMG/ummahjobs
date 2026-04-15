@@ -5,6 +5,13 @@ import JobCard from '@/components/jobs/JobCard'
 
 const API = process.env.NEXT_PUBLIC_API_URL
 
+function getImageUrl(path: string | null): string | null {
+  if (!path) return null
+  if (path.startsWith('http')) return path
+  if (path.startsWith('/storage/')) return (API ?? '') + path
+  return (API ?? '') + '/storage/' + path
+}
+
 async function getEmployer(slug: string): Promise<Employer | null> {
   try {
     const res = await fetch(`${API}/api/employers/${slug}`, { next: { revalidate: 300 } })
@@ -83,6 +90,9 @@ export default async function EmployerProfilePage({ params }: PageProps) {
   const avgRating =
     reviews.length > 0 ? reviews.reduce((sum, r) => sum + r.rating, 0) / reviews.length : null
 
+  const logoUrl = getImageUrl(employer.logo_path)
+  const coverUrl = getImageUrl(employer.cover_photo_path)
+
   const socialIcons: Record<string, string> = {
     linkedin: 'in',
     twitter: 'X',
@@ -93,51 +103,93 @@ export default async function EmployerProfilePage({ params }: PageProps) {
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
-      {/* Cover + Logo header */}
-      <div className="bg-white rounded-2xl border border-gray-200 overflow-hidden mb-8">
-        {/* Cover */}
-        <div
-          className="h-40 sm:h-52 w-full bg-gradient-to-r from-blue-600 to-blue-800 relative"
-          style={employer.cover_photo_path ? { backgroundImage: `url(${employer.cover_photo_path})`, backgroundSize: 'cover', backgroundPosition: 'center' } : undefined}
-        />
+      {/* Cover + overlapping logo header */}
+      <div className="bg-white rounded-2xl border border-gray-200 overflow-visible mb-8">
+        {/* Cover photo */}
+        <div style={{
+          width: '100%',
+          height: '200px',
+          position: 'relative',
+          background: coverUrl ? 'none' : 'linear-gradient(135deg, #033BB0, #0256CC)',
+          borderRadius: '12px 12px 0 0',
+          overflow: 'hidden',
+          marginBottom: '60px',
+        }}>
+          {coverUrl && (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img
+              src={coverUrl}
+              alt="Cover"
+              style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+            />
+          )}
 
-        {/* Profile info */}
-        <div className="px-6 pb-6">
-          <div className="flex items-end gap-5 -mt-10 mb-4">
-            <div className="w-20 h-20 rounded-2xl border-4 border-white bg-white shadow-md overflow-hidden flex items-center justify-center shrink-0">
-              {employer.logo_path ? (
-                // eslint-disable-next-line @next/next/no-img-element
-                <img src={employer.logo_path} alt={employer.company_name ?? ''} width={80} height={80} className="object-contain" />
-              ) : (
-                <span className="text-2xl font-bold" style={{ color: '#033BB0' }}>
-                  {employer.company_name?.charAt(0)?.toUpperCase() ?? '?'}
-                </span>
-              )}
-            </div>
-            <div className="pb-1 flex-1 min-w-0">
-              <div className="flex items-center gap-2 flex-wrap">
-                <h1 className="text-2xl font-extrabold text-gray-900">{employer.company_name}</h1>
-                {employer.is_verified && (
-                  <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-semibold border" style={{ backgroundColor: '#E6F9E6', color: '#0FBB0F', borderColor: '#0FBB0F' }}>
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.5} width={12} height={12}><path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" /></svg>
-                    Halal Verified
-                  </span>
-                )}
-              </div>
-              {employer.category && <p className="text-sm text-gray-500 mt-0.5">{employer.category}</p>}
-            </div>
+          {/* Logo overlapping bottom of cover */}
+          <div style={{
+            position: 'absolute',
+            bottom: '-40px',
+            left: '32px',
+            width: '80px',
+            height: '80px',
+            borderRadius: '12px',
+            background: 'white',
+            border: '3px solid white',
+            boxShadow: '0 2px 8px rgba(0,0,0,0.12)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            overflow: 'hidden',
+          }}>
+            {logoUrl ? (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img
+                src={logoUrl}
+                alt={employer.company_name ?? ''}
+                style={{ width: '100%', height: '100%', objectFit: 'contain' }}
+              />
+            ) : (
+              <span style={{ fontSize: '28px', fontWeight: '700', color: '#033BB0' }}>
+                {employer.company_name?.charAt(0)?.toUpperCase() ?? 'E'}
+              </span>
+            )}
           </div>
+        </div>
 
-          <div className="flex flex-wrap items-center gap-4 text-sm text-gray-500">
+        {/* Employer name + details */}
+        <div style={{ paddingLeft: '32px', paddingRight: '24px', paddingBottom: '24px' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '12px', flexWrap: 'wrap' }}>
+            <h1 style={{ fontSize: '24px', fontWeight: '700', color: '#111827', margin: 0 }}>
+              {employer.company_name}
+            </h1>
+            {employer.is_verified && (
+              <span style={{
+                background: '#DCFCE7',
+                color: '#166534',
+                border: '1px solid #BBF7D0',
+                borderRadius: '20px',
+                padding: '2px 10px',
+                fontSize: '12px',
+                fontWeight: '500',
+              }}>
+                ✓ Halal Verified
+              </span>
+            )}
+          </div>
+          <p style={{ color: '#6B7280', fontSize: '15px', margin: '4px 0 0' }}>
+            {employer.category ?? 'Company'}
+          </p>
+          {employer.email && (
+            <p style={{ color: '#6B7280', fontSize: '14px', margin: '4px 0 0' }}>
+              {employer.email}
+            </p>
+          )}
+
+          {/* Contact row */}
+          <div className="flex flex-wrap items-center gap-4 mt-3" style={{ fontSize: '14px', color: '#6B7280' }}>
             {employer.address && (
               <span className="flex items-center gap-1">
                 <span>📍</span> {employer.address}
               </span>
-            )}
-            {employer.email && (
-              <a href={`mailto:${employer.email}`} className="flex items-center gap-1 hover:text-gray-700">
-                <span>✉️</span> {employer.email}
-              </a>
             )}
             {employer.phone && (
               <span className="flex items-center gap-1">
@@ -147,7 +199,9 @@ export default async function EmployerProfilePage({ params }: PageProps) {
             {avgRating !== null && (
               <span className="flex items-center gap-1.5">
                 <StarRating rating={avgRating} />
-                <span className="text-xs">{avgRating.toFixed(1)} ({reviews.length} review{reviews.length !== 1 ? 's' : ''})</span>
+                <span style={{ fontSize: '12px' }}>
+                  {avgRating.toFixed(1)} ({reviews.length} review{reviews.length !== 1 ? 's' : ''})
+                </span>
               </span>
             )}
           </div>
