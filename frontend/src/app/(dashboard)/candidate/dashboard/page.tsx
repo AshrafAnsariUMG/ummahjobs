@@ -7,6 +7,7 @@ import { api } from '@/lib/api'
 import type { Candidate, JobApplication, SavedJob } from '@/types'
 import { timeAgo } from '@/lib/timeAgo'
 import { CrescentIcon } from '@/components/ui/IslamicIcons'
+import DailyQuoteWidget from '@/components/ui/DailyQuoteWidget'
 
 interface ApplicationsPage {
   total: number
@@ -76,6 +77,8 @@ export default function CandidateDashboardPage() {
         </h1>
         <p className="text-sm text-gray-400 mt-1">Here&apos;s what&apos;s happening with your job search today.</p>
       </div>
+
+      <DailyQuoteWidget />
 
       {/* Profile completion banner */}
       {!loading && candidate && completionPct < 80 && (

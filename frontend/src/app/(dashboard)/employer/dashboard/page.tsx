@@ -6,6 +6,7 @@ import { useAuth } from '@/context/AuthContext'
 import { api } from '@/lib/api'
 import type { CreditBalance, Employer, Job, PaginatedResponse } from '@/types'
 import { CrescentIcon } from '@/components/ui/IslamicIcons'
+import DailyQuoteWidget from '@/components/ui/DailyQuoteWidget'
 
 function StatusBadge({ status }: { status: string }) {
   const styles: Record<string, string> = {
@@ -61,6 +62,8 @@ export default function EmployerDashboardPage() {
         </h1>
         <p className="text-sm text-gray-400 mt-1">Manage your listings and find the right talent for your team.</p>
       </div>
+
+      <DailyQuoteWidget />
 
       {/* Stats */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
