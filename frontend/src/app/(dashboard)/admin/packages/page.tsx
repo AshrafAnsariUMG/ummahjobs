@@ -79,7 +79,7 @@ function CreatePackageModal({ onClose, onCreated }: { onClose: () => void; onCre
         description: description || null,
       }) as { package: AdminPackage }
       onCreated({ ...res.package, total_purchases: 0, total_revenue: 0 })
-      showToast(`Package '${res.package.name}' created!`, 'success')
+      showToast(`JazakAllah Khayran! Package '${res.package.name}' created.`, 'success')
     } catch (err: unknown) {
       setError((err as { message?: string })?.message ?? 'Failed to create package.')
     } finally {
@@ -264,7 +264,7 @@ function PackageCard({
     try {
       const res = await api.put(`/api/admin/packages/${pkg.id}`, { is_active: !pkg.is_active }) as { package: AdminPackage }
       onUpdated(res.package)
-      showToast(`Package ${res.package.is_active ? 'activated' : 'deactivated'}.`, 'success')
+      showToast(`JazakAllah Khayran! Package ${res.package.is_active ? 'activated' : 'deactivated'}.`, 'success')
     } catch {
       showToast('Failed to update package.', 'error')
     } finally {
@@ -303,7 +303,7 @@ function PackageCard({
       }) as { package: AdminPackage }
       onUpdated(res.package)
       setEditing(false)
-      showToast('Package updated!', 'success')
+      showToast('JazakAllah Khayran! Package updated.', 'success')
     } catch {
       showToast('Failed to save changes.', 'error')
     } finally {

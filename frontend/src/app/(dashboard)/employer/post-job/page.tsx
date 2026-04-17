@@ -163,7 +163,7 @@ export default function PostJobPage() {
         salary_min: form.salary_min ? Number(form.salary_min) : null,
         salary_max: form.salary_max ? Number(form.salary_max) : null,
       })
-      showToast('Job posted successfully!', 'success')
+      showToast('JazakAllah Khayran! Your job is live.', 'success')
       setTimeout(() => router.push('/employer/jobs'), 1500)
     } catch (err: unknown) {
       const e = err as { error?: string; message?: string }
@@ -557,7 +557,7 @@ export default function PostJobPage() {
                 className="px-6 py-2.5 rounded-xl text-sm font-semibold text-white transition-opacity hover:opacity-90 disabled:opacity-50"
                 style={{ backgroundColor: '#033BB0' }}
               >
-                {submitting ? 'Posting…' : 'Post Job'}
+                {submitting ? 'Posting…' : 'Post Job — Bismillah 🤲'}
               </button>
             </div>
           </div>

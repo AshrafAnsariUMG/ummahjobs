@@ -139,7 +139,7 @@ export default function AdminSettingsPage() {
         <div className="flex items-center gap-3">
           {savedAt && !hasChanges && (
             <span className="text-sm text-gray-400">
-              Saved {savedAt.toLocaleTimeString()}
+              JazakAllah Khayran! Saved {savedAt.toLocaleTimeString()}
             </span>
           )}
           <button

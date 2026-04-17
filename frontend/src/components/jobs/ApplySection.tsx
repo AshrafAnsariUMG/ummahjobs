@@ -75,7 +75,7 @@ export default function ApplySection({ jobId, applyType, applyUrl }: Props) {
         className="block w-full text-center px-5 py-3 rounded-xl text-sm font-semibold text-white transition-opacity hover:opacity-90"
         style={{ backgroundColor: '#033BB0' }}
       >
-        Apply Now →
+        Apply Now — Bismillah →
       </a>
     )
   }
@@ -110,8 +110,8 @@ export default function ApplySection({ jobId, applyType, applyUrl }: Props) {
             <path strokeLinecap="round" strokeLinejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
           </svg>
           <div>
-            <p className="text-sm font-semibold text-green-800">Application submitted successfully!</p>
-            <p className="text-xs text-green-700 mt-0.5">You can track it in your dashboard.</p>
+            <p className="text-sm font-semibold text-green-800">JazakAllah Khayran! 🤲</p>
+            <p className="text-xs text-green-700 mt-0.5">Your application has been submitted. May Allah bless your efforts and open the right doors for you.</p>
           </div>
         </div>
         <Link
@@ -148,7 +148,7 @@ export default function ApplySection({ jobId, applyType, applyUrl }: Props) {
           className="block w-full text-center px-5 py-3 rounded-xl text-sm font-semibold text-white transition-opacity hover:opacity-90"
           style={{ backgroundColor: '#033BB0' }}
         >
-          Apply Now →
+          Apply Now — Bismillah →
         </button>
       )
     }
@@ -218,7 +218,7 @@ export default function ApplySection({ jobId, applyType, applyUrl }: Props) {
             className="flex-1 px-4 py-2.5 rounded-lg text-sm font-semibold text-white disabled:opacity-60 transition-opacity hover:opacity-90"
             style={{ backgroundColor: '#033BB0' }}
           >
-            {applyState === 'loading' ? 'Submitting…' : 'Submit Application'}
+            {applyState === 'loading' ? 'Submitting — Bismillah…' : 'Submit Application — Bismillah'}
           </button>
           <button
             type="button"

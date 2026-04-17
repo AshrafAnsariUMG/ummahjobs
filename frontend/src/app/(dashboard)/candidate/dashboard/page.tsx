@@ -68,9 +68,9 @@ export default function CandidateDashboardPage() {
       {/* Welcome header */}
       <div className="mb-6">
         <h1 className="text-2xl font-extrabold text-gray-900">
-          Welcome back, {user?.display_name?.split(' ')[0] ?? 'there'} 👋
+          Assalamu Alaikum, {user?.display_name ?? 'there'}! 👋
         </h1>
-        <p className="text-sm text-gray-400 mt-1">{todayStr}</p>
+        <p className="text-sm text-gray-400 mt-1">Here&apos;s what&apos;s happening with your job search today.</p>
       </div>
 
       {/* Profile completion banner */}

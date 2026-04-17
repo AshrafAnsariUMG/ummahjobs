@@ -147,7 +147,7 @@ export default function AdminPostJobPage() {
       if (expiresAt) body.expires_at = expiresAt
 
       await api.post('/api/admin/jobs', body)
-      showToast('Job posted successfully!', 'success')
+      showToast('JazakAllah Khayran! Job posted.', 'success')
       setTimeout(() => router.push('/admin/jobs'), 1500)
     } catch (err: unknown) {
       const e = err as { message?: string; errors?: Record<string, string[]> }

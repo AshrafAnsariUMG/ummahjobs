@@ -144,7 +144,7 @@ export default function AdminBlogEditPage() {
       if (res.post.slug !== currentSlug) {
         router.replace(`/admin/blog/${res.post.slug}/edit`)
       }
-      showToast('Post updated!', 'success')
+      showToast('JazakAllah Khayran! Post updated.', 'success')
     } catch (err: unknown) {
       const e = err as { errors?: Record<string, string[]> }
       if (e?.errors) {

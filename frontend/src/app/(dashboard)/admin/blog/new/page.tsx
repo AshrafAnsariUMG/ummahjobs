@@ -79,7 +79,7 @@ export default function AdminBlogNewPage() {
 
     try {
       const res = await api.post('/api/admin/blog', payload) as { post: { slug: string }; slug: string }
-      showToast('Post created successfully!', 'success')
+      showToast('JazakAllah Khayran! Post created.', 'success')
       router.push(`/admin/blog/${res.slug}/edit`)
     } catch (err: unknown) {
       const e = err as { errors?: Record<string, string[]> }

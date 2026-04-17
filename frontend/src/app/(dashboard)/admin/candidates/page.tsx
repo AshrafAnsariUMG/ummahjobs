@@ -576,7 +576,7 @@ export default function AdminCandidatesPage() {
   function handleCandidateSaved(updated: AdminCandidate) {
     setCandidates((prev) => prev.map((c) => c.id === updated.id ? { ...c, ...updated } : c))
     if (editTarget?.id === updated.id) setEditTarget((prev) => prev ? { ...prev, ...updated } : prev)
-    showToast('Candidate profile updated.', 'success')
+    showToast('JazakAllah Khayran! Candidate profile updated.', 'success')
   }
 
   function formatDate(d: string) {

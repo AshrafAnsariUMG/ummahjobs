@@ -53,9 +53,9 @@ export default function EmployerDashboardPage() {
       {/* Welcome */}
       <div className="mb-8">
         <h1 className="text-2xl font-extrabold text-gray-900">
-          Welcome back, {employer?.company_name ?? user?.display_name?.split(' ')[0] ?? 'there'} 👋
+          Assalamu Alaikum, {user?.display_name ?? 'there'}! 👋
         </h1>
-        <p className="text-sm text-gray-400 mt-1">{today}</p>
+        <p className="text-sm text-gray-400 mt-1">Manage your listings and find the right talent for your team.</p>
       </div>
 
       {/* Stats */}

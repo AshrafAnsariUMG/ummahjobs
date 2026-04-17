@@ -51,7 +51,7 @@ export default function CandidateSavedJobsPage() {
     setTotal((t) => t - 1)
     try {
       await api.delete(`/api/candidate/saved-jobs/${jobId}`)
-      showToast('Job removed from saved list.', 'success')
+      showToast('Removed from saved jobs.', 'success')
     } catch {
       // Revert on failure — refetch
       api.get('/api/candidate/saved-jobs')

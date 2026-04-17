@@ -112,10 +112,10 @@ export default function AdminDashboardPage() {
     <div className="max-w-6xl mx-auto">
       {/* Header */}
       <div className="mb-8">
-        <h1 className="text-2xl font-extrabold text-gray-900">Dashboard</h1>
-        <p className="text-sm text-gray-500 mt-1">
-          {today} · Welcome back, {user?.display_name}
-        </p>
+        <h1 className="text-2xl font-extrabold text-gray-900">
+          Assalamu Alaikum, {user?.display_name ?? 'Admin'}! 👋
+        </h1>
+        <p className="text-sm text-gray-500 mt-1">Here&apos;s an overview of the platform.</p>
       </div>
 
       {/* Primary stats grid */}

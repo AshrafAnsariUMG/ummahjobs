@@ -89,7 +89,7 @@ export default function EmployerProfileEditPage() {
         map_lng: form.map_lng ? Number(form.map_lng) : null,
         socials: form.socials.filter((s) => s.url.trim()),
       })
-      showToast('Profile updated successfully!', 'success')
+      showToast('JazakAllah Khayran! Profile updated.', 'success')
     } catch (err: unknown) {
       const e = err as { message?: string }
       showToast(e?.message ?? 'Failed to save profile.', 'error')

@@ -52,7 +52,7 @@ function ApplicantCard({
     onStatusChange(app.id, newStatus) // optimistic
     try {
       await api.put(`/api/employer/applicants/${app.id}/status`, { status: newStatus })
-      showToast(`Status updated to ${STATUS_LABELS[newStatus]}.`, 'success')
+      showToast(`JazakAllah Khayran! Status updated to ${STATUS_LABELS[newStatus]}.`, 'success')
     } catch {
       onStatusChange(app.id, app.status) // revert
       showToast('Failed to update status.', 'error')

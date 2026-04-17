@@ -707,7 +707,7 @@ export default function AdminEmployersPage() {
     setEmployers((prev) => prev.map((e) => e.id === employer.id ? { ...e, is_verified: newVal } : e))
     try {
       await api.put(`/api/admin/employers/${employer.id}`, { is_verified: newVal })
-      showToast(newVal ? 'Halal Verified granted.' : 'Verified status removed.', 'success')
+      showToast(newVal ? 'JazakAllah Khayran! Halal Verified granted.' : 'Verified status removed.', 'success')
     } catch {
       setEmployers((prev) => prev.map((e) => e.id === employer.id ? { ...e, is_verified: !newVal } : e))
       showToast('Failed to update employer.', 'error')
@@ -729,7 +729,7 @@ export default function AdminEmployersPage() {
   function handleEmployerSaved(updated: AdminEmployer) {
     setEmployers((prev) => prev.map((e) => e.id === updated.id ? { ...e, ...updated } : e))
     if (editTarget?.id === updated.id) setEditTarget((prev) => prev ? { ...prev, ...updated } : prev)
-    showToast('Employer profile updated.', 'success')
+    showToast('JazakAllah Khayran! Employer profile updated.', 'success')
   }
 
   function formatDate(d: string) {
@@ -744,7 +744,7 @@ export default function AdminEmployersPage() {
         onClose={() => setGrantCreditsTarget(null)}
         onGranted={() => {
           setGrantCreditsTarget(null)
-          showToast('Credits granted successfully.', 'success')
+          showToast('JazakAllah Khayran! Credits granted.', 'success')
         }}
       />
     )}

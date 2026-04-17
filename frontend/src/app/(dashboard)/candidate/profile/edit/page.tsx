@@ -184,7 +184,7 @@ export default function CandidateProfileEditPage() {
       const res: { profile_photo_path: string } = await api.upload('/api/candidate/profile/photo', fd)
       setPhotoPreview(res.profile_photo_path)
       setCandidate((prev) => prev ? { ...prev, profile_photo_path: res.profile_photo_path } : prev)
-      showToast('Photo updated successfully!', 'success')
+      showToast('JazakAllah Khayran! Photo updated.', 'success')
     } catch (err: unknown) {
       const e = err as { message?: string }
       showToast(e?.message ?? 'Failed to upload photo.', 'error')
@@ -210,7 +210,7 @@ export default function CandidateProfileEditPage() {
       clearInterval(interval)
       setCvProgress(100)
       setCandidate((prev) => prev ? { ...prev, cv_path: res.cv_path } : prev)
-      showToast('CV uploaded successfully!', 'success')
+      showToast('JazakAllah Khayran! CV uploaded.', 'success')
       setTimeout(() => setCvProgress(0), 1500)
     } catch (err: unknown) {
       clearInterval(interval)
@@ -231,7 +231,7 @@ export default function CandidateProfileEditPage() {
         socials: form.socials.filter((s) => s.url.trim()),
       })
       setCandidate(updated)
-      showToast('Profile saved successfully!', 'success')
+      showToast('JazakAllah Khayran! Profile saved.', 'success')
     } catch (err: unknown) {
       const e = err as { message?: string }
       showToast(e?.message ?? 'Failed to save profile.', 'error')

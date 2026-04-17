@@ -173,7 +173,7 @@ export default function CandidateAlertsPage() {
       const created: JobAlert = await api.post('/api/candidate/alerts', payload)
       setAlerts((prev) => [created, ...prev])
       setForm(EMPTY_FORM)
-      showToast('Job alert created!', 'success')
+      showToast("JazakAllah Khayran! We'll notify you when matching jobs are posted. 🔔", 'success')
     } catch (err: unknown) {
       const e = err as { message?: string }
       showToast(e?.message ?? 'Failed to create alert.', 'error')
@@ -205,7 +205,7 @@ export default function CandidateAlertsPage() {
       const updated: JobAlert = await api.put(`/api/candidate/alerts/${id}`, payload)
       setAlerts((prev) => prev.map((a) => (a.id === id ? updated : a)))
       setEditingId(null)
-      showToast('Alert updated!', 'success')
+      showToast('JazakAllah Khayran! Alert updated.', 'success')
     } catch (err: unknown) {
       const e = err as { message?: string }
       showToast(e?.message ?? 'Failed to update alert.', 'error')

@@ -10,7 +10,7 @@ export default function BookmarkButton({ jobId }: { jobId: number }) {
   function toggle() {
     setSaved((prev) => {
       const next = !prev
-      showToast(next ? 'Job saved to bookmarks' : 'Bookmark removed', next ? 'success' : 'info')
+      showToast(next ? 'JazakAllah Khayran! Job saved.' : 'Bookmark removed', next ? 'success' : 'info')
       return next
     })
   }

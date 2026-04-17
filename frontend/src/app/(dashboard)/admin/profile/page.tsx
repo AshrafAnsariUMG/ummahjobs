@@ -70,7 +70,7 @@ export default function AdminProfilePage() {
       setProfile(updated)
       setDisplayName(updated.display_name)
       setEmail(updated.email)
-      showToast('Profile updated.', 'success')
+      showToast('JazakAllah Khayran! Profile updated.', 'success')
     } catch {
       showToast('Failed to update profile.', 'error')
     } finally {
@@ -94,7 +94,7 @@ export default function AdminProfilePage() {
       setCurrentPassword('')
       setNewPassword('')
       setConfirmPassword('')
-      showToast('Password changed successfully.', 'success')
+      showToast('JazakAllah Khayran! Password updated.', 'success')
     } catch (err: unknown) {
       const msg = (err as { message?: string })?.message ?? 'Failed to change password.'
       showToast(msg, 'error')

@@ -459,7 +459,7 @@ export default function AdminUsersPage() {
     setAddUserOpen(false)
     setUsers((prev) => [user, ...prev])
     setStats((s) => ({ ...s, total: s.total + 1, active: user.is_active ? s.active + 1 : s.active }))
-    showToast(`${user.display_name} created successfully.`, 'success')
+    showToast(`JazakAllah Khayran! ${user.display_name} created.`, 'success')
   }
 
   async function handleRoleChange(userId: string, newRole: AdminUser['role']) {

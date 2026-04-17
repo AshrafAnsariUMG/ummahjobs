@@ -106,7 +106,7 @@ export default function EmployerJobsPage() {
         salary_min: editForm.salary_min ? Number(editForm.salary_min) : null,
         salary_max: editForm.salary_max ? Number(editForm.salary_max) : null,
       })
-      showToast('Job updated.', 'success')
+      showToast('JazakAllah Khayran! Job updated.', 'success')
       setEditJob(null)
       fetchJobs()
     } catch {

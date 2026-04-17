@@ -176,7 +176,7 @@ export default function AdminJobsPage() {
     setJobs((prev) => prev.map((j) => j.id === job.id ? { ...j, is_featured: newVal } : j))
     try {
       await api.put(`/api/admin/jobs/${job.id}`, { is_featured: newVal })
-      showToast(newVal ? 'Job featured.' : 'Job unfeatured.', 'success')
+      showToast(newVal ? 'JazakAllah Khayran! Job featured.' : 'Job unfeatured.', 'success')
     } catch {
       setJobs((prev) => prev.map((j) => j.id === job.id ? { ...j, is_featured: !newVal } : j))
       showToast('Failed to update job.', 'error')
@@ -188,7 +188,7 @@ export default function AdminJobsPage() {
     setJobs((prev) => prev.map((j) => j.id === job.id ? { ...j, status: 'expired' } : j))
     try {
       await api.put(`/api/admin/jobs/${job.id}`, { status: 'expired' })
-      showToast('Job marked as expired.', 'success')
+      showToast('Job marked as expired.', 'info')
     } catch {
       setJobs((prev) => prev.map((j) => j.id === job.id ? { ...j, status: 'active' } : j))
       showToast('Failed to update job.', 'error')
