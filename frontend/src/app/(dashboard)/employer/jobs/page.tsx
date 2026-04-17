@@ -5,6 +5,8 @@ import Link from 'next/link'
 import { api } from '@/lib/api'
 import { useToast } from '@/components/ui/Toast'
 import type { Job, JobCategory, PaginatedResponse } from '@/types'
+import IslamicEmptyState from '@/components/ui/IslamicEmptyState'
+import { BriefcaseIcon } from '@/components/ui/IslamicIcons'
 
 const JOB_TYPES = ['Full Time', 'Part Time', 'Contract', 'Freelance', 'Internship', 'Temporary', 'Volunteer']
 const EXPERIENCE_LEVELS = ['Fresh', '1 Year', '2 Year', '3 Year', '4 Year', '5+ Year']
@@ -240,16 +242,21 @@ export default function EmployerJobsPage() {
             </table>
           </div>
         ) : (
-          <div className="p-12 text-center">
-            <p className="text-gray-500 text-sm mb-3">
-              {tab === 'active' ? 'No active listings.' : tab === 'expired' ? 'No expired listings.' : "You haven't posted any jobs yet."}
-            </p>
-            {(tab === 'active' || tab === 'all') && (
-              <Link href="/employer/post-job" className="text-sm font-medium hover:underline" style={{ color: '#033BB0' }}>
-                Post a job →
-              </Link>
-            )}
-          </div>
+          tab === 'all' ? (
+            <IslamicEmptyState
+              icon={<BriefcaseIcon size={28} />}
+              title="No job listings yet"
+              message="Post your first halal job and connect with thousands of Muslim professionals across the Ummah."
+              actionLabel="Post a Job — Bismillah"
+              actionHref="/employer/post-job"
+            />
+          ) : (
+            <div className="p-8 text-center">
+              <p className="text-sm text-gray-500">
+                {tab === 'active' ? 'No active listings.' : 'No expired listings.'}
+              </p>
+            </div>
+          )
         )}
       </div>
 

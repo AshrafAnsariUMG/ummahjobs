@@ -7,6 +7,8 @@ import { api } from '@/lib/api'
 import { useToast } from '@/components/ui/Toast'
 import type { EmployerApplicant } from '@/types'
 import { timeAgo } from '@/lib/timeAgo'
+import IslamicEmptyState from '@/components/ui/IslamicEmptyState'
+import { UsersIcon } from '@/components/ui/IslamicIcons'
 
 interface ApplicantsResponse {
   data: EmployerApplicant[]
@@ -277,24 +279,18 @@ function ApplicantsContent() {
           ))}
         </div>
       ) : (
-        <div className="bg-white rounded-2xl border border-dashed border-gray-300 p-16 text-center">
-          <div className="w-14 h-14 rounded-2xl flex items-center justify-center mx-auto mb-4" style={{ backgroundColor: '#E6EDFF' }}>
-            <svg className="w-7 h-7" fill="none" viewBox="0 0 24 24" stroke="#033BB0" strokeWidth={1.5}>
-              <path strokeLinecap="round" strokeLinejoin="round" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z" />
-            </svg>
-          </div>
-          <h2 className="font-semibold text-gray-900 mb-2">
-            {filter === 'all' ? 'No applicants yet for this listing' : `No ${filter} applicants`}
-          </h2>
-          {filter === 'all' && (
+        <div className="bg-white rounded-2xl border border-gray-100">
+          {filter === 'all' ? (
             <>
-              <p className="text-sm text-gray-500 mb-5">Share your job listing to attract candidates.</p>
-              <div className="flex items-center justify-center gap-3 flex-wrap">
-                {jobSlug && (
+              <IslamicEmptyState
+                icon={<UsersIcon size={28} />}
+                title="No applicants yet"
+                message="Your listing is live — in sha Allah the right candidate is on their way. Share your listing to reach more people."
+              />
+              {jobSlug && (
+                <div className="flex items-center justify-center gap-3 flex-wrap pb-8">
                   <button
-                    onClick={() => {
-                      navigator.clipboard.writeText(`${window.location.origin}/jobs/${jobSlug}`)
-                    }}
+                    onClick={() => { navigator.clipboard.writeText(`${window.location.origin}/jobs/${jobSlug}`) }}
                     className="flex items-center gap-1.5 px-4 py-2 rounded-lg text-sm font-medium border border-gray-200 hover:border-gray-300 text-gray-700"
                   >
                     <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
@@ -302,17 +298,23 @@ function ApplicantsContent() {
                     </svg>
                     Copy Link
                   </button>
-                )}
-                <a
-                  href={`https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(typeof window !== 'undefined' ? `${window.location.origin}/jobs/${jobSlug}` : '')}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="flex items-center gap-1.5 px-4 py-2 rounded-lg text-sm font-medium bg-blue-600 text-white hover:bg-blue-700 transition-colors"
-                >
-                  Share on LinkedIn
-                </a>
-              </div>
+                  <a
+                    href={`https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(typeof window !== 'undefined' ? `${window.location.origin}/jobs/${jobSlug}` : '')}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex items-center gap-1.5 px-4 py-2 rounded-lg text-sm font-medium bg-blue-600 text-white hover:bg-blue-700 transition-colors"
+                  >
+                    Share on LinkedIn
+                  </a>
+                </div>
+              )}
             </>
+          ) : (
+            <IslamicEmptyState
+              icon={<UsersIcon size={28} />}
+              title={`No ${filter} applicants`}
+              message="No applicants with this status yet."
+            />
           )}
         </div>
       )}

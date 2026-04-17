@@ -6,6 +6,8 @@ import { api } from '@/lib/api'
 import { useToast } from '@/components/ui/Toast'
 import type { SavedJob } from '@/types'
 import { timeAgo } from '@/lib/timeAgo'
+import IslamicEmptyState from '@/components/ui/IslamicEmptyState'
+import { BookmarkIcon } from '@/components/ui/IslamicIcons'
 
 interface SavedJobsPage {
   total: number
@@ -170,21 +172,14 @@ export default function CandidateSavedJobsPage() {
           })}
         </div>
       ) : (
-        <div className="bg-white rounded-2xl border border-dashed border-gray-300 p-16 text-center">
-          <div className="w-14 h-14 rounded-2xl flex items-center justify-center mx-auto mb-4" style={{ backgroundColor: '#E6EDFF' }}>
-            <svg className="w-7 h-7" fill="none" viewBox="0 0 24 24" stroke="#033BB0" strokeWidth={1.5}>
-              <path strokeLinecap="round" strokeLinejoin="round" d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z" />
-            </svg>
-          </div>
-          <h2 className="font-semibold text-gray-900 mb-2">No saved jobs yet</h2>
-          <p className="text-sm text-gray-500 mb-6">Save jobs while browsing to review them later.</p>
-          <Link
-            href="/jobs"
-            className="inline-flex items-center gap-1.5 px-5 py-2.5 rounded-xl text-sm font-semibold text-white transition-opacity hover:opacity-90"
-            style={{ backgroundColor: '#033BB0' }}
-          >
-            Browse Jobs →
-          </Link>
+        <div className="bg-white rounded-2xl border border-gray-100">
+          <IslamicEmptyState
+            icon={<BookmarkIcon size={28} />}
+            title="No saved jobs yet"
+            message="When you find a role that calls to you, save it here. Your halal opportunity is waiting — keep searching."
+            actionLabel="Browse Jobs"
+            actionHref="/jobs"
+          />
         </div>
       )}
     </div>

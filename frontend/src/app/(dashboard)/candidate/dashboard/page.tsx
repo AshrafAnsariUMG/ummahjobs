@@ -6,6 +6,7 @@ import { useAuth } from '@/context/AuthContext'
 import { api } from '@/lib/api'
 import type { Candidate, JobApplication, SavedJob } from '@/types'
 import { timeAgo } from '@/lib/timeAgo'
+import { CrescentIcon } from '@/components/ui/IslamicIcons'
 
 interface ApplicationsPage {
   total: number
@@ -68,7 +69,10 @@ export default function CandidateDashboardPage() {
       {/* Welcome header */}
       <div className="mb-6">
         <h1 className="text-2xl font-extrabold text-gray-900">
-          Assalamu Alaikum, {user?.display_name ?? 'there'}! 👋
+          <span style={{ display: 'inline-flex', alignItems: 'center', gap: '8px' }}>
+            <CrescentIcon />
+            Assalamu Alaikum, {user?.display_name ?? 'there'}!
+          </span>
         </h1>
         <p className="text-sm text-gray-400 mt-1">Here&apos;s what&apos;s happening with your job search today.</p>
       </div>
@@ -241,16 +245,25 @@ export default function CandidateDashboardPage() {
       {/* Quick links */}
       <section className="grid sm:grid-cols-3 gap-4">
         {[
-          { href: '/jobs', label: 'Browse All Jobs', desc: 'Find your next opportunity', emoji: '🔍' },
-          { href: '/candidate/alerts', label: 'Set Job Alert', desc: 'Get notified of new matches', emoji: '🔔' },
-          { href: '/candidate/profile/edit', label: 'Update Your CV', desc: 'Upload or replace your CV', emoji: '📄' },
+          {
+            href: '/jobs', label: 'Browse All Jobs', desc: 'Find your next opportunity',
+            icon: <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} width={22} height={22} strokeLinecap="round" strokeLinejoin="round"><circle cx="11" cy="11" r="8" /><path d="M21 21l-4.35-4.35" /></svg>,
+          },
+          {
+            href: '/candidate/alerts', label: 'Set Job Alert', desc: 'Get notified of new matches',
+            icon: <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} width={22} height={22} strokeLinecap="round" strokeLinejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9" /><path d="M13.73 21a2 2 0 0 1-3.46 0" /></svg>,
+          },
+          {
+            href: '/candidate/profile/edit', label: 'Update Your CV', desc: 'Upload or replace your CV',
+            icon: <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} width={22} height={22} strokeLinecap="round" strokeLinejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" /><polyline points="14,2 14,8 20,8" /><line x1="16" y1="13" x2="8" y2="13" /><line x1="16" y1="17" x2="8" y2="17" /></svg>,
+          },
         ].map((item) => (
           <Link
             key={item.href}
             href={item.href}
             className="bg-white rounded-xl border border-gray-200 p-5 hover:shadow-md hover:border-blue-200 transition-all"
           >
-            <div className="text-2xl mb-2">{item.emoji}</div>
+            <div className="mb-2" style={{ color: '#033BB0' }}>{item.icon}</div>
             <p className="font-semibold text-gray-900 text-sm">{item.label}</p>
             <p className="text-xs text-gray-400 mt-0.5">{item.desc}</p>
           </Link>

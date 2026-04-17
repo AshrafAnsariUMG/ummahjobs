@@ -5,6 +5,8 @@ import Link from 'next/link'
 import { api } from '@/lib/api'
 import type { JobApplication } from '@/types'
 import { timeAgo } from '@/lib/timeAgo'
+import IslamicEmptyState from '@/components/ui/IslamicEmptyState'
+import { BriefcaseIcon } from '@/components/ui/IslamicIcons'
 
 interface ApplicationsPage {
   total: number
@@ -234,26 +236,21 @@ export default function CandidateApplicationsPage() {
           })}
         </div>
       ) : (
-        <div className="bg-white rounded-2xl border border-dashed border-gray-300 p-16 text-center">
-          <div className="w-14 h-14 rounded-2xl flex items-center justify-center mx-auto mb-4" style={{ backgroundColor: '#E6EDFF' }}>
-            <svg className="w-7 h-7" fill="none" viewBox="0 0 24 24" stroke="#033BB0" strokeWidth={1.5}>
-              <path strokeLinecap="round" strokeLinejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-            </svg>
-          </div>
-          <h2 className="font-semibold text-gray-900 mb-2">
-            {filter === 'all' ? "You haven't applied to any jobs yet" : `No ${filter} applications`}
-          </h2>
-          {filter === 'all' && (
-            <>
-              <p className="text-sm text-gray-500 mb-6">Start applying to find your next opportunity.</p>
-              <Link
-                href="/jobs"
-                className="inline-flex items-center gap-1.5 px-5 py-2.5 rounded-xl text-sm font-semibold text-white transition-opacity hover:opacity-90"
-                style={{ backgroundColor: '#033BB0' }}
-              >
-                Browse Jobs →
-              </Link>
-            </>
+        <div className="bg-white rounded-2xl border border-gray-100">
+          {filter === 'all' ? (
+            <IslamicEmptyState
+              icon={<BriefcaseIcon size={28} />}
+              title="No applications yet"
+              message="Every great journey begins with a single step. Submit your first application — tawakkul and effort go hand in hand."
+              actionLabel="Find Jobs"
+              actionHref="/jobs"
+            />
+          ) : (
+            <IslamicEmptyState
+              icon={<BriefcaseIcon size={28} />}
+              title={`No ${filter} applications`}
+              message="No applications with this status yet."
+            />
           )}
         </div>
       )}

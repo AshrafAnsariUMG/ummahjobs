@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { useAuth } from '@/context/AuthContext'
+import { DuaHandsIcon } from '@/components/ui/IslamicIcons'
 
 interface Props {
   jobId: number
@@ -110,7 +111,10 @@ export default function ApplySection({ jobId, applyType, applyUrl }: Props) {
             <path strokeLinecap="round" strokeLinejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
           </svg>
           <div>
-            <p className="text-sm font-semibold text-green-800">JazakAllah Khayran! 🤲</p>
+            <div className="flex items-center gap-1.5">
+              <p className="text-sm font-semibold text-green-800">JazakAllah Khayran!</p>
+              <span className="text-green-600"><DuaHandsIcon size={16} /></span>
+            </div>
             <p className="text-xs text-green-700 mt-0.5">Your application has been submitted. May Allah bless your efforts and open the right doors for you.</p>
           </div>
         </div>

@@ -4,6 +4,8 @@ import type { Job, JobCategory, JobType, PaginatedResponse } from '@/types'
 import FilterSidebar from '@/components/jobs/FilterSidebar'
 import JobListWithScores from '@/components/jobs/JobListWithScores'
 import MANLeaderboard from '@/components/ads/MANLeaderboard'
+import IslamicEmptyState from '@/components/ui/IslamicEmptyState'
+import { SearchIcon } from '@/components/ui/IslamicIcons'
 
 const API = process.env.NEXT_PUBLIC_API_URL
 
@@ -146,11 +148,14 @@ export default async function JobsPage({ searchParams }: PageProps) {
               )}
             </>
           ) : (
-            <div className="bg-white rounded-xl border border-dashed border-gray-300 p-16 text-center">
-              <p className="text-gray-500 text-sm mb-3">No jobs match your filters.</p>
-              <Link href="/jobs" className="text-sm font-medium" style={{ color: '#033BB0' }}>
-                Clear filters →
-              </Link>
+            <div className="bg-white rounded-xl border border-gray-100">
+              <IslamicEmptyState
+                icon={<SearchIcon size={28} />}
+                title="No jobs found"
+                message="No jobs match your search — but Allah's rizq is not limited to one door. Try adjusting your filters or check back soon."
+                actionLabel="Clear Filters"
+                actionHref="/jobs"
+              />
             </div>
           )}
         </div>

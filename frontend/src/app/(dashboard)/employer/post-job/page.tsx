@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation'
 import { api } from '@/lib/api'
 import { useToast } from '@/components/ui/Toast'
 import type { CreditBalance, JobCategory } from '@/types'
+import { DuaHandsIcon } from '@/components/ui/IslamicIcons'
 
 const JOB_TYPES = ['Full Time', 'Part Time', 'Contract', 'Freelance', 'Internship', 'Temporary', 'Volunteer']
 const EXPERIENCE_LEVELS = ['Fresh', '1 Year', '2 Year', '3 Year', '4 Year', '5+ Year']
@@ -557,7 +558,11 @@ export default function PostJobPage() {
                 className="px-6 py-2.5 rounded-xl text-sm font-semibold text-white transition-opacity hover:opacity-90 disabled:opacity-50"
                 style={{ backgroundColor: '#033BB0' }}
               >
-                {submitting ? 'Posting…' : 'Post Job — Bismillah 🤲'}
+                {submitting ? 'Posting…' : (
+                  <span style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
+                    Post Job — Bismillah <DuaHandsIcon size={16} />
+                  </span>
+                )}
               </button>
             </div>
           </div>

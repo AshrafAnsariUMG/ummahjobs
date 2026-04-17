@@ -5,6 +5,7 @@ import Link from 'next/link'
 import { useAuth } from '@/context/AuthContext'
 import { api } from '@/lib/api'
 import type { CreditBalance, Employer, Job, PaginatedResponse } from '@/types'
+import { CrescentIcon } from '@/components/ui/IslamicIcons'
 
 function StatusBadge({ status }: { status: string }) {
   const styles: Record<string, string> = {
@@ -53,7 +54,10 @@ export default function EmployerDashboardPage() {
       {/* Welcome */}
       <div className="mb-8">
         <h1 className="text-2xl font-extrabold text-gray-900">
-          Assalamu Alaikum, {user?.display_name ?? 'there'}! 👋
+          <span style={{ display: 'inline-flex', alignItems: 'center', gap: '8px' }}>
+            <CrescentIcon />
+            Assalamu Alaikum, {user?.display_name ?? 'there'}!
+          </span>
         </h1>
         <p className="text-sm text-gray-400 mt-1">Manage your listings and find the right talent for your team.</p>
       </div>

@@ -5,6 +5,8 @@ import { api } from '@/lib/api'
 import { useToast } from '@/components/ui/Toast'
 import type { JobAlert, JobCategory, JobType } from '@/types'
 import { timeAgo } from '@/lib/timeAgo'
+import IslamicEmptyState from '@/components/ui/IslamicEmptyState'
+import { BellIcon } from '@/components/ui/IslamicIcons'
 
 interface AlertForm {
   keyword: string
@@ -173,7 +175,7 @@ export default function CandidateAlertsPage() {
       const created: JobAlert = await api.post('/api/candidate/alerts', payload)
       setAlerts((prev) => [created, ...prev])
       setForm(EMPTY_FORM)
-      showToast("JazakAllah Khayran! We'll notify you when matching jobs are posted. 🔔", 'success')
+      showToast("JazakAllah Khayran! We'll notify you when matching jobs are posted.", 'success')
     } catch (err: unknown) {
       const e = err as { message?: string }
       showToast(e?.message ?? 'Failed to create alert.', 'error')
@@ -339,16 +341,12 @@ export default function CandidateAlertsPage() {
             ))}
           </div>
         ) : (
-          <div className="bg-white rounded-2xl border border-dashed border-gray-300 p-12 text-center">
-            <div className="w-12 h-12 rounded-2xl flex items-center justify-center mx-auto mb-3" style={{ backgroundColor: '#E6EDFF' }}>
-              <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="#033BB0" strokeWidth={1.5}>
-                <path strokeLinecap="round" strokeLinejoin="round" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
-              </svg>
-            </div>
-            <h3 className="font-semibold text-gray-900 mb-1">No job alerts yet</h3>
-            <p className="text-sm text-gray-500">
-              Alerts help you stay updated on new opportunities matching your criteria.
-            </p>
+          <div className="bg-white rounded-2xl border border-gray-100">
+            <IslamicEmptyState
+              icon={<BellIcon size={28} />}
+              title="No alerts yet"
+              message="Set up a job alert and we'll notify you when halal opportunities matching your criteria are posted."
+            />
           </div>
         )}
       </section>

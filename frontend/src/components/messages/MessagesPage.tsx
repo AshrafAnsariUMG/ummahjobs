@@ -6,6 +6,8 @@ import Link from 'next/link'
 import { api } from '@/lib/api'
 import type { MessageThread, Message } from '@/types'
 import { timeAgo } from '@/lib/timeAgo'
+import IslamicEmptyState from '@/components/ui/IslamicEmptyState'
+import { MessageIcon } from '@/components/ui/IslamicIcons'
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
 
@@ -253,11 +255,17 @@ function MessagesContent() {
               ))}
             </div>
           ) : filteredThreads.length === 0 ? (
-            <div className="p-8 text-center">
-              <p className="text-sm text-gray-400">
-                {search ? 'No conversations match.' : 'No messages yet.'}
-              </p>
-            </div>
+            search ? (
+              <div className="p-8 text-center">
+                <p className="text-sm text-gray-400">No conversations match.</p>
+              </div>
+            ) : (
+              <IslamicEmptyState
+                icon={<MessageIcon size={28} />}
+                title="No messages yet"
+                message="Reach out to an employer or wait for them to contact you. Good communication opens doors."
+              />
+            )
           ) : (
             filteredThreads.map((thread) => {
               const isActive = thread.other_user_id === activeUserId

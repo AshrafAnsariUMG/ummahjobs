@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import { DuaHandsIcon } from '@/components/ui/IslamicIcons'
 
 interface Props {
   dark?: boolean
@@ -45,7 +46,10 @@ export default function NewsletterSignup({ dark = false }: Props) {
           <svg className="w-5 h-5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
           </svg>
-          JazakAllah Khayran! You&apos;re subscribed. May Allah bless your career journey. 🤲
+          <span style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
+              JazakAllah Khayran! You&apos;re subscribed. May Allah bless your career journey.
+              <DuaHandsIcon size={16} />
+            </span>
         </div>
       </div>
     )
