@@ -26,7 +26,7 @@ export default function ContactPage() {
   return (
     <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-14">
       <FloatingOrbs variant="minimal" />
-      <FloatingCrescent position="top-right" size={220} opacity={0.04} />
+      <FloatingCrescent position="top-right" size={220} opacity={0.08} />
       {/* Breadcrumb */}
       <nav className="text-xs text-gray-400 flex items-center gap-1.5 mb-8">
         <Link href="/" className="hover:text-gray-600">Home</Link>

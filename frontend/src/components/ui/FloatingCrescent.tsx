@@ -9,7 +9,7 @@ interface FloatingCrescentProps {
 export default function FloatingCrescent({
   position = 'top-right',
   size = 200,
-  opacity = 0.04,
+  opacity = 0.08,
 }: FloatingCrescentProps) {
   const posStyle: CSSProperties = {
     position: 'fixed',

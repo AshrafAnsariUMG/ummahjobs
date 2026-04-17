@@ -69,8 +69,8 @@ export default async function PackagesPage() {
   return (
     <div className="bg-gray-50 min-h-screen" style={{ position: 'relative' }}>
       <FloatingOrbs variant="minimal" />
-      <FloatingCrescent position="top-right" size={250} opacity={0.04} />
-      <FloatingCrescent position="bottom-left" size={200} opacity={0.03} />
+      <FloatingCrescent position="top-right" size={250} opacity={0.08} />
+      <FloatingCrescent position="bottom-left" size={200} opacity={0.06} />
       {/* Hero */}
       <section className="bg-white border-b border-gray-100 py-16 px-4 text-center">
         <h1 className="text-4xl sm:text-5xl font-extrabold text-gray-900 leading-tight mb-3">

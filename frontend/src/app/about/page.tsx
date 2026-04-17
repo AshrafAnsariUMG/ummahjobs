@@ -9,7 +9,7 @@ export const metadata = {
 export default function AboutPage() {
   return (
     <div style={{ position: 'relative' }}>
-      <FloatingCrescent position="bottom-right" size={200} opacity={0.03} />
+      <FloatingCrescent position="bottom-right" size={200} opacity={0.06} />
 
       {/* ── Section 1: Hero Banner ── */}
       <section style={{
