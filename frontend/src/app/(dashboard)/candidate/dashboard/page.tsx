@@ -71,8 +71,8 @@ export default function CandidateDashboardPage() {
   return (
     <div className="max-w-5xl mx-auto">
       {/* Welcome header */}
-      <div className="mb-6" style={{ position: 'relative', overflow: 'hidden' }}>
-        <IslamicPattern opacity={0.04} />
+      <div className="mb-6" style={{ position: 'relative', overflow: 'hidden', minHeight: '120px' }}>
+        <IslamicPattern opacity={0.06} />
         <BismillahWatermark />
         <div style={{ position: 'relative', zIndex: 1 }}>
           <h1 className="text-2xl font-extrabold text-gray-900">

@@ -55,8 +55,8 @@ export default function EmployerDashboardPage() {
   return (
     <div className="max-w-6xl mx-auto">
       {/* Welcome */}
-      <div className="mb-8" style={{ position: 'relative', overflow: 'hidden' }}>
-        <IslamicPattern opacity={0.04} />
+      <div className="mb-8" style={{ position: 'relative', overflow: 'hidden', minHeight: '120px' }}>
+        <IslamicPattern opacity={0.06} />
         <BismillahWatermark />
         <div style={{ position: 'relative', zIndex: 1 }}>
           <h1 className="text-2xl font-extrabold text-gray-900">

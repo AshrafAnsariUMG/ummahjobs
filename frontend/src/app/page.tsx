@@ -2,6 +2,7 @@ import Link from 'next/link'
 import type { Job, JobCategory } from '@/types'
 import JobCard from '@/components/jobs/JobCard'
 import SectionHeading from '@/components/ui/SectionHeading'
+import IslamicPattern from '@/components/ui/IslamicPattern'
 import MANLeaderboard from '@/components/ads/MANLeaderboard'
 import HeroSearch from '@/components/home/HeroSearch'
 import FeaturedJobsCarousel from '@/components/home/FeaturedJobsCarousel'
@@ -106,8 +107,10 @@ export default async function HomePage() {
           paddingBottom: 0,
           borderBottom: '1px solid #F3F4F6',
           overflow: 'hidden',
+          position: 'relative',
         }}
       >
+        <IslamicPattern opacity={0.04} size={36} />
         {/* Centered content */}
         <div style={{ maxWidth: '860px', margin: '0 auto', padding: '0 24px', textAlign: 'center' }}>
 

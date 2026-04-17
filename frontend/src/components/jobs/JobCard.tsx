@@ -1,5 +1,6 @@
 'use client'
 
+import { useState } from 'react'
 import Link from 'next/link'
 import type { Job } from '@/types'
 import { timeAgo } from '@/lib/timeAgo'
@@ -84,14 +85,48 @@ function MatchBadge({ score }: { score: number }) {
   )
 }
 
+function GeometricAccent({ hovered }: { hovered: boolean }) {
+  return (
+    <div
+      style={{
+        position: 'absolute',
+        bottom: '-10px',
+        right: '-10px',
+        opacity: hovered ? 0.08 : 0.04,
+        pointerEvents: 'none',
+        transition: 'transform 0.3s ease, opacity 0.3s ease',
+        transform: hovered ? 'rotate(15deg) scale(1.1)' : 'rotate(0deg) scale(1)',
+      }}
+    >
+      <svg viewBox="0 0 80 80" width={80} height={80} fill="none" stroke="#033BB0" strokeWidth="1">
+        <polygon points="40,5 47,25 67,15 57,35 75,40 57,45 67,65 47,55 40,75 33,55 13,65 23,45 5,40 23,35 13,15 33,25" />
+        <polygon points="40,15 45,30 60,22 52,37 67,40 52,43 60,58 45,50 40,65 35,50 20,58 28,43 13,40 28,37 20,22 35,30" />
+        <circle cx="40" cy="40" r="12" fill="none" />
+      </svg>
+    </div>
+  )
+}
+
 export default function JobCard({ job, variant = 'list', matchScore }: JobCardProps) {
+  const [isHovered, setIsHovered] = useState(false)
+
   if (variant === 'carousel') {
     return (
       <Link
         href={`/jobs/${job.slug}`}
-        className="block bg-white rounded-xl border border-gray-200 p-5 hover:shadow-md hover:border-blue-200 transition-all w-72 shrink-0"
+        className="block bg-white rounded-xl border border-gray-200 p-5 w-72 shrink-0"
+        style={{
+          position: 'relative',
+          overflow: 'hidden',
+          transition: 'transform 0.2s ease, box-shadow 0.2s ease',
+          transform: isHovered ? 'translateY(-3px)' : 'translateY(0)',
+          boxShadow: isHovered ? '0 8px 24px rgba(0,0,0,0.12)' : '0 1px 3px rgba(0,0,0,0.08)',
+        }}
+        onMouseEnter={() => setIsHovered(true)}
+        onMouseLeave={() => setIsHovered(false)}
       >
-        <div className="flex items-start gap-3 mb-3">
+        <GeometricAccent hovered={isHovered} />
+        <div className="flex items-start gap-3 mb-3" style={{ position: 'relative', zIndex: 1 }}>
           <div className="w-12 h-12 rounded-lg border border-gray-100 overflow-hidden flex items-center justify-center shrink-0 relative">
             {job.employer.logo_path ? (
               <img
@@ -118,7 +153,7 @@ export default function JobCard({ job, variant = 'list', matchScore }: JobCardPr
           </div>
         </div>
 
-        <p className="text-xs text-gray-500 mb-3 flex items-center gap-1.5">
+        <p className="text-xs text-gray-500 mb-3 flex items-center gap-1.5" style={{ position: 'relative', zIndex: 1 }}>
           {job.employer.company_name}
           {job.employer.is_verified && (
             <span className="inline-flex items-center gap-1 text-xs font-medium" style={{ color: '#0FBB0F' }}>
@@ -128,7 +163,7 @@ export default function JobCard({ job, variant = 'list', matchScore }: JobCardPr
           )}
         </p>
 
-        <div className="flex flex-wrap gap-1.5">
+        <div className="flex flex-wrap gap-1.5" style={{ position: 'relative', zIndex: 1 }}>
           {job.location && (
             <span className="text-xs text-gray-500 flex items-center gap-1">
               <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -155,17 +190,20 @@ export default function JobCard({ job, variant = 'list', matchScore }: JobCardPr
   return (
     <Link
       href={`/jobs/${job.slug}`}
-      className="flex items-center gap-4 bg-white rounded-xl border border-gray-200 p-4 hover:shadow-md transition-all"
-      onMouseEnter={(e) => {
-        e.currentTarget.style.borderLeftColor = '#033BB0'
-        e.currentTarget.style.borderLeftWidth = '3px'
+      className="flex items-center gap-4 bg-white rounded-xl border border-gray-200 p-4"
+      style={{
+        position: 'relative',
+        overflow: 'hidden',
+        transition: 'transform 0.2s ease, box-shadow 0.2s ease',
+        transform: isHovered ? 'translateY(-3px)' : 'translateY(0)',
+        boxShadow: isHovered ? '0 8px 24px rgba(0,0,0,0.12)' : '0 1px 3px rgba(0,0,0,0.08)',
       }}
-      onMouseLeave={(e) => {
-        e.currentTarget.style.borderLeftColor = ''
-        e.currentTarget.style.borderLeftWidth = ''
-      }}
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
     >
-      <div className="w-10 h-10 rounded-lg border border-gray-100 overflow-hidden flex items-center justify-center shrink-0">
+      <GeometricAccent hovered={isHovered} />
+
+      <div className="w-10 h-10 rounded-lg border border-gray-100 overflow-hidden flex items-center justify-center shrink-0" style={{ position: 'relative', zIndex: 1 }}>
         {job.employer.logo_path ? (
           <img
             src={job.employer.logo_path}
@@ -177,7 +215,7 @@ export default function JobCard({ job, variant = 'list', matchScore }: JobCardPr
         )}
       </div>
 
-      <div className="flex-1 min-w-0">
+      <div className="flex-1 min-w-0" style={{ position: 'relative', zIndex: 1 }}>
         <div className="flex items-start justify-between gap-2">
           <div className="min-w-0">
             <h3 className="font-semibold text-gray-900 text-sm truncate">{job.title}</h3>

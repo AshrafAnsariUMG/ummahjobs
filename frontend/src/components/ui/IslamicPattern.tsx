@@ -10,7 +10,17 @@ const STAR = 'M 15 5 L 16.5 11.3 L 22.1 7.9 L 18.7 13.5 L 25 15 L 18.7 16.5 L 22
 export default function IslamicPattern({ color = '#033BB0', opacity = 0.04, size = 30 }: Props) {
   return (
     <svg
-      style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', pointerEvents: 'none' }}
+      style={{
+        position: 'absolute',
+        top: 0,
+        left: 0,
+        right: 0,
+        bottom: 0,
+        width: '100%',
+        height: '100%',
+        pointerEvents: 'none',
+        zIndex: 0,
+      }}
       aria-hidden="true"
     >
       <defs>

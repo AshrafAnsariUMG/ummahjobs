@@ -160,6 +160,15 @@ export default function FilterSidebar({ categories, jobTypes }: Props) {
             ))}
           </div>
         </div>
+
+        {/* Decorative geometric accent */}
+        <div style={{ display: 'flex', justifyContent: 'center', opacity: 0.08 }}>
+          <svg viewBox="0 0 60 60" width={60} height={60} fill="none" stroke="#033BB0" strokeWidth="0.8">
+            <polygon points="30,2 35,18 50,10 42,26 58,30 42,34 50,50 35,42 30,58 25,42 10,50 18,34 2,30 18,26 10,10 25,18" />
+            <circle cx="30" cy="30" r="10" />
+            <circle cx="30" cy="30" r="20" />
+          </svg>
+        </div>
       </div>
 
       {/* Sidebar-wide ad — desktop only */}
