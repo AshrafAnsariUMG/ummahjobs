@@ -4,9 +4,9 @@ namespace App\Jobs;
 
 use App\Models\Package;
 use App\Models\User;
+use App\Services\GmailMailerService;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Queue\Queueable;
-use Illuminate\Support\Facades\Mail;
 
 class SendPackageConfirmation implements ShouldQueue
 {
@@ -26,7 +26,10 @@ class SendPackageConfirmation implements ShouldQueue
             return;
         }
 
-        Mail::raw(
+        $mailer = new GmailMailerService();
+        $mailer->send(
+            $user->email,
+            'Your UmmahJobs package is active!',
             "Assalamu Alaikum {$user->display_name},\n\n"
             . "Your purchase was successful!\n\n"
             . "Package: {$package->name}\n"
@@ -35,11 +38,7 @@ class SendPackageConfirmation implements ShouldQueue
             . "You can now post jobs from your dashboard:\n"
             . env('FRONTEND_URL') . "/employer/post-job\n\n"
             . "JazakAllah Khayran,\n"
-            . "The UmmahJobs Team",
-            function ($message) use ($user) {
-                $message->to($user->email)
-                    ->subject('Your UmmahJobs package is active!');
-            }
+            . "The UmmahJobs Team"
         );
     }
 }

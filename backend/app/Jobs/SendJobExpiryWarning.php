@@ -3,9 +3,9 @@
 namespace App\Jobs;
 
 use App\Models\Job;
+use App\Services\GmailMailerService;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Queue\Queueable;
-use Illuminate\Support\Facades\Mail;
 
 class SendJobExpiryWarning implements ShouldQueue
 {
@@ -25,18 +25,17 @@ class SendJobExpiryWarning implements ShouldQueue
 
         $user = $job->employer->user;
 
-        Mail::raw(
+        $mailer = new GmailMailerService();
+        $mailer->send(
+            $user->email,
+            "Your job listing \"{$job->title}\" expires in 5 days",
             "Assalamu Alaikum {$user->display_name},\n\n"
             . "Your job listing \"{$job->title}\" will expire in 5 days "
             . "({$job->expires_at->format('M d, Y')}).\n\n"
             . "To renew it, visit your dashboard and post it again using your remaining credits.\n\n"
             . env('FRONTEND_URL') . "/employer/dashboard\n\n"
             . "JazakAllah Khayran,\n"
-            . "The UmmahJobs Team",
-            function ($message) use ($user, $job) {
-                $message->to($user->email)
-                    ->subject("Your job listing \"{$job->title}\" expires in 5 days");
-            }
+            . "The UmmahJobs Team"
         );
     }
 }

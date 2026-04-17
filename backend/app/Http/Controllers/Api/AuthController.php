@@ -3,13 +3,13 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
-use App\Mail\PasswordResetMail;
 use App\Models\Candidate;
 use App\Models\Employer;
 use App\Models\User;
+use App\Services\GmailMailerService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Password;
 use Illuminate\Support\Str;
 
@@ -79,9 +79,21 @@ class AuthController extends Controller
                 . urlencode($token) . '&email='
                 . urlencode($user->email);
             try {
-                Mail::to($user->email)->send(new PasswordResetMail($url));
+                $mailer = new GmailMailerService();
+                $mailer->send(
+                    $user->email,
+                    'Reset your UmmahJobs password',
+                    "Assalamu Alaikum,\n\n"
+                    . "We've upgraded our platform. Please set a new password to continue.\n\n"
+                    . "Click the link below to set a new password:\n"
+                    . $url . "\n\n"
+                    . "This link expires in 60 minutes.\n\n"
+                    . "If you did not request this, you can safely ignore this email.\n\n"
+                    . "JazakAllah Khayran,\n"
+                    . "The UmmahJobs Team"
+                );
             } catch (\Exception $e) {
-                \Illuminate\Support\Facades\Log::error('Failed to send legacy password reset email: ' . $e->getMessage());
+                Log::error('Failed to send legacy password reset email: ' . $e->getMessage());
             }
 
             return response()->json([
@@ -148,9 +160,21 @@ class AuthController extends Controller
                 . urlencode($token) . '&email='
                 . urlencode($user->email);
             try {
-                Mail::to($user->email)->send(new PasswordResetMail($url));
+                $mailer = new GmailMailerService();
+                $mailer->send(
+                    $user->email,
+                    'Reset your UmmahJobs password',
+                    "Assalamu Alaikum,\n\n"
+                    . "You requested a password reset for your UmmahJobs account.\n\n"
+                    . "Click the link below to set a new password:\n"
+                    . $url . "\n\n"
+                    . "This link expires in 60 minutes.\n\n"
+                    . "If you did not request this, you can safely ignore this email.\n\n"
+                    . "JazakAllah Khayran,\n"
+                    . "The UmmahJobs Team"
+                );
             } catch (\Exception $e) {
-                \Illuminate\Support\Facades\Log::error('Failed to send password reset email: ' . $e->getMessage());
+                Log::error('Failed to send password reset email: ' . $e->getMessage());
             }
         }
 

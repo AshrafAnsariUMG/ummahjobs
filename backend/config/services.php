@@ -46,4 +46,12 @@ return [
         'segment_id' => env('FLODESK_SEGMENT_ID'),
     ],
 
+    'gmail' => [
+        'client_id'     => env('GMAIL_OAUTH_CLIENT_ID'),
+        'client_secret' => env('GMAIL_OAUTH_CLIENT_SECRET'),
+        'refresh_token' => env('GMAIL_REFRESH_TOKEN'),
+        'from_address'  => env('GMAIL_FROM_ADDRESS'),
+        'from_name'     => env('GMAIL_FROM_NAME', 'UmmahJobs'),
+    ],
+
 ];
