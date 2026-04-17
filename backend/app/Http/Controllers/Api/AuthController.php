@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Candidate;
 use App\Models\Employer;
 use App\Models\User;
+use App\Services\EmailTemplateService as ET;
 use App\Services\GmailMailerService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
@@ -80,18 +81,18 @@ class AuthController extends Controller
                 . urlencode($user->email);
             try {
                 $mailer = new GmailMailerService();
-                $mailer->send(
-                    $user->email,
-                    'Reset your UmmahJobs password',
-                    "Assalamu Alaikum,\n\n"
-                    . "We've upgraded our platform. Please set a new password to continue.\n\n"
-                    . "Click the link below to set a new password:\n"
-                    . $url . "\n\n"
-                    . "This link expires in 60 minutes.\n\n"
-                    . "If you did not request this, you can safely ignore this email.\n\n"
-                    . "JazakAllah Khayran,\n"
-                    . "The UmmahJobs Team"
-                );
+                $resetButton = ET::button($url, 'Set New Password');
+                $body = ET::heading("We've upgraded our platform")
+                    . ET::paragraph("Assalamu Alaikum,")
+                    . ET::paragraph("We've made some improvements to UmmahJobs and you'll need to set a new password to continue.")
+                    . ET::paragraph("Click the button below to set your new password:")
+                    . $resetButton
+                    . ET::infoBox(
+                        '<p style="margin:0;font-size:13px;color:#1E40AF;">This link expires in <strong>60 minutes</strong>. If you did not request this, you can safely ignore this email.</p>'
+                    )
+                    . ET::paragraph("JazakAllah Khayran,<br>The UmmahJobs Team");
+                $html = ET::wrap("We've upgraded UmmahJobs — please set a new password", $body);
+                $mailer->sendHtml($user->email, 'Reset your UmmahJobs password', $html);
             } catch (\Exception $e) {
                 Log::error('Failed to send legacy password reset email: ' . $e->getMessage());
             }
@@ -161,18 +162,17 @@ class AuthController extends Controller
                 . urlencode($user->email);
             try {
                 $mailer = new GmailMailerService();
-                $mailer->send(
-                    $user->email,
-                    'Reset your UmmahJobs password',
-                    "Assalamu Alaikum,\n\n"
-                    . "You requested a password reset for your UmmahJobs account.\n\n"
-                    . "Click the link below to set a new password:\n"
-                    . $url . "\n\n"
-                    . "This link expires in 60 minutes.\n\n"
-                    . "If you did not request this, you can safely ignore this email.\n\n"
-                    . "JazakAllah Khayran,\n"
-                    . "The UmmahJobs Team"
-                );
+                $resetButton = ET::button($url, 'Reset My Password');
+                $body = ET::heading('Reset your password')
+                    . ET::paragraph("Assalamu Alaikum,")
+                    . ET::paragraph("We received a request to reset the password for your UmmahJobs account. Click the button below to set a new password:")
+                    . $resetButton
+                    . ET::infoBox(
+                        '<p style="margin:0;font-size:13px;color:#1E40AF;">This link expires in <strong>60 minutes</strong>. If you did not request a password reset, you can safely ignore this email — your password will not change.</p>'
+                    )
+                    . ET::paragraph("JazakAllah Khayran,<br>The UmmahJobs Team");
+                $html = ET::wrap('Reset your UmmahJobs password', $body);
+                $mailer->sendHtml($user->email, 'Reset your UmmahJobs password', $html);
             } catch (\Exception $e) {
                 Log::error('Failed to send password reset email: ' . $e->getMessage());
             }
