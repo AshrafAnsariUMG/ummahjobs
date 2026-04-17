@@ -108,13 +108,21 @@ export default async function JobDetailPage({ params }: PageProps) {
                 <div className="flex items-start justify-between gap-3 flex-wrap">
                   <div>
                     <h1 className="text-2xl font-extrabold text-gray-900">{job.title}</h1>
-                    <Link
-                      href={`/employers/${job.employer.slug}`}
-                      className="text-sm font-medium hover:underline mt-0.5 block"
-                      style={{ color: '#033BB0' }}
-                    >
-                      {job.employer.company_name}
-                    </Link>
+                    <div className="flex items-center gap-2 mt-0.5 flex-wrap">
+                      <Link
+                        href={`/employers/${job.employer.slug}`}
+                        className="text-sm font-medium hover:underline"
+                        style={{ color: '#033BB0' }}
+                      >
+                        {job.employer.company_name}
+                      </Link>
+                      {job.employer.is_verified && (
+                        <span className="inline-flex items-center gap-1 text-xs font-medium" style={{ color: '#0FBB0F' }}>
+                          <span style={{ width: 6, height: 6, borderRadius: '50%', backgroundColor: '#0FBB0F', display: 'inline-block', flexShrink: 0 }} />
+                          Halal Verified
+                        </span>
+                      )}
+                    </div>
                   </div>
                   <div className="flex items-center gap-2 shrink-0">
                     <ErrorBoundary>
@@ -262,7 +270,15 @@ export default async function JobDetailPage({ params }: PageProps) {
               </div>
               <div>
                 <p className="text-sm font-semibold text-gray-900">{job.employer.company_name}</p>
-                {job.employer.category && <p className="text-xs text-gray-500">{job.employer.category}</p>}
+                <div className="flex items-center gap-1.5 flex-wrap">
+                  {job.employer.category && <p className="text-xs text-gray-500">{job.employer.category}</p>}
+                  {job.employer.is_verified && (
+                    <span className="inline-flex items-center gap-1 text-xs font-medium" style={{ color: '#0FBB0F' }}>
+                      <span style={{ width: 5, height: 5, borderRadius: '50%', backgroundColor: '#0FBB0F', display: 'inline-block', flexShrink: 0 }} />
+                      Halal Verified
+                    </span>
+                  )}
+                </div>
               </div>
             </div>
             {job.employer.description && (

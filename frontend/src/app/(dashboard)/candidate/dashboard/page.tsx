@@ -8,6 +8,9 @@ import type { Candidate, JobApplication, SavedJob } from '@/types'
 import { timeAgo } from '@/lib/timeAgo'
 import { CrescentIcon } from '@/components/ui/IslamicIcons'
 import DailyQuoteWidget from '@/components/ui/DailyQuoteWidget'
+import IslamicPattern from '@/components/ui/IslamicPattern'
+import BismillahWatermark from '@/components/ui/BismillahWatermark'
+import SectionHeading from '@/components/ui/SectionHeading'
 
 interface ApplicationsPage {
   total: number
@@ -68,14 +71,18 @@ export default function CandidateDashboardPage() {
   return (
     <div className="max-w-5xl mx-auto">
       {/* Welcome header */}
-      <div className="mb-6">
-        <h1 className="text-2xl font-extrabold text-gray-900">
-          <span style={{ display: 'inline-flex', alignItems: 'center', gap: '8px' }}>
-            <CrescentIcon />
-            Assalamu Alaikum, {user?.display_name ?? 'there'}!
-          </span>
-        </h1>
-        <p className="text-sm text-gray-400 mt-1">Here&apos;s what&apos;s happening with your job search today.</p>
+      <div className="mb-6" style={{ position: 'relative', overflow: 'hidden' }}>
+        <IslamicPattern opacity={0.04} />
+        <BismillahWatermark />
+        <div style={{ position: 'relative', zIndex: 1 }}>
+          <h1 className="text-2xl font-extrabold text-gray-900">
+            <span style={{ display: 'inline-flex', alignItems: 'center', gap: '8px' }}>
+              <CrescentIcon />
+              Assalamu Alaikum, {user?.display_name ?? 'there'}!
+            </span>
+          </h1>
+          <p className="text-sm text-gray-400 mt-1">Here&apos;s what&apos;s happening with your job search today.</p>
+        </div>
       </div>
 
       <DailyQuoteWidget />
@@ -144,12 +151,10 @@ export default function CandidateDashboardPage() {
 
       {/* Recent Applications */}
       <section className="bg-white rounded-xl border border-gray-200 p-5 mb-6">
-        <div className="flex items-center justify-between mb-4">
-          <h2 className="font-semibold text-gray-900 text-sm">Recent Applications</h2>
-          <Link href="/candidate/applications" className="text-xs font-medium hover:underline" style={{ color: '#033BB0' }}>
-            View all →
-          </Link>
-        </div>
+        <SectionHeading
+          title="Recent Applications"
+          action={{ label: 'View all →', href: '/candidate/applications' }}
+        />
 
         {loading ? (
           <div className="space-y-3 animate-pulse">
@@ -211,12 +216,10 @@ export default function CandidateDashboardPage() {
       {/* Saved Jobs preview */}
       {!loading && previewSaved.length > 0 && (
         <section className="bg-white rounded-xl border border-gray-200 p-5 mb-6">
-          <div className="flex items-center justify-between mb-4">
-            <h2 className="font-semibold text-gray-900 text-sm">Saved Jobs</h2>
-            <Link href="/candidate/saved-jobs" className="text-xs font-medium hover:underline" style={{ color: '#033BB0' }}>
-              View all saved →
-            </Link>
-          </div>
+          <SectionHeading
+            title="Saved Jobs"
+            action={{ label: 'View all saved →', href: '/candidate/saved-jobs' }}
+          />
           <div className="grid sm:grid-cols-2 gap-3">
             {previewSaved.map((saved) => {
               const job = saved.job

@@ -7,6 +7,8 @@ import { api } from '@/lib/api'
 import type { CreditBalance, Employer, Job, PaginatedResponse } from '@/types'
 import { CrescentIcon } from '@/components/ui/IslamicIcons'
 import DailyQuoteWidget from '@/components/ui/DailyQuoteWidget'
+import IslamicPattern from '@/components/ui/IslamicPattern'
+import BismillahWatermark from '@/components/ui/BismillahWatermark'
 
 function StatusBadge({ status }: { status: string }) {
   const styles: Record<string, string> = {
@@ -53,14 +55,18 @@ export default function EmployerDashboardPage() {
   return (
     <div className="max-w-6xl mx-auto">
       {/* Welcome */}
-      <div className="mb-8">
-        <h1 className="text-2xl font-extrabold text-gray-900">
-          <span style={{ display: 'inline-flex', alignItems: 'center', gap: '8px' }}>
-            <CrescentIcon />
-            Assalamu Alaikum, {user?.display_name ?? 'there'}!
-          </span>
-        </h1>
-        <p className="text-sm text-gray-400 mt-1">Manage your listings and find the right talent for your team.</p>
+      <div className="mb-8" style={{ position: 'relative', overflow: 'hidden' }}>
+        <IslamicPattern opacity={0.04} />
+        <BismillahWatermark />
+        <div style={{ position: 'relative', zIndex: 1 }}>
+          <h1 className="text-2xl font-extrabold text-gray-900">
+            <span style={{ display: 'inline-flex', alignItems: 'center', gap: '8px' }}>
+              <CrescentIcon />
+              Assalamu Alaikum, {user?.display_name ?? 'there'}!
+            </span>
+          </h1>
+          <p className="text-sm text-gray-400 mt-1">Manage your listings and find the right talent for your team.</p>
+        </div>
       </div>
 
       <DailyQuoteWidget />
@@ -204,7 +210,10 @@ export default function EmployerDashboardPage() {
       {/* Recent listings */}
       <div className="bg-white rounded-xl border border-gray-200">
         <div className="flex items-center justify-between px-5 py-4 border-b border-gray-100">
-          <h2 className="font-semibold text-gray-900 text-sm">Recent Listings</h2>
+          <h2 className="font-semibold text-gray-900 text-sm flex items-center gap-1.5">
+            <span style={{ color: '#0FBB0F' }}><CrescentIcon size={13} /></span>
+            Recent Listings
+          </h2>
           <Link href="/employer/jobs" className="text-xs font-medium hover:underline" style={{ color: '#033BB0' }}>
             View all ({totalJobs}) →
           </Link>

@@ -118,7 +118,15 @@ export default function JobCard({ job, variant = 'list', matchScore }: JobCardPr
           </div>
         </div>
 
-        <p className="text-xs text-gray-500 mb-3">{job.employer.company_name}</p>
+        <p className="text-xs text-gray-500 mb-3 flex items-center gap-1.5">
+          {job.employer.company_name}
+          {job.employer.is_verified && (
+            <span className="inline-flex items-center gap-1 text-xs font-medium" style={{ color: '#0FBB0F' }}>
+              <span style={{ width: 6, height: 6, borderRadius: '50%', backgroundColor: '#0FBB0F', display: 'inline-block', flexShrink: 0 }} />
+              Halal Verified
+            </span>
+          )}
+        </p>
 
         <div className="flex flex-wrap gap-1.5">
           {job.location && (
@@ -173,10 +181,18 @@ export default function JobCard({ job, variant = 'list', matchScore }: JobCardPr
         <div className="flex items-start justify-between gap-2">
           <div className="min-w-0">
             <h3 className="font-semibold text-gray-900 text-sm truncate">{job.title}</h3>
-            <p className="text-xs text-gray-500 mt-0.5">
-              {job.employer.company_name}
-              {job.category && (
-                <span className="text-gray-400"> · {job.category.name}</span>
+            <p className="text-xs text-gray-500 mt-0.5 flex items-center gap-1.5 flex-wrap">
+              <span>
+                {job.employer.company_name}
+                {job.category && (
+                  <span className="text-gray-400"> · {job.category.name}</span>
+                )}
+              </span>
+              {job.employer.is_verified && (
+                <span className="inline-flex items-center gap-1 font-medium" style={{ color: '#0FBB0F' }}>
+                  <span style={{ width: 6, height: 6, borderRadius: '50%', backgroundColor: '#0FBB0F', display: 'inline-block', flexShrink: 0 }} />
+                  Halal Verified
+                </span>
               )}
             </p>
           </div>

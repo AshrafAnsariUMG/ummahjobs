@@ -1,6 +1,7 @@
 import Link from 'next/link'
 import type { Job, JobCategory } from '@/types'
 import JobCard from '@/components/jobs/JobCard'
+import SectionHeading from '@/components/ui/SectionHeading'
 import MANLeaderboard from '@/components/ads/MANLeaderboard'
 import HeroSearch from '@/components/home/HeroSearch'
 import FeaturedJobsCarousel from '@/components/home/FeaturedJobsCarousel'
@@ -218,34 +219,23 @@ export default async function HomePage() {
 
       {/* ── Featured Jobs ── */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
-        <div className="flex items-end justify-between mb-6">
-          <div>
-            <div className="flex items-center gap-2 mb-1">
-              <svg viewBox="0 0 24 24" fill="#0FBB0F" width={20} height={20}>
-                <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
-              </svg>
-              <h2 className="text-2xl font-bold text-gray-900">Featured Jobs</h2>
-            </div>
-            <p className="text-sm text-gray-500">Hand-picked opportunities from top Muslim-friendly employers</p>
-          </div>
-          <Link href="/jobs?featured=1" className="text-sm font-medium whitespace-nowrap" style={{ color: '#033BB0' }}>
-            View all →
-          </Link>
-        </div>
+        <SectionHeading
+          title="Featured Jobs"
+          subtitle="Hand-picked opportunities from top Muslim-friendly employers"
+          action={{ label: 'View all →', href: '/jobs?featured=1' }}
+          size="lg"
+        />
         <FeaturedJobsCarousel jobs={featuredJobs} />
       </section>
 
       {/* ── Latest Jobs ── */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
-        <div className="flex items-end justify-between mb-6">
-          <div>
-            <h2 className="text-2xl font-bold text-gray-900 mb-1">Latest Jobs</h2>
-            <p className="text-sm text-gray-500">Fresh opportunities added daily</p>
-          </div>
-          <Link href="/jobs" className="text-sm font-medium whitespace-nowrap" style={{ color: '#033BB0' }}>
-            Browse all jobs →
-          </Link>
-        </div>
+        <SectionHeading
+          title="Latest Jobs"
+          subtitle="Fresh opportunities added daily"
+          action={{ label: 'Browse all jobs →', href: '/jobs' }}
+          size="lg"
+        />
 
         {latestJobs.length > 0 ? (
           <>
@@ -277,15 +267,13 @@ export default async function HomePage() {
       {/* ── Categories Grid ── */}
       <section className="bg-white border-t border-b border-gray-100 py-12">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-end justify-between mb-8">
-            <div>
-              <h2 className="text-2xl font-bold text-gray-900 mb-1">Browse by Category</h2>
-              <p className="text-sm text-gray-500">Explore opportunities across all fields</p>
-            </div>
-            <Link href="/jobs" className="text-sm font-medium whitespace-nowrap" style={{ color: '#033BB0' }}>
-              View all →
-            </Link>
-          </div>
+          <SectionHeading
+            title="Browse by Category"
+            subtitle="Explore opportunities across all fields"
+            action={{ label: 'View all →', href: '/jobs' }}
+            size="lg"
+            className="mb-8"
+          />
 
           <CategoryGrid categories={visibleCategories} />
 

@@ -5,6 +5,7 @@ import Link from 'next/link'
 import { useAuth } from '@/context/AuthContext'
 import { api } from '@/lib/api'
 import { CrescentIcon } from '@/components/ui/IslamicIcons'
+import IslamicPattern from '@/components/ui/IslamicPattern'
 
 interface AdminStats {
   total_users: number
@@ -112,14 +113,17 @@ export default function AdminDashboardPage() {
   return (
     <div className="max-w-6xl mx-auto">
       {/* Header */}
-      <div className="mb-8">
-        <h1 className="text-2xl font-extrabold text-gray-900">
-          <span style={{ display: 'inline-flex', alignItems: 'center', gap: '8px' }}>
-            <CrescentIcon />
-            Assalamu Alaikum, {user?.display_name ?? 'Admin'}!
-          </span>
-        </h1>
-        <p className="text-sm text-gray-500 mt-1">Here&apos;s an overview of the platform.</p>
+      <div className="mb-8" style={{ position: 'relative', overflow: 'hidden' }}>
+        <IslamicPattern opacity={0.03} />
+        <div style={{ position: 'relative', zIndex: 1 }}>
+          <h1 className="text-2xl font-extrabold text-gray-900">
+            <span style={{ display: 'inline-flex', alignItems: 'center', gap: '8px' }}>
+              <CrescentIcon />
+              Assalamu Alaikum, {user?.display_name ?? 'Admin'}!
+            </span>
+          </h1>
+          <p className="text-sm text-gray-500 mt-1">Here&apos;s an overview of the platform.</p>
+        </div>
       </div>
 
       {/* Primary stats grid */}
