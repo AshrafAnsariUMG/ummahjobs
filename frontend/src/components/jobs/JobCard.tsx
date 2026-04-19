@@ -94,13 +94,13 @@ function GeometricAccent({ hovered }: { hovered: boolean }) {
         position: 'absolute',
         bottom: '-10px',
         right: '-10px',
-        opacity: hovered ? 0.08 : 0.04,
+        opacity: hovered ? 0.20 : 0.12,
         pointerEvents: 'none',
         transition: 'transform 0.3s ease, opacity 0.3s ease',
         transform: hovered ? 'rotate(15deg) scale(1.1)' : 'rotate(0deg) scale(1)',
       }}
     >
-      <svg viewBox="0 0 80 80" width={80} height={80} fill="none" stroke="#033BB0" strokeWidth="1">
+      <svg viewBox="0 0 80 80" width={80} height={80} fill="none" stroke={hovered ? '#033BB0' : '#0FBB0F'} strokeWidth="1">
         <polygon points="40,5 47,25 67,15 57,35 75,40 57,45 67,65 47,55 40,75 33,55 13,65 23,45 5,40 23,35 13,15 33,25" />
         <polygon points="40,15 45,30 60,22 52,37 67,40 52,43 60,58 45,50 40,65 35,50 20,58 28,43 13,40 28,37 20,22 35,30" />
         <circle cx="40" cy="40" r="12" fill="none" />
