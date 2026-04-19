@@ -1,13 +1,34 @@
 'use client'
 
 import { Suspense, useEffect, useState } from 'react'
-import { useSearchParams } from 'next/navigation'
+import { useRouter, useSearchParams } from 'next/navigation'
 import { api } from '@/lib/api'
 import { useToast } from '@/components/ui/Toast'
 import type { CreditBalance, Package, StripeOrderItem } from '@/types'
 
+function getPackageFeatures(pkg: Package): string[] {
+  const features: string[] = []
+  features.push(`${pkg.post_count} job post${pkg.post_count !== 1 ? 's' : ''}`)
+  features.push(`Active for ${pkg.duration_days} days`)
+  const nameLower = pkg.name.toLowerCase()
+  if (pkg.post_type === 'featured') {
+    features.push('Featured listing')
+  } else {
+    features.push('Standard listing')
+  }
+  if (nameLower.includes('basic')) features.push('Community support')
+  if (nameLower.includes('standard')) {
+    features.push('Email support')
+    features.push('Priority placement')
+  }
+  if (nameLower.includes('extended')) features.push('Priority support')
+  if (pkg.includes_newsletter) features.push('Newsletter inclusion')
+  return features
+}
+
 function PackagesContent() {
   const searchParams = useSearchParams()
+  const router = useRouter()
   const { showToast } = useToast()
   const [balance, setBalance] = useState<CreditBalance | null>(null)
   const [history, setHistory] = useState<StripeOrderItem[]>([])
@@ -47,6 +68,36 @@ function PackagesContent() {
       .finally(() => setLoading(false))
   }, [searchParams])
 
+  // Auto-poll for credits after successful payment
+  useEffect(() => {
+    if (searchParams.get('success') !== '1') return
+
+    let attempts = 0
+    const successRedirect = searchParams.get('success_redirect')
+
+    const interval = setInterval(async () => {
+      attempts++
+      try {
+        const data = await api.get('/api/employer/packages/balance') as CreditBalance
+        if ((data.total_credits ?? 0) > 0) {
+          clearInterval(interval)
+          if (successRedirect) {
+            router.push(successRedirect)
+          } else {
+            window.location.reload()
+          }
+        }
+      } catch {
+        // ignore polling errors
+      }
+      if (attempts >= 12) {
+        clearInterval(interval)
+      }
+    }, 5000)
+
+    return () => clearInterval(interval)
+  }, [])
+
   async function handleCheckout(packageId: number) {
     setCheckingOut(packageId)
     try {
@@ -62,8 +113,7 @@ function PackagesContent() {
   }
 
   function isRecommended(pkg: Package) {
-    const max = Math.max(...packages.map((p) => Number(p.price)))
-    return pkg.name.toLowerCase().includes('extended') || Number(pkg.price) === max
+    return pkg.name.toLowerCase().includes('extended')
   }
 
   return (
@@ -78,6 +128,43 @@ function PackagesContent() {
             <p className="text-sm font-semibold text-green-800">Payment successful!</p>
             <p className="text-sm text-green-700">Your credits have been added. It may take a moment to appear.</p>
           </div>
+        </div>
+      )}
+
+      {/* Refresh notice — shown when coming back from Stripe */}
+      {searchParams.get('success') === '1' && (
+        <div style={{
+          background: '#FFF3CD',
+          border: '1px solid #FDE68A',
+          borderRadius: '8px',
+          padding: '12px 16px',
+          marginBottom: '16px',
+          fontSize: '14px',
+          color: '#92400E',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          gap: '12px',
+        }}>
+          <span>
+            Credits are processed automatically. If your balance hasn&apos;t updated, click refresh.
+          </span>
+          <button
+            onClick={() => window.location.reload()}
+            style={{
+              padding: '6px 14px',
+              background: '#033BB0',
+              color: 'white',
+              border: 'none',
+              borderRadius: '6px',
+              fontSize: '13px',
+              fontWeight: '600',
+              cursor: 'pointer',
+              whiteSpace: 'nowrap',
+            }}
+          >
+            Refresh Balance
+          </button>
         </div>
       )}
 
@@ -171,6 +258,7 @@ function PackagesContent() {
           {packages.map((pkg) => {
             const rec = isRecommended(pkg)
             const busy = checkingOut === pkg.id
+            const features = getPackageFeatures(pkg)
             return (
               <div
                 key={pkg.id}
@@ -181,7 +269,7 @@ function PackagesContent() {
                     className="absolute -top-3 left-1/2 -translate-x-1/2 px-3 py-0.5 rounded-full text-xs font-bold text-white"
                     style={{ backgroundColor: '#033BB0' }}
                   >
-                    Recommended
+                    Best Value
                   </div>
                 )}
                 <h3 className="font-bold text-gray-900 mb-1">{pkg.name}</h3>
@@ -190,9 +278,14 @@ function PackagesContent() {
                   <span className="text-gray-400 text-sm ml-1">one-time</span>
                 </div>
                 <ul className="space-y-2 mb-5 text-sm text-gray-700">
-                  <li>✓ {pkg.post_count} job post{pkg.post_count !== 1 ? 's' : ''}</li>
-                  <li>✓ Active for {pkg.duration_days} days</li>
-                  {pkg.includes_newsletter && <li>✓ Newsletter inclusion</li>}
+                  {features.map((f) => (
+                    <li key={f} className="flex items-center gap-2">
+                      <svg className="w-4 h-4 shrink-0 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+                      </svg>
+                      {f}
+                    </li>
+                  ))}
                 </ul>
                 <button
                   onClick={() => handleCheckout(pkg.id)}

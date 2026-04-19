@@ -93,6 +93,20 @@ export default function PostJobPage() {
   const [errors, setErrors] = useState<Record<string, string>>({})
 
   useEffect(() => {
+    // Restore draft if returning from packages page
+    const draft = localStorage.getItem('uj_draft_job')
+    if (draft) {
+      try {
+        const data = JSON.parse(draft) as FormState
+        setForm(data)
+        setStep(3)
+        localStorage.removeItem('uj_draft_job')
+        showToast('Your draft job has been restored!', 'success')
+      } catch {
+        localStorage.removeItem('uj_draft_job')
+      }
+    }
+
     Promise.all([
       api.get('/api/categories'),
       api.get('/api/employer/packages/balance'),
@@ -539,9 +553,15 @@ export default function PostJobPage() {
                 <p className="text-sm text-red-700 mb-2">
                   You have no active credits. Please purchase a package to post this job.
                 </p>
-                <a href="/employer/packages" className="text-sm font-medium underline text-red-700">
+                <button
+                  onClick={() => {
+                    localStorage.setItem('uj_draft_job', JSON.stringify(form))
+                    router.push('/employer/packages?success_redirect=/employer/post-job')
+                  }}
+                  className="text-sm font-medium underline text-red-700 cursor-pointer bg-transparent border-0 p-0"
+                >
                   Buy a package →
-                </a>
+                </button>
               </div>
             )}
 
@@ -553,12 +573,19 @@ export default function PostJobPage() {
                 ← Edit
               </button>
               <button
-                onClick={handleSubmit}
-                disabled={submitting || !hasCredits}
+                onClick={() => {
+                  if (!hasCredits) {
+                    localStorage.setItem('uj_draft_job', JSON.stringify(form))
+                    router.push('/employer/packages?success_redirect=/employer/post-job')
+                    return
+                  }
+                  handleSubmit()
+                }}
+                disabled={submitting}
                 className="px-6 py-2.5 rounded-xl text-sm font-semibold text-white transition-opacity hover:opacity-90 disabled:opacity-50"
                 style={{ backgroundColor: '#033BB0' }}
               >
-                {submitting ? 'Posting…' : (
+                {submitting ? 'Posting…' : !hasCredits ? 'Buy Credits to Post' : (
                   <span style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
                     Post Job — Bismillah <DuaHandsIcon size={16} />
                   </span>
