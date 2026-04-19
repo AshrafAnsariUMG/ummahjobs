@@ -1,7 +1,6 @@
 import Link from 'next/link'
 import type { BlogPost } from '@/types'
 import BlogClient from '@/components/blog/BlogClient'
-import FloatingOrbs from '@/components/ui/FloatingOrbs'
 
 const API = process.env.NEXT_PUBLIC_API_URL
 
@@ -25,8 +24,7 @@ export default async function BlogPage() {
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10" style={{ position: 'relative' }}>
-      <FloatingOrbs variant="page" />
-      {/* Header */}
+{/* Header */}
       <div className="mb-8">
         <nav className="text-xs text-gray-400 flex items-center gap-1.5 mb-3">
           <Link href="/" className="hover:text-gray-600">Home</Link>

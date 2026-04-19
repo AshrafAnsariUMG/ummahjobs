@@ -3,7 +3,6 @@ import type { Job, JobCategory } from '@/types'
 import JobCard from '@/components/jobs/JobCard'
 import SectionHeading from '@/components/ui/SectionHeading'
 import IslamicPattern from '@/components/ui/IslamicPattern'
-import FloatingOrbs from '@/components/ui/FloatingOrbs'
 import MANLeaderboard from '@/components/ads/MANLeaderboard'
 import HeroSearch from '@/components/home/HeroSearch'
 import FeaturedJobsCarousel from '@/components/home/FeaturedJobsCarousel'
@@ -112,8 +111,7 @@ export default async function HomePage() {
         }}
       >
         <IslamicPattern opacity={0.04} size={36} />
-        <FloatingOrbs variant="hero" />
-        {/* Centered content */}
+{/* Centered content */}
         <div style={{ maxWidth: '860px', margin: '0 auto', padding: '0 24px', textAlign: 'center', position: 'relative', zIndex: 1 }}>
 
           {/* Badge */}

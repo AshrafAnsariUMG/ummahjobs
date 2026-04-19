@@ -200,6 +200,13 @@ function GrantCreditsModal({
   )
 }
 
+function getImageUrl(path: string | null): string | null {
+  if (!path) return null
+  if (path.startsWith('http')) return path
+  if (path.startsWith('/storage/')) return process.env.NEXT_PUBLIC_API_URL + path
+  return process.env.NEXT_PUBLIC_API_URL + '/storage/' + path
+}
+
 function EditEmployerModal({
   employer,
   onClose,
@@ -229,13 +236,23 @@ function EditEmployerModal({
   // Media state
   const logoInputRef = useRef<HTMLInputElement>(null)
   const coverInputRef = useRef<HTMLInputElement>(null)
-  const [logoPreview, setLogoPreview] = useState<string | null>(null)
-  const [coverPreview, setCoverPreview] = useState<string | null>(null)
+  const [logoPreview, setLogoPreview] = useState<string | null>(getImageUrl(employer.logo_path))
+  const [coverPreview, setCoverPreview] = useState<string | null>(getImageUrl(employer.cover_photo_path))
   const [logoFile, setLogoFile] = useState<File | null>(null)
   const [coverFile, setCoverFile] = useState<File | null>(null)
   const [uploadingLogo, setUploadingLogo] = useState(false)
   const [uploadingCover, setUploadingCover] = useState(false)
   const [mediaSuccess, setMediaSuccess] = useState<string | null>(null)
+
+  // Re-initialise previews when a different employer is loaded into the modal
+  useEffect(() => {
+    setLogoPreview(getImageUrl(employer.logo_path))
+    setCoverPreview(getImageUrl(employer.cover_photo_path))
+    setLogoFile(null)
+    setCoverFile(null)
+    setMediaSuccess(null)
+    setError(null)
+  }, [employer.id])
 
   const inputCls = 'w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:border-transparent'
   const inputStyle = { '--tw-ring-color': '#033BB0' } as React.CSSProperties
@@ -279,11 +296,12 @@ function EditEmployerModal({
         body: fd,
       })
       if (!res.ok) throw new Error('Upload failed')
-      const data = await res.json() as { logo_url: string }
-      setMediaSuccess('Logo uploaded successfully.')
+      const data = await res.json() as { logo_path: string }
+      const fullUrl = getImageUrl(data.logo_path)
+      setLogoPreview(fullUrl)
       setLogoFile(null)
-      setLogoPreview(null)
-      onSaved({ ...employer, logo_path: data.logo_url })
+      setMediaSuccess('Logo uploaded successfully.')
+      onSaved({ ...employer, logo_path: fullUrl })
     } catch {
       setError('Logo upload failed.')
     } finally {
@@ -306,11 +324,12 @@ function EditEmployerModal({
         body: fd,
       })
       if (!res.ok) throw new Error('Upload failed')
-      const data = await res.json() as { cover_url: string }
-      setMediaSuccess('Cover photo uploaded successfully.')
+      const data = await res.json() as { cover_path: string }
+      const fullCoverUrl = getImageUrl(data.cover_path)
+      setCoverPreview(fullCoverUrl)
       setCoverFile(null)
-      setCoverPreview(null)
-      onSaved({ ...employer, cover_photo_path: data.cover_url })
+      setMediaSuccess('Cover photo uploaded successfully.')
+      onSaved({ ...employer, cover_photo_path: fullCoverUrl })
     } catch {
       setError('Cover upload failed.')
     } finally {

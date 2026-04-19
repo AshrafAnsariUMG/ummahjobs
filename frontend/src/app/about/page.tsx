@@ -1,5 +1,4 @@
 import Link from 'next/link'
-import FloatingCrescent from '@/components/ui/FloatingCrescent'
 
 export const metadata = {
   title: 'About Us | UmmahJobs',
@@ -9,9 +8,8 @@ export const metadata = {
 export default function AboutPage() {
   return (
     <div style={{ position: 'relative' }}>
-      <FloatingCrescent position="bottom-right" size={200} opacity={0.06} />
 
-      {/* ── Section 1: Hero Banner ── */}
+{/* ── Section 1: Hero Banner ── */}
       <section style={{
         background: 'linear-gradient(135deg, #022E8A 0%, #033BB0 50%, #0256CC 100%)',
         padding: '80px 24px',
