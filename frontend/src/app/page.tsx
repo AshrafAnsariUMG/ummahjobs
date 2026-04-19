@@ -114,25 +114,6 @@ export default async function HomePage() {
 {/* Centered content */}
         <div style={{ maxWidth: '860px', margin: '0 auto', padding: '0 24px', textAlign: 'center', position: 'relative', zIndex: 1 }}>
 
-          {/* Badge */}
-          <div style={{
-            display: 'inline-flex',
-            alignItems: 'center',
-            gap: '6px',
-            background: '#E6EDFF',
-            border: '1px solid #C7D2FE',
-            borderRadius: '20px',
-            padding: '4px 14px',
-            fontSize: '13px',
-            color: '#033BB0',
-            marginBottom: '20px',
-          }}>
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.75} width={14} height={14}>
-              <path strokeLinecap="round" strokeLinejoin="round" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
-            </svg>
-            The #1 Halal Job Platform
-          </div>
-
           {/* Heading */}
           <h1 style={{
             fontSize: 'clamp(36px, 5vw, 58px)',
@@ -188,12 +169,8 @@ export default async function HomePage() {
               display: 'block',
             }}
           />
-          {/* Floating stat card */}
-          <div style={{
-            position: 'absolute',
-            bottom: '20px',
-            left: '50%',
-            transform: 'translateX(-50%)',
+          {/* Stat pill — flows below on mobile, floats over on sm+ */}
+          <div className="relative mt-2 mx-auto w-fit sm:absolute sm:bottom-4 sm:left-1/2 sm:-translate-x-1/2 sm:mt-0" style={{
             background: 'white',
             borderRadius: '12px',
             boxShadow: '0 4px 16px rgba(0,0,0,0.12)',
