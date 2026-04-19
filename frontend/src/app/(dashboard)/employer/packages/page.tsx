@@ -21,12 +21,16 @@ function PackagesContent() {
 
   useEffect(() => {
     const hasSuccess = searchParams.get('success') === '1'
+    const hasCancelled = searchParams.get('cancelled') === '1'
     if (hasSuccess) {
       setSuccessBanner(true)
       setTimeout(() => {
         fetchBalance()
         setSuccessBanner(false)
       }, 3500)
+    }
+    if (hasCancelled) {
+      showToast('Payment cancelled. You can try again anytime.', 'error')
     }
 
     Promise.all([

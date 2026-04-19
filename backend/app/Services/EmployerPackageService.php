@@ -37,7 +37,7 @@ class EmployerPackageService
             'credits_remaining' => $package->post_count,
             'duration_days'    => $package->duration_days,
             'granted_by_admin' => false,
-            'expires_at'       => null,
+            'expires_at'       => now()->addDays($package->duration_days),
         ]);
 
         return $empPackage;

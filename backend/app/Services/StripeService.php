@@ -35,8 +35,8 @@ class StripeService
                 'quantity'   => 1,
             ]],
             'mode'           => 'payment',
-            'success_url'    => env('FRONTEND_URL') . '/employer/packages?success=1',
-            'cancel_url'     => env('FRONTEND_URL') . '/packages',
+            'success_url'    => config('services.app.frontend_url') . '/employer/packages?success=1',
+            'cancel_url'     => config('services.app.frontend_url') . '/employer/packages?cancelled=1',
             'customer_email' => $user->email,
             'metadata'       => [
                 'employer_id' => $employer->id,
