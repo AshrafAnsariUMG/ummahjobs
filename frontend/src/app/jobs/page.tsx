@@ -6,6 +6,7 @@ import JobListWithScores from '@/components/jobs/JobListWithScores'
 import MANLeaderboard from '@/components/ads/MANLeaderboard'
 import IslamicEmptyState from '@/components/ui/IslamicEmptyState'
 import { SearchIcon } from '@/components/ui/IslamicIcons'
+import SortDropdown from '@/components/jobs/SortDropdown'
 
 const API = process.env.NEXT_PUBLIC_API_URL
 
@@ -101,6 +102,16 @@ export default async function JobsPage({ searchParams }: PageProps) {
 
         {/* Main */}
         <div className="flex-1 min-w-0">
+          {/* Results bar with sort */}
+          <div className="flex items-center justify-between mb-4">
+            <p className="text-sm text-gray-500">
+              {meta.total} {meta.total === 1 ? 'result' : 'results'}
+            </p>
+            <Suspense fallback={null}>
+              <SortDropdown currentSort={params.sort ?? ''} />
+            </Suspense>
+          </div>
+
           {jobs.length > 0 ? (
             <>
               <JobListWithScores jobs={jobs} />

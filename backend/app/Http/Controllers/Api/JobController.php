@@ -83,11 +83,38 @@ class JobController extends Controller
             $query->where('is_featured', true);
         }
 
+        if ($request->remote === 'true' || $request->remote === '1') {
+            $query->where(function ($q) {
+                $q->where('location', 'like', '%remote%')
+                  ->orWhere('country', 'like', '%remote%');
+            });
+        }
+
+        if ($request->work_type && $request->work_type !== 'all') {
+            match ($request->work_type) {
+                'remote'  => $query->where(function ($q) {
+                    $q->where('location', 'like', '%remote%')
+                      ->orWhere('country', 'like', '%remote%');
+                }),
+                'hybrid'  => $query->where(function ($q) {
+                    $q->where('location', 'like', '%hybrid%')
+                      ->orWhere('description', 'like', '%hybrid%');
+                }),
+                'on-site' => $query->where(function ($q) {
+                    $q->where('location', 'not like', '%remote%')
+                      ->where('location', 'not like', '%hybrid%')
+                      ->whereNotNull('location')
+                      ->where('location', '!=', '');
+                }),
+                default   => null,
+            };
+        }
+
         match ($request->sort) {
-            'newest'      => $query->orderBy('created_at', 'desc'),
-            'salary_asc'  => $query->orderBy('salary_min', 'asc'),
-            'salary_desc' => $query->orderBy('salary_min', 'desc'),
-            default       => $query->orderByDesc('is_featured')->orderByDesc('created_at'),
+            'newest'   => $query->orderBy('created_at', 'desc'),
+            'oldest'   => $query->orderBy('created_at', 'asc'),
+            'featured' => $query->orderByDesc('is_featured')->orderByDesc('created_at'),
+            default    => $query->orderByDesc('is_featured')->orderByDesc('created_at'),
         };
 
         $perPage = min((int) ($request->per_page ?? 12), 50);
