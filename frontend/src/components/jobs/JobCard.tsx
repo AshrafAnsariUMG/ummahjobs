@@ -4,6 +4,7 @@ import { useState } from 'react'
 import Link from 'next/link'
 import type { Job } from '@/types'
 import { timeAgo } from '@/lib/timeAgo'
+import { getStorageUrl } from '@/lib/imageUtils'
 
 interface JobCardProps {
   job: Job
@@ -12,10 +13,11 @@ interface JobCardProps {
 }
 
 function EmployerLogo({ name, logoPath }: { name: string; logoPath: string | null }) {
-  if (logoPath) {
+  const src = getStorageUrl(logoPath)
+  if (src) {
     return (
       <img
-        src={logoPath}
+        src={src}
         alt={name}
         className="object-contain"
         onError={(e) => {
@@ -128,9 +130,9 @@ export default function JobCard({ job, variant = 'list', matchScore }: JobCardPr
         <GeometricAccent hovered={isHovered} />
         <div className="flex items-start gap-3 mb-3" style={{ position: 'relative', zIndex: 1 }}>
           <div className="w-12 h-12 rounded-lg border border-gray-100 overflow-hidden flex items-center justify-center shrink-0 relative">
-            {job.employer.logo_path ? (
+            {getStorageUrl(job.employer.logo_path) ? (
               <img
-                src={job.employer.logo_path}
+                src={getStorageUrl(job.employer.logo_path)!}
                 alt={job.employer.company_name}
                 className="w-full h-full object-contain"
               />
@@ -204,9 +206,9 @@ export default function JobCard({ job, variant = 'list', matchScore }: JobCardPr
       <GeometricAccent hovered={isHovered} />
 
       <div className="w-10 h-10 rounded-lg border border-gray-100 overflow-hidden flex items-center justify-center shrink-0" style={{ position: 'relative', zIndex: 1 }}>
-        {job.employer.logo_path ? (
+        {getStorageUrl(job.employer.logo_path) ? (
           <img
-            src={job.employer.logo_path}
+            src={getStorageUrl(job.employer.logo_path)!}
             alt={job.employer.company_name}
             className="w-full h-full object-contain"
           />

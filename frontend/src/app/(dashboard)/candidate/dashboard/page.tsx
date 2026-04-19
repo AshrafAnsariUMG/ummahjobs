@@ -11,6 +11,7 @@ import DailyQuoteWidget from '@/components/ui/DailyQuoteWidget'
 import IslamicPattern from '@/components/ui/IslamicPattern'
 import BismillahWatermark from '@/components/ui/BismillahWatermark'
 import SectionHeading from '@/components/ui/SectionHeading'
+import { getStorageUrl } from '@/lib/imageUtils'
 
 interface ApplicationsPage {
   total: number
@@ -231,8 +232,8 @@ export default function CandidateDashboardPage() {
                   className="flex items-center gap-3 p-3 rounded-lg border border-gray-100 hover:border-blue-200 hover:shadow-sm transition-all"
                 >
                   <div className="w-10 h-10 rounded-lg border border-gray-100 overflow-hidden flex items-center justify-center shrink-0 bg-gray-50">
-                    {job.employer?.logo_path ? (
-                      <img src={job.employer.logo_path} alt={job.employer.company_name} className="w-full h-full object-contain" />
+                    {getStorageUrl(job.employer?.logo_path ?? null) ? (
+                      <img src={getStorageUrl(job.employer?.logo_path ?? null)!} alt={job.employer?.company_name} className="w-full h-full object-contain" />
                     ) : (
                       <LogoFallback name={job.employer?.company_name ?? 'J'} />
                     )}

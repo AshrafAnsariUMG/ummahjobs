@@ -4,6 +4,7 @@ import { useState, useRef, useEffect } from 'react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { useAuth } from '@/context/AuthContext'
+import { getStorageUrl } from '@/lib/imageUtils'
 
 const navLinks = [
   { href: '/', label: 'Home' },
@@ -209,7 +210,7 @@ export default function Navbar() {
     fetch(`${API}/api/settings`)
       .then((r) => r.json())
       .then((data: { logo_path?: string }) => {
-        if (data.logo_path) setLogoPath(data.logo_path)
+        if (data.logo_path) setLogoPath(getStorageUrl(data.logo_path) ?? data.logo_path)
       })
       .catch(() => {/* use default */})
   }, [])

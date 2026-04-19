@@ -5,6 +5,7 @@ import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { api } from '@/lib/api'
 import { useToast } from '@/components/ui/Toast'
+import { getStorageUrl } from '@/lib/imageUtils'
 
 interface AdminBlogPost {
   id: number
@@ -162,9 +163,9 @@ export default function AdminBlogPage() {
                       {/* Title + thumbnail */}
                       <td className="px-5 py-3">
                         <div className="flex items-center gap-3">
-                          {post.featured_image_path ? (
+                          {getStorageUrl(post.featured_image_path) ? (
                             <img
-                              src={post.featured_image_path}
+                              src={getStorageUrl(post.featured_image_path)!}
                               alt=""
                               className="w-10 h-10 rounded-lg object-cover shrink-0 border border-gray-100"
                             />

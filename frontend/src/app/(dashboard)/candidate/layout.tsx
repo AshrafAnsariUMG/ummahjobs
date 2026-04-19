@@ -6,6 +6,7 @@ import { usePathname, useRouter } from 'next/navigation'
 import { useAuth } from '@/context/AuthContext'
 import { api } from '@/lib/api'
 import type { Candidate } from '@/types'
+import { getStorageUrl } from '@/lib/imageUtils'
 
 const navLinks = [
   {
@@ -81,7 +82,7 @@ export default function CandidateLayout({ children }: { children: React.ReactNod
   useEffect(() => {
     if (isAuthenticated && role === 'candidate') {
       api.get('/api/candidate/profile')
-        .then((c: Candidate) => setProfilePhoto(c.profile_photo_path))
+        .then((c: Candidate) => setProfilePhoto(getStorageUrl(c.profile_photo_path)))
         .catch(() => {})
     }
   }, [isAuthenticated, role])

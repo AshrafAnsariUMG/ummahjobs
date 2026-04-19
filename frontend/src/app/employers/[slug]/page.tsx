@@ -2,15 +2,9 @@ import { notFound } from 'next/navigation'
 import Link from 'next/link'
 import type { Employer, EmployerReview, Job } from '@/types'
 import JobCard from '@/components/jobs/JobCard'
+import { getStorageUrl } from '@/lib/imageUtils'
 
 const API = process.env.NEXT_PUBLIC_API_URL
-
-function getImageUrl(path: string | null): string | null {
-  if (!path) return null
-  if (path.startsWith('http')) return path
-  if (path.startsWith('/storage/')) return (API ?? '') + path
-  return (API ?? '') + '/storage/' + path
-}
 
 interface EmployerData {
   employer: Employer
@@ -98,8 +92,8 @@ export default async function EmployerProfilePage({ params }: PageProps) {
   const avgRating =
     reviews.length > 0 ? reviews.reduce((sum, r) => sum + r.rating, 0) / reviews.length : null
 
-  const logoUrl = getImageUrl(employer.logo_path)
-  const coverUrl = getImageUrl(employer.cover_photo_path)
+  const logoUrl = getStorageUrl(employer.logo_path)
+  const coverUrl = getStorageUrl(employer.cover_photo_path)
 
   const socialIcons: Record<string, string> = {
     linkedin: 'in',

@@ -9,6 +9,7 @@ import type { EmployerApplicant } from '@/types'
 import { timeAgo } from '@/lib/timeAgo'
 import IslamicEmptyState from '@/components/ui/IslamicEmptyState'
 import { UsersIcon } from '@/components/ui/IslamicIcons'
+import { getStorageUrl } from '@/lib/imageUtils'
 
 interface ApplicantsResponse {
   data: EmployerApplicant[]
@@ -45,7 +46,7 @@ function ApplicantCard({
   const candidate = app.candidate
   const name = candidate?.user?.display_name ?? 'Unknown Candidate'
   const email = candidate?.user?.email ?? ''
-  const photo = candidate?.profile_photo_path ?? null
+  const photo = getStorageUrl(candidate?.profile_photo_path ?? null)
   const initials = name.split(' ').slice(0, 2).map((w) => w[0]).join('').toUpperCase()
 
   async function handleStatusChange(newStatus: EmployerApplicant['status']) {

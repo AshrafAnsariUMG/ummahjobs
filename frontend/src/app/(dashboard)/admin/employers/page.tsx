@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { api } from '@/lib/api'
 import { useToast } from '@/components/ui/Toast'
+import { getStorageUrl } from '@/lib/imageUtils'
 
 interface AdminEmployer {
   id: number
@@ -200,13 +201,6 @@ function GrantCreditsModal({
   )
 }
 
-function getImageUrl(path: string | null): string | null {
-  if (!path) return null
-  if (path.startsWith('http')) return path
-  if (path.startsWith('/storage/')) return process.env.NEXT_PUBLIC_API_URL + path
-  return process.env.NEXT_PUBLIC_API_URL + '/storage/' + path
-}
-
 function EditEmployerModal({
   employer,
   onClose,
@@ -236,8 +230,8 @@ function EditEmployerModal({
   // Media state
   const logoInputRef = useRef<HTMLInputElement>(null)
   const coverInputRef = useRef<HTMLInputElement>(null)
-  const [logoPreview, setLogoPreview] = useState<string | null>(getImageUrl(employer.logo_path))
-  const [coverPreview, setCoverPreview] = useState<string | null>(getImageUrl(employer.cover_photo_path))
+  const [logoPreview, setLogoPreview] = useState<string | null>(getStorageUrl(employer.logo_path))
+  const [coverPreview, setCoverPreview] = useState<string | null>(getStorageUrl(employer.cover_photo_path))
   const [logoFile, setLogoFile] = useState<File | null>(null)
   const [coverFile, setCoverFile] = useState<File | null>(null)
   const [uploadingLogo, setUploadingLogo] = useState(false)
@@ -246,8 +240,8 @@ function EditEmployerModal({
 
   // Re-initialise previews when a different employer is loaded into the modal
   useEffect(() => {
-    setLogoPreview(getImageUrl(employer.logo_path))
-    setCoverPreview(getImageUrl(employer.cover_photo_path))
+    setLogoPreview(getStorageUrl(employer.logo_path))
+    setCoverPreview(getStorageUrl(employer.cover_photo_path))
     setLogoFile(null)
     setCoverFile(null)
     setMediaSuccess(null)
@@ -297,7 +291,7 @@ function EditEmployerModal({
       })
       if (!res.ok) throw new Error('Upload failed')
       const data = await res.json() as { logo_path: string }
-      const fullUrl = getImageUrl(data.logo_path)
+      const fullUrl = getStorageUrl(data.logo_path)
       setLogoPreview(fullUrl)
       setLogoFile(null)
       setMediaSuccess('Logo uploaded successfully.')
@@ -325,7 +319,7 @@ function EditEmployerModal({
       })
       if (!res.ok) throw new Error('Upload failed')
       const data = await res.json() as { cover_path: string }
-      const fullCoverUrl = getImageUrl(data.cover_path)
+      const fullCoverUrl = getStorageUrl(data.cover_path)
       setCoverPreview(fullCoverUrl)
       setCoverFile(null)
       setMediaSuccess('Cover photo uploaded successfully.')
@@ -512,8 +506,8 @@ function EditEmployerModal({
                 <h4 className="text-sm font-semibold text-gray-900 mb-3">Company Logo</h4>
                 <div className="flex items-start gap-4">
                   <div className="w-16 h-16 rounded-xl border border-gray-200 bg-gray-50 overflow-hidden shrink-0 flex items-center justify-center">
-                    {(logoPreview ?? employer.logo_path) ? (
-                      <img src={logoPreview ?? employer.logo_path!} alt="" className="w-full h-full object-contain" />
+                    {(logoPreview ?? getStorageUrl(employer.logo_path)) ? (
+                      <img src={logoPreview ?? getStorageUrl(employer.logo_path)!} alt="" className="w-full h-full object-contain" />
                     ) : (
                       <span className="text-lg font-bold" style={{ color: '#033BB0' }}>{employer.company_name.charAt(0)}</span>
                     )}
@@ -549,9 +543,9 @@ function EditEmployerModal({
               {/* Cover photo */}
               <div>
                 <h4 className="text-sm font-semibold text-gray-900 mb-3">Cover Photo</h4>
-                {(coverPreview ?? employer.cover_photo_path) && (
+                {(coverPreview ?? getStorageUrl(employer.cover_photo_path)) && (
                   <div className="w-full h-28 rounded-xl overflow-hidden border border-gray-200 bg-gray-100 mb-3">
-                    <img src={coverPreview ?? employer.cover_photo_path!} alt="" className="w-full h-full object-cover" />
+                    <img src={coverPreview ?? getStorageUrl(employer.cover_photo_path)!} alt="" className="w-full h-full object-cover" />
                   </div>
                 )}
                 <div className="flex items-center gap-3">
@@ -844,8 +838,8 @@ export default function AdminEmployersPage() {
                       {/* Company */}
                       <td className="px-5 py-3">
                         <div className="flex items-center gap-3">
-                          {emp.logo_path ? (
-                            <img src={emp.logo_path} alt={emp.company_name} className="w-8 h-8 rounded-lg object-contain border border-gray-100 shrink-0 bg-gray-50" />
+                          {getStorageUrl(emp.logo_path) ? (
+                            <img src={getStorageUrl(emp.logo_path)!} alt={emp.company_name} className="w-8 h-8 rounded-lg object-contain border border-gray-100 shrink-0 bg-gray-50" />
                           ) : (
                             <div className="w-8 h-8 rounded-lg flex items-center justify-center text-xs font-bold text-white shrink-0" style={{ backgroundColor: '#033BB0' }}>
                               {emp.company_name.charAt(0).toUpperCase()}

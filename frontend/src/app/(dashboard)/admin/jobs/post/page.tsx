@@ -5,6 +5,7 @@ import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { api } from '@/lib/api'
 import { useToast } from '@/components/ui/Toast'
+import { getStorageUrl } from '@/lib/imageUtils'
 
 interface EmployerResult {
   id: number
@@ -194,9 +195,9 @@ export default function AdminPostJobPage() {
           {selectedEmployer ? (
             <div className="flex items-center justify-between p-3 rounded-xl border border-gray-200 bg-gray-50">
               <div className="flex items-center gap-3">
-                {selectedEmployer.logo_path ? (
+                {getStorageUrl(selectedEmployer.logo_path) ? (
                   // eslint-disable-next-line @next/next/no-img-element
-                  <img src={selectedEmployer.logo_path} alt={selectedEmployer.company_name} className="w-10 h-10 rounded-lg object-contain border border-gray-100 bg-white" />
+                  <img src={getStorageUrl(selectedEmployer.logo_path)!} alt={selectedEmployer.company_name} className="w-10 h-10 rounded-lg object-contain border border-gray-100 bg-white" />
                 ) : (
                   <div className="w-10 h-10 rounded-lg flex items-center justify-center text-sm font-bold text-white shrink-0" style={{ backgroundColor: '#033BB0' }}>
                     {selectedEmployer.company_name.charAt(0).toUpperCase()}
@@ -239,9 +240,9 @@ export default function AdminPostJobPage() {
                       onClick={() => { setSelectedEmployer(emp); setSearchOpen(false); setEmployerQuery('') }}
                       className="w-full flex items-center gap-3 px-4 py-2.5 hover:bg-gray-50 text-left"
                     >
-                      {emp.logo_path ? (
+                      {getStorageUrl(emp.logo_path) ? (
                         // eslint-disable-next-line @next/next/no-img-element
-                        <img src={emp.logo_path} alt={emp.company_name} className="w-7 h-7 rounded object-contain border border-gray-100 shrink-0" />
+                        <img src={getStorageUrl(emp.logo_path)!} alt={emp.company_name} className="w-7 h-7 rounded object-contain border border-gray-100 shrink-0" />
                       ) : (
                         <div className="w-7 h-7 rounded flex items-center justify-center text-xs font-bold text-white shrink-0" style={{ backgroundColor: '#033BB0' }}>
                           {emp.company_name.charAt(0).toUpperCase()}

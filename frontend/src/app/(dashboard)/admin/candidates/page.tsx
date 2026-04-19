@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { api } from '@/lib/api'
 import { useToast } from '@/components/ui/Toast'
+import { getStorageUrl } from '@/lib/imageUtils'
 
 interface AdminCandidate {
   id: number
@@ -128,7 +129,7 @@ function EditCandidateModal({
   const photoInputRef = useRef<HTMLInputElement>(null)
   const cvInputRef = useRef<HTMLInputElement>(null)
   const [photoFile, setPhotoFile] = useState<File | null>(null)
-  const [photoPreview, setPhotoPreview] = useState<string | null>(null)
+  const [photoPreview, setPhotoPreview] = useState<string | null>(getStorageUrl(candidate.profile_photo_path))
   const [cvFile, setCvFile] = useState<File | null>(null)
   const [uploadingPhoto, setUploadingPhoto] = useState(false)
   const [uploadingCv, setUploadingCv] = useState(false)
@@ -172,10 +173,11 @@ function EditCandidateModal({
       })
       if (!res.ok) throw new Error('Upload failed')
       const data = await res.json() as { profile_photo_path: string }
+      const fullPhotoUrl = getStorageUrl(data.profile_photo_path)
       setFileSuccess('Photo uploaded successfully.')
       setPhotoFile(null)
-      setPhotoPreview(null)
-      onSaved({ ...candidate, profile_photo_path: data.profile_photo_path })
+      setPhotoPreview(fullPhotoUrl)
+      onSaved({ ...candidate, profile_photo_path: fullPhotoUrl })
     } catch {
       setError('Photo upload failed.')
     } finally {
@@ -354,8 +356,8 @@ function EditCandidateModal({
                 <h4 className="text-sm font-semibold text-gray-900 mb-3">Profile Photo</h4>
                 <div className="flex items-start gap-4">
                   <div className="w-16 h-16 rounded-full overflow-hidden shrink-0 flex items-center justify-center bg-gray-100">
-                    {(photoPreview ?? candidate.profile_photo_path) ? (
-                      <img src={photoPreview ?? candidate.profile_photo_path!} alt="" className="w-full h-full object-cover" />
+                    {(photoPreview ?? getStorageUrl(candidate.profile_photo_path)) ? (
+                      <img src={photoPreview ?? getStorageUrl(candidate.profile_photo_path)!} alt="" className="w-full h-full object-cover" />
                     ) : (
                       <span className="text-xl font-bold" style={{ color: '#033BB0' }}>{initials}</span>
                     )}

@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import FooterNewsletter from './FooterNewsletter'
+import { getStorageUrl } from '@/lib/imageUtils'
 
 const API = process.env.NEXT_PUBLIC_API_URL
 
@@ -61,7 +62,7 @@ export default function Footer() {
     fetch(`${API}/api/settings`)
       .then((r) => r.json())
       .then((data: { logo_path?: string }) => {
-        if (data.logo_path) setLogoPath(data.logo_path)
+        if (data.logo_path) setLogoPath(getStorageUrl(data.logo_path) ?? data.logo_path)
       })
       .catch(() => {/* use default */})
   }, [])

@@ -8,6 +8,7 @@ import type { MessageThread, Message } from '@/types'
 import { timeAgo } from '@/lib/timeAgo'
 import IslamicEmptyState from '@/components/ui/IslamicEmptyState'
 import { MessageIcon } from '@/components/ui/IslamicIcons'
+import { getStorageUrl } from '@/lib/imageUtils'
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
 
@@ -39,7 +40,7 @@ function Avatar({
   photo?: string | null
   size?: number
 }) {
-  const src = logoPath ?? photo ?? null
+  const src = getStorageUrl(logoPath ?? photo ?? null)
   if (src) {
     return (
       <img

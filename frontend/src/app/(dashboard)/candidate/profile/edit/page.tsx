@@ -5,6 +5,7 @@ import { api } from '@/lib/api'
 import { useToast } from '@/components/ui/Toast'
 import SkillsInput from '@/components/candidate/SkillsInput'
 import type { Candidate, JobCategory } from '@/types'
+import { getStorageUrl } from '@/lib/imageUtils'
 
 const GENDER_OPTIONS = [
   { value: '', label: 'Select gender' },
@@ -120,7 +121,7 @@ export default function CandidateProfileEditPage() {
       .then(([profile, cats]: [Candidate, JobCategory[]]) => {
         setCandidate(profile)
         setCategories(cats)
-        setPhotoPreview(profile.profile_photo_path)
+        setPhotoPreview(getStorageUrl(profile.profile_photo_path))
         setForm({
           title: profile.title ?? '',
           location: profile.location ?? '',
@@ -182,13 +183,13 @@ export default function CandidateProfileEditPage() {
       const fd = new FormData()
       fd.append('photo', file)
       const res: { profile_photo_path: string } = await api.upload('/api/candidate/profile/photo', fd)
-      setPhotoPreview(res.profile_photo_path)
+      setPhotoPreview(getStorageUrl(res.profile_photo_path))
       setCandidate((prev) => prev ? { ...prev, profile_photo_path: res.profile_photo_path } : prev)
       showToast('JazakAllah Khayran! Photo updated.', 'success')
     } catch (err: unknown) {
       const e = err as { message?: string }
       showToast(e?.message ?? 'Failed to upload photo.', 'error')
-      setPhotoPreview(candidate?.profile_photo_path ?? null)
+      setPhotoPreview(getStorageUrl(candidate?.profile_photo_path ?? null))
     } finally {
       setUploadingPhoto(false)
     }

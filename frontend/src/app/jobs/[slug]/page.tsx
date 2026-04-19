@@ -10,6 +10,7 @@ import { ErrorBoundary } from '@/components/ui/ErrorBoundary'
 import { categoryIcons, defaultIcon } from '@/lib/categoryIcons'
 import { formatJobDescription } from '@/lib/formatJobDescription'
 import MANAd from '@/components/ads/MANAdBanner'
+import { getStorageUrl } from '@/lib/imageUtils'
 
 const API = process.env.NEXT_PUBLIC_API_URL
 const SITE = process.env.NEXT_PUBLIC_SITE_URL ?? 'https://ummahjobs.com'
@@ -54,7 +55,7 @@ export default async function JobDetailPage({ params }: PageProps) {
   if (!job) notFound()
 
   const salary = formatSalary(job)
-  const logoSrc = job.employer.logo_path
+  const logoSrc = getStorageUrl(job.employer.logo_path)
   const jobUrl = `${SITE}/jobs/${job.slug}`
 
   // Suppress WP term IDs (pure numbers) that weren't resolved during migration

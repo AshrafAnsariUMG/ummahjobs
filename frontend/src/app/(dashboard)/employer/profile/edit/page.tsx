@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react'
 import { api } from '@/lib/api'
 import { useToast } from '@/components/ui/Toast'
 import type { Employer } from '@/types'
+import { getStorageUrl } from '@/lib/imageUtils'
 
 const NETWORKS = ['LinkedIn', 'Twitter', 'Facebook', 'Instagram', 'TikTok', 'Website']
 
@@ -122,8 +123,8 @@ export default function EmployerProfileEditPage() {
         <div className="grid sm:grid-cols-2 gap-4">
           <div>
             <p className="text-xs font-medium text-gray-700 mb-2">Company Logo</p>
-            {employer?.logo_path && (
-              <img src={employer.logo_path} alt="Logo" className="w-16 h-16 rounded-xl object-contain border border-gray-200 mb-2" />
+            {getStorageUrl(employer?.logo_path ?? null) && (
+              <img src={getStorageUrl(employer?.logo_path ?? null)!} alt="Logo" className="w-16 h-16 rounded-xl object-contain border border-gray-200 mb-2" />
             )}
             <button
               disabled
@@ -135,8 +136,8 @@ export default function EmployerProfileEditPage() {
           </div>
           <div>
             <p className="text-xs font-medium text-gray-700 mb-2">Cover Photo</p>
-            {employer?.cover_photo_path && (
-              <img src={employer.cover_photo_path} alt="Cover" className="w-full h-16 rounded-xl object-cover border border-gray-200 mb-2" />
+            {getStorageUrl(employer?.cover_photo_path ?? null) && (
+              <img src={getStorageUrl(employer?.cover_photo_path ?? null)!} alt="Cover" className="w-full h-16 rounded-xl object-cover border border-gray-200 mb-2" />
             )}
             <button
               disabled
