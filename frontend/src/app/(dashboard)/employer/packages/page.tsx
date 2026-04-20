@@ -6,24 +6,18 @@ import { api } from '@/lib/api'
 import { useToast } from '@/components/ui/Toast'
 import type { CreditBalance, Package, StripeOrderItem } from '@/types'
 
-function getPackageFeatures(pkg: Package): string[] {
-  const features: string[] = []
-  features.push(`${pkg.post_count} job post${pkg.post_count !== 1 ? 's' : ''}`)
-  features.push(`Active for ${pkg.duration_days} days`)
-  const nameLower = pkg.name.toLowerCase()
-  if (pkg.post_type === 'featured') {
-    features.push('Featured listing')
-  } else {
-    features.push('Standard listing')
-  }
-  if (nameLower.includes('basic')) features.push('Community support')
-  if (nameLower.includes('standard')) {
-    features.push('Email support')
-    features.push('Priority placement')
-  }
-  if (nameLower.includes('extended')) features.push('Priority support')
-  if (pkg.includes_newsletter) features.push('Newsletter inclusion')
-  return features
+function getFeatures(pkg: Package): { label: string; included: boolean }[] {
+  const nameLower = pkg.name?.toLowerCase() ?? ''
+  return [
+    { label: `${pkg.post_count} job post${pkg.post_count > 1 ? 's' : ''}`, included: true },
+    { label: `Active for ${pkg.duration_days} days`, included: true },
+    { label: 'Featured listing placement', included: pkg.post_type === 'featured' },
+    { label: 'AI job description generator', included: true },
+    { label: 'Candidate match scoring', included: true },
+    { label: 'Company profile + Halal Verified', included: true },
+    { label: 'Newsletter inclusion', included: pkg.includes_newsletter === true || nameLower === 'extended' },
+    { label: 'Priority support', included: nameLower === 'extended' },
+  ]
 }
 
 function PackagesContent() {
@@ -102,10 +96,6 @@ function PackagesContent() {
       showToast(e?.message ?? 'Failed to start checkout.', 'error')
       setCheckingOut(null)
     }
-  }
-
-  function isRecommended(pkg: Package) {
-    return pkg.name.toLowerCase().includes('extended')
   }
 
   return (
@@ -196,46 +186,96 @@ function PackagesContent() {
       {/* Buy more */}
       <section>
         <h2 className="font-semibold text-gray-900 mb-5">Need more credits?</h2>
-        <div className="grid sm:grid-cols-3 gap-5">
+        <div className="grid sm:grid-cols-3 gap-5 items-center">
           {packages.map((pkg) => {
-            const rec = isRecommended(pkg)
+            const nameLower = pkg.name?.toLowerCase() ?? ''
+            const isStandard = nameLower.includes('standard')
+            const isExtended = nameLower.includes('extended')
             const busy = checkingOut === pkg.id
-            const features = getPackageFeatures(pkg)
+            const features = getFeatures(pkg)
             return (
               <div
                 key={pkg.id}
-                className={`bg-white rounded-2xl border-2 p-6 relative ${rec ? 'border-blue-500 shadow-lg' : 'border-gray-200'}`}
+                style={{
+                  background: isExtended ? '#F9FAFB' : 'white',
+                  border: isStandard ? '2px solid #033BB0' : '1px solid #E5E7EB',
+                  borderRadius: '16px',
+                  padding: '28px',
+                  position: 'relative',
+                  boxShadow: isStandard ? '0 8px 30px rgba(3,59,176,0.12)' : undefined,
+                }}
               >
-                {rec && (
-                  <div
-                    className="absolute -top-3 left-1/2 -translate-x-1/2 px-3 py-0.5 rounded-full text-xs font-bold text-white"
-                    style={{ backgroundColor: '#033BB0' }}
-                  >
+                {isStandard && (
+                  <div style={{
+                    position: 'absolute', top: '-12px', left: '50%',
+                    transform: 'translateX(-50%)',
+                    background: '#033BB0', color: 'white',
+                    fontSize: '11px', fontWeight: 700,
+                    padding: '3px 14px', borderRadius: '20px', whiteSpace: 'nowrap',
+                  }}>
+                    Most Popular
+                  </div>
+                )}
+                {isExtended && (
+                  <div style={{
+                    position: 'absolute', top: '-12px', left: '50%',
+                    transform: 'translateX(-50%)',
+                    background: '#0FBB0F', color: 'white',
+                    fontSize: '11px', fontWeight: 700,
+                    padding: '3px 14px', borderRadius: '20px', whiteSpace: 'nowrap',
+                  }}>
                     Best Value
                   </div>
                 )}
+
                 <h3 className="font-bold text-gray-900 mb-1">{pkg.name}</h3>
                 <div className="mb-5">
-                  <span className="text-3xl font-extrabold text-gray-900">${Number(pkg.price).toFixed(0)}</span>
+                  <span className="text-3xl font-extrabold" style={{ color: '#033BB0' }}>
+                    ${Number(pkg.price).toFixed(0)}
+                  </span>
                   <span className="text-gray-400 text-sm ml-1">one-time</span>
                 </div>
-                <ul className="space-y-2 mb-5 text-sm text-gray-700">
-                  {features.map((f) => (
-                    <li key={f} className="flex items-center gap-2">
-                      <svg className="w-4 h-4 shrink-0 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
-                        <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
-                      </svg>
-                      {f}
+
+                <ul style={{ listStyle: 'none', padding: 0, margin: '0 0 20px' }}>
+                  {features.map((f, fi) => (
+                    <li key={fi} style={{
+                      display: 'flex', alignItems: 'center', gap: '8px',
+                      padding: '6px 0', fontSize: '13px',
+                      color: f.included ? '#374151' : '#9CA3AF',
+                      borderBottom: fi < features.length - 1 ? '1px solid #F3F4F6' : undefined,
+                    }}>
+                      {f.included ? (
+                        <svg viewBox="0 0 20 20" fill="#0FBB0F" width={15} height={15} style={{ flexShrink: 0 }}>
+                          <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" />
+                        </svg>
+                      ) : (
+                        <svg viewBox="0 0 20 20" fill="#D1D5DB" width={15} height={15} style={{ flexShrink: 0 }}>
+                          <path fillRule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clipRule="evenodd" />
+                        </svg>
+                      )}
+                      {f.label}
                     </li>
                   ))}
                 </ul>
+
                 <button
                   onClick={() => handleCheckout(pkg.id)}
                   disabled={busy}
-                  className={`w-full py-2.5 rounded-xl text-sm font-semibold transition-opacity hover:opacity-90 disabled:opacity-60 ${
-                    rec ? 'text-white' : 'border-2'
-                  }`}
-                  style={rec ? { backgroundColor: '#033BB0' } : { color: '#033BB0', borderColor: '#033BB0' }}
+                  style={{
+                    width: '100%',
+                    padding: '10px',
+                    background: 'white',
+                    color: '#033BB0',
+                    border: '2px solid #033BB0',
+                    borderRadius: '8px',
+                    fontWeight: 700,
+                    fontSize: '14px',
+                    cursor: busy ? 'not-allowed' : 'pointer',
+                    opacity: busy ? 0.6 : 1,
+                    transition: 'background 0.2s, color 0.2s',
+                  }}
+                  onMouseEnter={(e) => { if (!busy) { const b = e.currentTarget; b.style.background = '#033BB0'; b.style.color = 'white' } }}
+                  onMouseLeave={(e) => { const b = e.currentTarget; b.style.background = 'white'; b.style.color = '#033BB0' }}
                 >
                   {busy ? 'Redirecting…' : `Purchase ${pkg.name}`}
                 </button>
