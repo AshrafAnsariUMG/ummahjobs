@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { api } from '@/lib/api'
 
-type SettingType = 'text' | 'textarea' | 'boolean' | 'color' | 'image' | 'url'
+type SettingType = 'text' | 'textarea' | 'boolean' | 'color' | 'image' | 'url' | 'number'
 
 interface Setting {
   key: string
@@ -397,6 +397,18 @@ function SettingField({
           <p style={{ marginTop: '6px', fontSize: '12px', color: '#9CA3AF', wordBreak: 'break-all' }}>{value}</p>
         )}
       </div>
+    )
+  }
+
+  if (setting.type === 'number') {
+    return (
+      <input
+        id={setting.key}
+        type="number"
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+        style={{ ...inputBase, maxWidth: '120px' }}
+      />
     )
   }
 

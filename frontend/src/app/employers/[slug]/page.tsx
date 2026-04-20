@@ -3,6 +3,7 @@ import Link from 'next/link'
 import type { Employer, EmployerReview, Job } from '@/types'
 import JobCard from '@/components/jobs/JobCard'
 import { getStorageUrl } from '@/lib/imageUtils'
+import EmployerReviewsSection from '@/components/employers/EmployerReviewsSection'
 
 const API = process.env.NEXT_PUBLIC_API_URL
 
@@ -258,38 +259,7 @@ export default async function EmployerProfilePage({ params }: PageProps) {
           )}
 
           {/* Reviews */}
-          <section>
-            <h2 className="text-lg font-bold text-gray-900 mb-4">
-              Reviews {reviews.length > 0 && `(${reviews.length})`}
-            </h2>
-
-            {reviews.length > 0 ? (
-              <div className="space-y-4">
-                {reviews.map((review) => (
-                  <div key={review.id} className="bg-white rounded-xl border border-gray-200 p-5">
-                    <div className="flex items-start justify-between gap-3 mb-2">
-                      <div>
-                        <p className="text-sm font-semibold text-gray-900">
-                          {review.reviewer?.display_name ?? 'Anonymous'}
-                        </p>
-                        <p className="text-xs text-gray-400">
-                          {new Date(review.created_at).toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' })}
-                        </p>
-                      </div>
-                      <StarRating rating={review.rating} />
-                    </div>
-                    {review.review_text && (
-                      <p className="text-sm text-gray-700 leading-relaxed">{review.review_text}</p>
-                    )}
-                  </div>
-                ))}
-              </div>
-            ) : (
-              <div className="bg-white rounded-xl border border-dashed border-gray-300 p-8 text-center">
-                <p className="text-gray-500 text-sm">No reviews yet. Be the first to leave one.</p>
-              </div>
-            )}
-          </section>
+          <EmployerReviewsSection slug={slug} initialReviews={reviews} />
         </main>
 
         {/* Sidebar */}

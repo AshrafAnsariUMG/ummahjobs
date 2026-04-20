@@ -84,7 +84,7 @@ export default function AboutPage() {
                 lineHeight: 1.8,
                 marginTop: '16px',
               }}>
-                We believe work is worship — and every Muslim deserves the opportunity
+                We believe work is worship, and every Muslim deserves the opportunity
                 to earn halal rizq in a workplace that honours their prayers, their
                 values, and their identity.
               </p>
@@ -180,7 +180,7 @@ export default function AboutPage() {
                 Halal First
               </h3>
               <p style={{ fontSize: '15px', color: '#6B7280', lineHeight: 1.7 }}>
-                Every feature we build, every decision we make — we ask: does this serve
+                Every feature we build, every decision we make, we ask: does this serve
                 the Muslim community with integrity? Halal earning is not just a checkbox
                 for us. It&apos;s the foundation.
               </p>
@@ -212,7 +212,7 @@ export default function AboutPage() {
               </h3>
               <p style={{ fontSize: '15px', color: '#6B7280', lineHeight: 1.7 }}>
                 We are part of the Ummah too. We built this platform because we felt
-                the gap ourselves — finding work that doesn&apos;t compromise your deen
+                the gap ourselves. Finding work that doesn&apos;t compromise your deen
                 shouldn&apos;t be this hard.
               </p>
             </div>
@@ -242,7 +242,7 @@ export default function AboutPage() {
                 For the Whole Ummah
               </h3>
               <p style={{ fontSize: '15px', color: '#6B7280', lineHeight: 1.7 }}>
-                From imams to engineers, nurses to NGO workers — UmmahJobs serves every
+                From imams to engineers, nurses to NGO workers. UmmahJobs serves every
                 Muslim professional, in every field, in every corner of the world.
               </p>
             </div>
@@ -257,12 +257,11 @@ export default function AboutPage() {
         padding: '48px 24px',
       }}>
         <div style={{ maxWidth: '900px', margin: '0 auto' }}>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-0">
+          <div className="grid grid-cols-3 gap-0">
             {[
-              { number: '2,000+', label: 'Muslim Professionals' },
-              { number: '100+',   label: 'Employers' },
-              { number: '26',     label: 'Job Categories' },
-              { number: 'Free',   label: 'to Join' },
+              { number: '100+', label: 'Employers' },
+              { number: '26',   label: 'Job Categories' },
+              { number: 'Free', label: 'to Join' },
             ].map((stat, i) => (
               <div
                 key={stat.label}
@@ -271,31 +270,11 @@ export default function AboutPage() {
                   padding: '16px 24px',
                   borderLeft: i > 0 ? '1px solid rgba(255,255,255,0.15)' : undefined,
                 }}
-                className={i > 0 ? 'hidden md:block md:border-l' : ''}
               >
                 <div style={{ fontSize: '36px', fontWeight: 800, color: 'white', lineHeight: 1.1 }}>
                   {stat.number}
                 </div>
                 <div style={{ fontSize: '14px', color: 'rgba(255,255,255,0.75)', marginTop: '4px' }}>
-                  {stat.label}
-                </div>
-              </div>
-            ))}
-          </div>
-
-          {/* Mobile: 2×2 grid without inner borders */}
-          <div className="grid grid-cols-2 md:hidden gap-6 mt-0">
-            {[
-              { number: '2,000+', label: 'Muslim Professionals' },
-              { number: '100+',   label: 'Employers' },
-              { number: '26',     label: 'Job Categories' },
-              { number: 'Free',   label: 'to Join' },
-            ].map((stat) => (
-              <div key={`m-${stat.label}`} style={{ textAlign: 'center', padding: '8px' }}>
-                <div style={{ fontSize: '30px', fontWeight: 800, color: 'white', lineHeight: 1.1 }}>
-                  {stat.number}
-                </div>
-                <div style={{ fontSize: '13px', color: 'rgba(255,255,255,0.75)', marginTop: '4px' }}>
                   {stat.label}
                 </div>
               </div>
@@ -340,9 +319,9 @@ export default function AboutPage() {
 
                   {[
                     { year: '2019', text: 'UmmahJobs.com first launched, connecting Muslim professionals with halal opportunities.', past: true },
-                    { year: '2022', text: 'Grew to 2,000+ registered candidates across the globe.', past: true },
+                    { year: '2022', text: 'Grew to thousands of registered professionals across the globe.', past: true },
                     { year: '2025', text: 'Platform rebuilt from the ground up on modern infrastructure.', past: true },
-                    { year: '2026', text: 'New features: AI job matching, private messaging, and employer tools — launched.', past: false },
+                    { year: '2026', text: 'New features: AI job matching, private messaging, and employer tools. Now live.', past: false },
                   ].map((item) => (
                     <div key={item.year} style={{ display: 'flex', gap: '16px', marginBottom: '24px', position: 'relative' }}>
                       {/* Dot */}
@@ -405,7 +384,7 @@ export default function AboutPage() {
 
               <p style={{ fontSize: '16px', color: '#6B7280', lineHeight: 1.8 }}>
                 What began as a small community project has grown into a platform serving thousands
-                of Muslims worldwide — from fresh graduates looking for their first halal role, to
+                of Muslims worldwide, from fresh graduates looking for their first halal role, to
                 seasoned professionals seeking meaningful career moves.
               </p>
             </div>

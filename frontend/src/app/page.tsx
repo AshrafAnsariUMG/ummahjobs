@@ -83,6 +83,8 @@ export default async function HomePage() {
   const [heroLine2Green, ...heroLine2BlueParts] = heroLine2Raw.trim().split(' ')
   const heroLine2Blue = heroLine2BlueParts.join(' ')
   const heroSub  = settings.hero_subheading || 'Connect with Muslim-friendly employers and build a career aligned with your values and faith.'
+  const heroFontDesktop = settings.hero_font_size_desktop ?? '56'
+  const heroFontMobile  = settings.hero_font_size_mobile  ?? '36'
 
   const visibleCategories = categories.slice(0, 12)
 
@@ -90,7 +92,6 @@ export default async function HomePage() {
     ? [
         { label: 'Active Jobs', value: stats.total_jobs },
         { label: 'Employers', value: stats.total_employers },
-        { label: 'Candidates', value: stats.total_candidates },
         { label: 'Categories', value: stats.total_categories },
       ]
     : []
@@ -106,17 +107,21 @@ export default async function HomePage() {
           overflow: 'hidden',
         }}
       >
-        {/* Illustration — full width, sits directly below navbar */}
-        <div style={{ width: '100%', lineHeight: 0 }}>
+        {/* Illustration — centered at natural proportions */}
+        <div style={{
+          width: '100%',
+          display: 'flex',
+          justifyContent: 'center',
+          overflow: 'hidden',
+          marginBottom: '32px',
+        }}>
           <img
             src="/images/illustration.webp"
             alt="Muslim professionals"
             style={{
-              width: '100%',
-              height: 'auto',
-              maxHeight: '280px',
+              height: '260px',
+              width: 'auto',
               objectFit: 'contain',
-              objectPosition: 'center center',
               display: 'block',
             }}
           />
@@ -127,7 +132,7 @@ export default async function HomePage() {
 
           {/* Heading */}
           <h1 style={{
-            fontSize: 'clamp(36px, 5vw, 56px)',
+            fontSize: `clamp(${heroFontMobile}px, 5vw, ${heroFontDesktop}px)`,
             fontWeight: 800,
             lineHeight: 1.1,
             marginBottom: '16px',
@@ -155,7 +160,6 @@ export default async function HomePage() {
           {/* Search bar + stats + popular pills */}
           <HeroSearch
             categories={categories}
-            statCandidates={settings.stat_candidates}
             statEmployers={settings.stat_employers}
           />
         </div>

@@ -55,11 +55,10 @@ const POPULAR_SEARCHES: { term: string; icon: React.ReactNode }[] = [
 
 interface HeroSearchProps {
   categories: JobCategory[]
-  statCandidates?: string
   statEmployers?: string
 }
 
-export default function HeroSearch({ categories, statCandidates = '2,000+', statEmployers = '100+' }: HeroSearchProps) {
+export default function HeroSearch({ categories, statEmployers = '100+' }: HeroSearchProps) {
   const router = useRouter()
   const [search, setSearch] = useState('')
   const [location, setLocation] = useState('')
@@ -200,8 +199,6 @@ export default function HeroSearch({ categories, statCandidates = '2,000+', stat
         color: '#6B7280',
         flexWrap: 'wrap',
       }}>
-        <span>{statCandidates} Candidates</span>
-        <span style={{ color: '#D1D5DB' }}>•</span>
         <span>{statEmployers} Employers</span>
         <span style={{ color: '#D1D5DB' }}>•</span>
         <span>Free to Register</span>
