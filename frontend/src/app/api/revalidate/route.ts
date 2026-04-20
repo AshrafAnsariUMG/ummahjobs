@@ -9,6 +9,7 @@ export async function POST(request: NextRequest) {
   }
 
   revalidatePath('/')
+  revalidatePath('/jobs')
   revalidatePath('/about')
   revalidatePath('/blog')
 

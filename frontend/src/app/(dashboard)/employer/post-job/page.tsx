@@ -178,6 +178,10 @@ export default function PostJobPage() {
         salary_min: form.salary_min ? Number(form.salary_min) : null,
         salary_max: form.salary_max ? Number(form.salary_max) : null,
       })
+      // Bust the homepage cache so the new job appears immediately
+      fetch(`/api/revalidate?secret=${process.env.NEXT_PUBLIC_REVALIDATION_SECRET}`, {
+        method: 'POST',
+      }).catch(() => {})
       showToast('JazakAllah Khayran! Your job is live.', 'success')
       setTimeout(() => router.push('/employer/jobs'), 1500)
     } catch (err: unknown) {
