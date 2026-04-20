@@ -35,22 +35,9 @@ function PackagesContent() {
   const [packages, setPackages] = useState<Package[]>([])
   const [loading, setLoading] = useState(true)
   const [checkingOut, setCheckingOut] = useState<number | null>(null)
-  const [successBanner, setSuccessBanner] = useState(false)
-
-  const fetchBalance = () =>
-    api.get('/api/employer/packages/balance').then(setBalance).catch(() => {})
 
   useEffect(() => {
-    const hasSuccess = searchParams.get('success') === '1'
-    const hasCancelled = searchParams.get('cancelled') === '1'
-    if (hasSuccess) {
-      setSuccessBanner(true)
-      setTimeout(() => {
-        fetchBalance()
-        setSuccessBanner(false)
-      }, 3500)
-    }
-    if (hasCancelled) {
+    if (searchParams.get('cancelled') === '1') {
       showToast('Payment cancelled. You can try again anytime.', 'error')
     }
 
@@ -78,21 +65,26 @@ function PackagesContent() {
     const interval = setInterval(async () => {
       attempts++
       try {
-        const data = await api.get('/api/employer/packages/balance') as CreditBalance
+        const token = localStorage.getItem('uj_token')
+        const res = await fetch(
+          `${process.env.NEXT_PUBLIC_API_URL}/api/employer/packages/balance`,
+          { headers: { Authorization: `Bearer ${token}`, Accept: 'application/json' } }
+        )
+        const data: CreditBalance = await res.json()
         if ((data.total_credits ?? 0) > 0) {
           clearInterval(interval)
           if (successRedirect) {
             router.push(successRedirect)
           } else {
-            window.location.reload()
+            setBalance(data)
+            window.history.replaceState({}, '', '/employer/packages')
+            showToast('JazakAllah Khayran! Your credits are ready.', 'success')
           }
         }
       } catch {
-        // ignore polling errors
+        // silent fail
       }
-      if (attempts >= 12) {
-        clearInterval(interval)
-      }
+      if (attempts >= 12) clearInterval(interval)
     }, 5000)
 
     return () => clearInterval(interval)
@@ -118,56 +110,6 @@ function PackagesContent() {
 
   return (
     <>
-      {/* Success banner */}
-      {successBanner && (
-        <div className="mb-6 bg-green-50 border border-green-200 rounded-xl px-5 py-4 flex items-start gap-3">
-          <svg className="w-5 h-5 text-green-600 shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-            <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
-          </svg>
-          <div>
-            <p className="text-sm font-semibold text-green-800">Payment successful!</p>
-            <p className="text-sm text-green-700">Your credits have been added. It may take a moment to appear.</p>
-          </div>
-        </div>
-      )}
-
-      {/* Refresh notice — shown when coming back from Stripe */}
-      {searchParams.get('success') === '1' && (
-        <div style={{
-          background: '#FFF3CD',
-          border: '1px solid #FDE68A',
-          borderRadius: '8px',
-          padding: '12px 16px',
-          marginBottom: '16px',
-          fontSize: '14px',
-          color: '#92400E',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-          gap: '12px',
-        }}>
-          <span>
-            Credits are processed automatically. If your balance hasn&apos;t updated, click refresh.
-          </span>
-          <button
-            onClick={() => window.location.reload()}
-            style={{
-              padding: '6px 14px',
-              background: '#033BB0',
-              color: 'white',
-              border: 'none',
-              borderRadius: '6px',
-              fontSize: '13px',
-              fontWeight: '600',
-              cursor: 'pointer',
-              whiteSpace: 'nowrap',
-            }}
-          >
-            Refresh Balance
-          </button>
-        </div>
-      )}
-
       {/* Current balance */}
       <section className="bg-white rounded-xl border border-gray-200 p-5 mb-6">
         <h2 className="font-semibold text-gray-900 mb-4 text-sm">Current Balance</h2>
