@@ -350,7 +350,7 @@ export default async function HomePage() {
           </p>
           <div style={{ display: 'flex', gap: '16px', justifyContent: 'center', flexWrap: 'wrap' }}>
             <a
-              href="/register?role=employer"
+              href="/employers/why-post"
               style={{
                 padding: '14px 32px',
                 background: '#0FBB0F',
@@ -365,7 +365,7 @@ export default async function HomePage() {
               Post a Job — Bismillah
             </a>
             <a
-              href="/packages"
+              href="/employers/why-post#pricing"
               style={{
                 padding: '14px 32px',
                 background: 'rgba(255,255,255,0.15)',

@@ -1,8 +1,20 @@
 import AnimatedSection from '@/components/ui/AnimatedSection'
+import type { Package } from '@/types'
 
 export const metadata = {
   title: 'Post a Job | UmmahJobs',
   description: 'Reach thousands of qualified Muslim professionals. Post your halal job listing on UmmahJobs today.',
+}
+
+async function getPackages(): Promise<Package[]> {
+  try {
+    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/packages`, { next: { revalidate: 3600 } })
+    if (!res.ok) return []
+    const data = await res.json()
+    return Array.isArray(data) ? data : (data.packages ?? [])
+  } catch {
+    return []
+  }
 }
 
 const STEPS = [
@@ -77,7 +89,8 @@ const TRUST_ITEMS = [
   'Starting from $8',
 ]
 
-export default function WhyPostPage() {
+export default async function WhyPostPage() {
+  const packages = await getPackages()
   return (
     <div>
 
@@ -337,6 +350,191 @@ export default function WhyPostPage() {
             ))}
           </div>
         </div>
+      </section>
+
+      {/* ── Section 4: Pricing ── */}
+      {packages.length > 0 && (
+        <section id="pricing" style={{ padding: '80px 24px', background: 'white' }}>
+          <div style={{ maxWidth: '900px', margin: '0 auto' }}>
+
+            <AnimatedSection animation="fade-up">
+              <div style={{ textAlign: 'center', marginBottom: '56px' }}>
+                <h2 style={{
+                  fontSize: 'clamp(24px, 3vw, 36px)',
+                  fontWeight: 800,
+                  color: '#111827',
+                  margin: '0 0 12px',
+                }}>
+                  Simple, Transparent Pricing
+                </h2>
+                <p style={{ color: '#6B7280', fontSize: '16px' }}>
+                  One-time payment. No subscriptions. No hidden fees.
+                </p>
+              </div>
+            </AnimatedSection>
+
+            <div style={{
+              display: 'grid',
+              gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))',
+              gap: '24px',
+            }}>
+              {packages.map((pkg, i) => {
+                const isPopular = pkg.name?.toLowerCase() === 'standard'
+                return (
+                  <AnimatedSection key={pkg.id} animation="fade-up" delay={i * 150}>
+                    <div style={{
+                      borderRadius: '16px',
+                      padding: '32px',
+                      border: isPopular ? '2px solid #033BB0' : '1px solid #E5E7EB',
+                      background: isPopular ? '#F0F4FF' : 'white',
+                      position: 'relative',
+                      height: '100%',
+                    }}>
+                      {isPopular && (
+                        <div style={{
+                          position: 'absolute',
+                          top: '-14px',
+                          left: '50%',
+                          transform: 'translateX(-50%)',
+                          background: '#033BB0',
+                          color: 'white',
+                          fontSize: '12px',
+                          fontWeight: 700,
+                          padding: '4px 16px',
+                          borderRadius: '20px',
+                          whiteSpace: 'nowrap',
+                        }}>
+                          Most Popular
+                        </div>
+                      )}
+
+                      <h3 style={{ fontSize: '20px', fontWeight: 700, color: '#111827', margin: '0 0 8px' }}>
+                        {pkg.name}
+                      </h3>
+
+                      <div style={{ fontSize: '40px', fontWeight: 800, color: '#033BB0', margin: '0 0 4px' }}>
+                        ${parseFloat(String(pkg.price)).toFixed(0)}
+                        <span style={{ fontSize: '16px', fontWeight: 400, color: '#6B7280' }}>{' '}one-time</span>
+                      </div>
+
+                      <div style={{ borderTop: '1px solid #E5E7EB', margin: '20px 0' }} />
+
+                      <ul style={{ listStyle: 'none', padding: 0, margin: '0 0 28px' }}>
+                        {[
+                          `${pkg.post_count} job post${pkg.post_count !== 1 ? 's' : ''}`,
+                          `Active for ${pkg.duration_days} days`,
+                          pkg.post_type === 'featured' ? 'Featured listing' : 'Standard listing',
+                          pkg.includes_newsletter ? 'Newsletter inclusion' : null,
+                        ].filter(Boolean).map((feature, fi) => (
+                          <li key={fi} style={{
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: '10px',
+                            marginBottom: '10px',
+                            fontSize: '15px',
+                            color: '#374151',
+                          }}>
+                            <svg viewBox="0 0 20 20" fill="#0FBB0F" width={16} height={16}>
+                              <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" />
+                            </svg>
+                            {feature}
+                          </li>
+                        ))}
+                      </ul>
+
+                      <a
+                        href="/register?role=employer"
+                        style={{
+                          display: 'block',
+                          width: '100%',
+                          padding: '12px',
+                          background: isPopular ? '#033BB0' : 'white',
+                          color: isPopular ? 'white' : '#033BB0',
+                          border: '2px solid #033BB0',
+                          borderRadius: '8px',
+                          fontWeight: 700,
+                          fontSize: '15px',
+                          textAlign: 'center',
+                          textDecoration: 'none',
+                          boxSizing: 'border-box',
+                        }}
+                      >
+                        Get Started
+                      </a>
+                    </div>
+                  </AnimatedSection>
+                )
+              })}
+            </div>
+
+            <AnimatedSection animation="fade-up" delay={300}>
+              <p style={{ textAlign: 'center', color: '#9CA3AF', fontSize: '14px', marginTop: '24px' }}>
+                All prices in USD. Need a custom plan?{' '}
+                <a href="/contact" style={{ color: '#033BB0' }}>Contact us</a>
+              </p>
+            </AnimatedSection>
+
+          </div>
+        </section>
+      )}
+
+      {/* ── Section 5: Final CTA ── */}
+      <section style={{
+        background: 'linear-gradient(135deg, #022a8a 0%, #033BB0 100%)',
+        padding: '80px 24px',
+        textAlign: 'center',
+      }}>
+        <AnimatedSection animation="fade-up">
+          <h2 style={{
+            color: 'white',
+            fontSize: 'clamp(26px, 4vw, 40px)',
+            fontWeight: 800,
+            margin: '0 0 16px',
+          }}>
+            Ready to Find Your Next Hire?
+          </h2>
+          <p style={{
+            color: 'rgba(255,255,255,0.8)',
+            fontSize: '17px',
+            maxWidth: '460px',
+            margin: '0 auto 36px',
+            lineHeight: 1.7,
+          }}>
+            Join 100+ employers already using UmmahJobs to build their teams
+            with halal-conscious talent.
+          </p>
+          <div style={{ display: 'flex', gap: '16px', justifyContent: 'center', flexWrap: 'wrap' }}>
+            <a
+              href="/register?role=employer"
+              style={{
+                padding: '16px 40px',
+                background: '#0FBB0F',
+                color: 'white',
+                borderRadius: '8px',
+                fontWeight: 700,
+                fontSize: '16px',
+                textDecoration: 'none',
+              }}
+            >
+              Post a Job — Bismillah
+            </a>
+            <a
+              href="/contact"
+              style={{
+                padding: '16px 40px',
+                background: 'rgba(255,255,255,0.12)',
+                color: 'white',
+                border: '2px solid rgba(255,255,255,0.35)',
+                borderRadius: '8px',
+                fontWeight: 600,
+                fontSize: '16px',
+                textDecoration: 'none',
+              }}
+            >
+              Talk to Us
+            </a>
+          </div>
+        </AnimatedSection>
       </section>
 
     </div>
