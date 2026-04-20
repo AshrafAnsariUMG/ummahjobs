@@ -362,7 +362,7 @@ export default async function HomePage() {
                 display: 'inline-block',
               }}
             >
-              Post a Job — Bismillah
+              Post a Job
             </a>
             <a
               href="/employers/why-post#pricing"

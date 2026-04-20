@@ -247,7 +247,7 @@ export default function EmployerJobsPage() {
               icon={<BriefcaseIcon size={28} />}
               title="No job listings yet"
               message="Post your first halal job and connect with thousands of Muslim professionals across the Ummah."
-              actionLabel="Post a Job — Bismillah"
+              actionLabel="Post a Job"
               actionHref="/employer/post-job"
             />
           ) : (

@@ -591,7 +591,7 @@ export default function PostJobPage() {
               >
                 {submitting ? 'Posting…' : !hasCredits ? 'Buy Credits to Post' : (
                   <span style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
-                    Post Job — Bismillah <DuaHandsIcon size={16} />
+                    Post Job <DuaHandsIcon size={16} />
                   </span>
                 )}
               </button>

@@ -9,7 +9,6 @@ import { getStorageUrl } from '@/lib/imageUtils'
 const navLinks = [
   { href: '/', label: 'Home' },
   { href: '/jobs', label: 'Jobs' },
-  { href: '/packages', label: 'Packages' },
   { href: '/employers/why-post', label: 'For Employers' },
   { href: '/blog', label: 'Blog' },
 ]

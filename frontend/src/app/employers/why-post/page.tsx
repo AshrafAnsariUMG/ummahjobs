@@ -1,4 +1,5 @@
 import AnimatedSection from '@/components/ui/AnimatedSection'
+import EmployerFAQ from '@/components/employers/EmployerFAQ'
 import type { Package } from '@/types'
 
 export const metadata = {
@@ -16,6 +17,33 @@ async function getPackages(): Promise<Package[]> {
     return []
   }
 }
+
+type Tier = 'basic' | 'standard' | 'extended'
+
+function getPkgTier(name: string): Tier | null {
+  const n = name.toLowerCase()
+  if (n.includes('extended')) return 'extended'
+  if (n.includes('standard')) return 'standard'
+  if (n.includes('basic')) return 'basic'
+  return null
+}
+
+const TAGLINES: Record<Tier, string> = {
+  basic: 'Perfect for trying us out',
+  standard: 'Most popular choice',
+  extended: 'Best value for growing teams',
+}
+
+const FEATURE_ROWS: { label: string; tiers: Tier[]; note?: Partial<Record<Tier, string>> }[] = [
+  { label: 'Job post credits', tiers: ['basic', 'standard', 'extended'], note: { basic: '1 post', standard: '1 post', extended: '3 posts' } },
+  { label: 'Listing duration', tiers: ['basic', 'standard', 'extended'], note: { basic: '40 days', standard: '40 days', extended: '60 days' } },
+  { label: 'Featured listing (carousel + top of search)', tiers: ['standard', 'extended'] },
+  { label: 'AI job description generator', tiers: ['basic', 'standard', 'extended'] },
+  { label: 'Candidate match scoring', tiers: ['basic', 'standard', 'extended'] },
+  { label: 'Company profile + Halal Verified badge', tiers: ['basic', 'standard', 'extended'] },
+  { label: 'Newsletter inclusion', tiers: ['extended'] },
+  { label: 'Priority support', tiers: ['extended'] },
+]
 
 const STEPS = [
   {
@@ -91,6 +119,7 @@ const TRUST_ITEMS = [
 
 export default async function WhyPostPage() {
   const packages = await getPackages()
+
   return (
     <div>
 
@@ -101,7 +130,6 @@ export default async function WhyPostPage() {
         position: 'relative',
         overflow: 'hidden',
       }}>
-        {/* Decorative crescent */}
         <div style={{ position: 'absolute', right: '-60px', top: '-60px', opacity: 0.06 }}>
           <svg viewBox="0 0 300 300" width={300} height={300} fill="white">
             <path d="M150 20A130 130 0 1 0 280 150 100 100 0 1 1 150 20z" />
@@ -109,14 +137,7 @@ export default async function WhyPostPage() {
         </div>
 
         <AnimatedSection animation="fade-up">
-          <div style={{
-            maxWidth: '760px',
-            margin: '0 auto',
-            textAlign: 'center',
-            position: 'relative',
-            zIndex: 1,
-          }}>
-            {/* Label */}
+          <div style={{ maxWidth: '760px', margin: '0 auto', textAlign: 'center', position: 'relative', zIndex: 1 }}>
             <div style={{
               display: 'inline-block',
               background: 'rgba(15,187,15,0.2)',
@@ -139,7 +160,7 @@ export default async function WhyPostPage() {
               lineHeight: 1.15,
               margin: '0 0 20px',
             }}>
-              Hire Qualified Muslim Talent — Bismillah
+              Hire Qualified Muslim Talent
             </h1>
 
             <p style={{
@@ -155,55 +176,35 @@ export default async function WhyPostPage() {
               Post your job today and find the right fit for your team.
             </p>
 
-            {/* CTA Buttons */}
             <div style={{ display: 'flex', gap: '16px', justifyContent: 'center', flexWrap: 'wrap' }}>
-              <a
-                href="/register?role=employer"
-                style={{
-                  padding: '16px 36px',
-                  background: '#0FBB0F',
-                  color: 'white',
-                  borderRadius: '8px',
-                  fontWeight: 700,
-                  fontSize: '16px',
-                  textDecoration: 'none',
-                }}
-              >
+              <a href="/register?role=employer" style={{
+                padding: '16px 36px',
+                background: '#0FBB0F',
+                color: 'white',
+                borderRadius: '8px',
+                fontWeight: 700,
+                fontSize: '16px',
+                textDecoration: 'none',
+              }}>
                 Get Started Free
               </a>
-              <a
-                href="/packages"
-                style={{
-                  padding: '16px 36px',
-                  background: 'rgba(255,255,255,0.12)',
-                  color: 'white',
-                  border: '2px solid rgba(255,255,255,0.35)',
-                  borderRadius: '8px',
-                  fontWeight: 600,
-                  fontSize: '16px',
-                  textDecoration: 'none',
-                }}
-              >
+              <a href="#pricing" style={{
+                padding: '16px 36px',
+                background: 'rgba(255,255,255,0.12)',
+                color: 'white',
+                border: '2px solid rgba(255,255,255,0.35)',
+                borderRadius: '8px',
+                fontWeight: 600,
+                fontSize: '16px',
+                textDecoration: 'none',
+              }}>
                 View Pricing
               </a>
             </div>
 
-            {/* Trust strip */}
-            <div style={{
-              display: 'flex',
-              gap: '32px',
-              justifyContent: 'center',
-              marginTop: '40px',
-              flexWrap: 'wrap',
-            }}>
+            <div style={{ display: 'flex', gap: '32px', justifyContent: 'center', marginTop: '40px', flexWrap: 'wrap' }}>
               {TRUST_ITEMS.map((item, i) => (
-                <div key={i} style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '8px',
-                  color: 'rgba(255,255,255,0.7)',
-                  fontSize: '14px',
-                }}>
+                <div key={i} style={{ display: 'flex', alignItems: 'center', gap: '8px', color: 'rgba(255,255,255,0.7)', fontSize: '14px' }}>
                   <svg viewBox="0 0 20 20" fill="#0FBB0F" width={16} height={16}>
                     <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" />
                   </svg>
@@ -218,15 +219,9 @@ export default async function WhyPostPage() {
       {/* ── Section 2: How it works ── */}
       <section style={{ padding: '80px 24px', background: 'white' }}>
         <div style={{ maxWidth: '900px', margin: '0 auto' }}>
-
           <AnimatedSection animation="fade-up">
             <div style={{ textAlign: 'center', marginBottom: '56px' }}>
-              <h2 style={{
-                fontSize: 'clamp(24px, 3vw, 36px)',
-                fontWeight: 800,
-                color: '#111827',
-                margin: '0 0 12px',
-              }}>
+              <h2 style={{ fontSize: 'clamp(24px, 3vw, 36px)', fontWeight: 800, color: '#111827', margin: '0 0 12px' }}>
                 Hire in 3 Simple Steps
               </h2>
               <p style={{ color: '#6B7280', fontSize: '16px', maxWidth: '480px', margin: '0 auto' }}>
@@ -235,55 +230,17 @@ export default async function WhyPostPage() {
             </div>
           </AnimatedSection>
 
-          <div style={{
-            display: 'grid',
-            gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))',
-            gap: '32px',
-          }}>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '32px' }}>
             {STEPS.map((item, i) => (
               <AnimatedSection key={i} animation="fade-up" delay={i * 150}>
-                <div style={{
-                  background: '#F9FAFB',
-                  borderRadius: '16px',
-                  padding: '32px',
-                  position: 'relative',
-                  border: '1px solid #E5E7EB',
-                }}>
-                  {/* Step number */}
-                  <div style={{
-                    position: 'absolute',
-                    top: '24px',
-                    right: '24px',
-                    fontSize: '48px',
-                    fontWeight: 800,
-                    color: '#033BB0',
-                    opacity: 0.07,
-                    lineHeight: 1,
-                  }}>
+                <div style={{ background: '#F9FAFB', borderRadius: '16px', padding: '32px', position: 'relative', border: '1px solid #E5E7EB' }}>
+                  <div style={{ position: 'absolute', top: '24px', right: '24px', fontSize: '48px', fontWeight: 800, color: '#033BB0', opacity: 0.07, lineHeight: 1 }}>
                     {item.step}
                   </div>
-
-                  {/* Icon */}
-                  <div
-                    style={{
-                      width: '56px',
-                      height: '56px',
-                      background: '#EFF6FF',
-                      borderRadius: '12px',
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      marginBottom: '20px',
-                    }}
-                    dangerouslySetInnerHTML={{ __html: item.icon }}
-                  />
-
-                  <h3 style={{ fontSize: '18px', fontWeight: 700, color: '#111827', margin: '0 0 10px' }}>
-                    {item.title}
-                  </h3>
-                  <p style={{ fontSize: '15px', color: '#6B7280', lineHeight: 1.7, margin: 0 }}>
-                    {item.desc}
-                  </p>
+                  <div style={{ width: '56px', height: '56px', background: '#EFF6FF', borderRadius: '12px', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '20px' }}
+                    dangerouslySetInnerHTML={{ __html: item.icon }} />
+                  <h3 style={{ fontSize: '18px', fontWeight: 700, color: '#111827', margin: '0 0 10px' }}>{item.title}</h3>
+                  <p style={{ fontSize: '15px', color: '#6B7280', lineHeight: 1.7, margin: 0 }}>{item.desc}</p>
                 </div>
               </AnimatedSection>
             ))}
@@ -294,15 +251,9 @@ export default async function WhyPostPage() {
       {/* ── Section 3: Platform Features ── */}
       <section style={{ padding: '80px 24px', background: '#F9FAFB' }}>
         <div style={{ maxWidth: '1000px', margin: '0 auto' }}>
-
           <AnimatedSection animation="fade-up">
             <div style={{ textAlign: 'center', marginBottom: '56px' }}>
-              <h2 style={{
-                fontSize: 'clamp(24px, 3vw, 36px)',
-                fontWeight: 800,
-                color: '#111827',
-                margin: '0 0 12px',
-              }}>
+              <h2 style={{ fontSize: 'clamp(24px, 3vw, 36px)', fontWeight: 800, color: '#111827', margin: '0 0 12px' }}>
                 Everything You Need to Hire
               </h2>
               <p style={{ color: '#6B7280', fontSize: '16px', maxWidth: '480px', margin: '0 auto' }}>
@@ -311,42 +262,18 @@ export default async function WhyPostPage() {
             </div>
           </AnimatedSection>
 
-          <div style={{
-            display: 'grid',
-            gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))',
-            gap: '24px',
-          }}>
+          <div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'center', gap: '24px' }}>
             {FEATURES.map((feature, i) => (
-              <AnimatedSection key={i} animation="fade-up" delay={i * 100}>
-                <div style={{
-                  background: 'white',
-                  borderRadius: '16px',
-                  padding: '28px',
-                  border: '1px solid #E5E7EB',
-                  height: '100%',
-                }}>
-                  <div
-                    style={{
-                      width: '48px',
-                      height: '48px',
-                      background: feature.color,
-                      borderRadius: '10px',
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      marginBottom: '16px',
-                      color: feature.iconColor,
-                    }}
-                    dangerouslySetInnerHTML={{ __html: feature.icon }}
-                  />
-                  <h3 style={{ fontSize: '16px', fontWeight: 700, color: '#111827', margin: '0 0 8px' }}>
-                    {feature.title}
-                  </h3>
-                  <p style={{ fontSize: '14px', color: '#6B7280', lineHeight: 1.6, margin: 0 }}>
-                    {feature.desc}
-                  </p>
-                </div>
-              </AnimatedSection>
+              <div key={i} style={{ width: 'calc(25% - 24px)', minWidth: '220px', maxWidth: '280px' }}>
+                <AnimatedSection animation="fade-up" delay={i * 100}>
+                  <div style={{ background: 'white', borderRadius: '16px', padding: '28px', border: '1px solid #E5E7EB', height: '100%' }}>
+                    <div style={{ width: '48px', height: '48px', background: feature.color, borderRadius: '10px', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '16px', color: feature.iconColor }}
+                      dangerouslySetInnerHTML={{ __html: feature.icon }} />
+                    <h3 style={{ fontSize: '16px', fontWeight: 700, color: '#111827', margin: '0 0 8px' }}>{feature.title}</h3>
+                    <p style={{ fontSize: '14px', color: '#6B7280', lineHeight: 1.6, margin: 0 }}>{feature.desc}</p>
+                  </div>
+                </AnimatedSection>
+              </div>
             ))}
           </div>
         </div>
@@ -355,103 +282,173 @@ export default async function WhyPostPage() {
       {/* ── Section 4: Pricing ── */}
       {packages.length > 0 && (
         <section id="pricing" style={{ padding: '80px 24px', background: 'white' }}>
-          <div style={{ maxWidth: '900px', margin: '0 auto' }}>
+          <style>{`
+            .pkg-card { transition: transform 0.2s ease, box-shadow 0.2s ease; }
+            .pkg-card:hover { transform: translateY(-4px); }
+            .pkg-card-standard { transform: scale(1.03); box-shadow: 0 20px 60px rgba(3,59,176,0.15); }
+            .pkg-card-standard:hover { transform: scale(1.03) translateY(-4px); }
+            .pkg-btn { background: white; color: #033BB0; transition: background 0.2s, color 0.2s; }
+            .pkg-btn:hover { background: #033BB0; color: white; }
+          `}</style>
+          <div style={{ maxWidth: '1060px', margin: '0 auto' }}>
 
             <AnimatedSection animation="fade-up">
               <div style={{ textAlign: 'center', marginBottom: '56px' }}>
-                <h2 style={{
-                  fontSize: 'clamp(24px, 3vw, 36px)',
-                  fontWeight: 800,
-                  color: '#111827',
-                  margin: '0 0 12px',
-                }}>
+                <h2 style={{ fontSize: 'clamp(24px, 3vw, 36px)', fontWeight: 800, color: '#111827', margin: '0 0 12px' }}>
                   Simple, Transparent Pricing
                 </h2>
-                <p style={{ color: '#6B7280', fontSize: '16px' }}>
+                <p style={{ color: '#6B7280', fontSize: '16px', margin: 0 }}>
                   One-time payment. No subscriptions. No hidden fees.
                 </p>
               </div>
             </AnimatedSection>
 
-            <div style={{
-              display: 'grid',
-              gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))',
-              gap: '24px',
-            }}>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '24px', alignItems: 'center' }}>
               {packages.map((pkg, i) => {
-                const isPopular = pkg.name?.toLowerCase() === 'standard'
+                const tier = getPkgTier(pkg.name ?? '')
+                const isStandard = tier === 'standard'
+                const isExtended = tier === 'extended'
+                const isBasic = tier === 'basic'
+
                 return (
                   <AnimatedSection key={pkg.id} animation="fade-up" delay={i * 150}>
-                    <div style={{
-                      borderRadius: '16px',
-                      padding: '32px',
-                      border: isPopular ? '2px solid #033BB0' : '1px solid #E5E7EB',
-                      background: isPopular ? '#F0F4FF' : 'white',
-                      position: 'relative',
-                      height: '100%',
-                    }}>
-                      {isPopular && (
+                    <div
+                      className={`pkg-card${isStandard ? ' pkg-card-standard' : ''}`}
+                      style={{
+                        borderRadius: '20px',
+                        padding: '36px',
+                        position: 'relative',
+                        background: isExtended ? '#F9FAFB' : 'white',
+                        border: isStandard ? '2px solid #033BB0' : '1px solid #E5E7EB',
+                      }}
+                    >
+                      {/* Badge */}
+                      {isStandard && (
                         <div style={{
-                          position: 'absolute',
-                          top: '-14px',
-                          left: '50%',
+                          position: 'absolute', top: '-14px', left: '50%',
                           transform: 'translateX(-50%)',
-                          background: '#033BB0',
-                          color: 'white',
-                          fontSize: '12px',
-                          fontWeight: 700,
-                          padding: '4px 16px',
-                          borderRadius: '20px',
-                          whiteSpace: 'nowrap',
+                          background: '#033BB0', color: 'white',
+                          fontSize: '12px', fontWeight: 700,
+                          padding: '4px 16px', borderRadius: '20px', whiteSpace: 'nowrap',
                         }}>
                           Most Popular
                         </div>
                       )}
+                      {isExtended && (
+                        <div style={{
+                          position: 'absolute', top: '-14px', left: '50%',
+                          transform: 'translateX(-50%)',
+                          background: '#0FBB0F', color: 'white',
+                          fontSize: '12px', fontWeight: 700,
+                          padding: '4px 16px', borderRadius: '20px', whiteSpace: 'nowrap',
+                        }}>
+                          Best Value
+                        </div>
+                      )}
 
-                      <h3 style={{ fontSize: '20px', fontWeight: 700, color: '#111827', margin: '0 0 8px' }}>
+                      {/* Header */}
+                      <h3 style={{ fontSize: '22px', fontWeight: 800, color: '#111827', margin: '0 0 4px' }}>
                         {pkg.name}
                       </h3>
+                      <p style={{ fontSize: '14px', color: '#6B7280', margin: '0 0 20px', minHeight: '20px' }}>
+                        {tier ? TAGLINES[tier] : ''}
+                      </p>
 
-                      <div style={{ fontSize: '40px', fontWeight: 800, color: '#033BB0', margin: '0 0 4px' }}>
-                        ${parseFloat(String(pkg.price)).toFixed(0)}
-                        <span style={{ fontSize: '16px', fontWeight: 400, color: '#6B7280' }}>{' '}one-time</span>
+                      {/* Price */}
+                      <div style={{ lineHeight: 1 }}>
+                        <span style={{ fontSize: '48px', fontWeight: 800, color: '#033BB0' }}>
+                          ${parseFloat(String(pkg.price)).toFixed(0)}
+                        </span>
+                      </div>
+                      <p style={{ fontSize: '13px', color: '#9CA3AF', margin: '4px 0 24px' }}>one-time payment</p>
+
+                      {/* Core info highlight */}
+                      <div style={{
+                        background: isStandard ? '#EFF6FF' : '#F9FAFB',
+                        borderRadius: '10px', padding: '14px 16px', marginBottom: '24px',
+                        display: 'flex', gap: '12px',
+                      }}>
+                        <div style={{ flex: 1, textAlign: 'center' }}>
+                          <div style={{ fontSize: '22px', fontWeight: 800, color: '#033BB0', lineHeight: 1 }}>
+                            {pkg.post_count}
+                          </div>
+                          <div style={{ fontSize: '11px', color: '#6B7280', marginTop: '3px' }}>
+                            Post{pkg.post_count !== 1 ? 's' : ''}
+                          </div>
+                        </div>
+                        <div style={{ width: '1px', background: '#E5E7EB' }} />
+                        <div style={{ flex: 1, textAlign: 'center' }}>
+                          <div style={{ fontSize: '22px', fontWeight: 800, color: '#033BB0', lineHeight: 1 }}>
+                            {pkg.duration_days}
+                          </div>
+                          <div style={{ fontSize: '11px', color: '#6B7280', marginTop: '3px' }}>Days</div>
+                        </div>
+                        <div style={{ width: '1px', background: '#E5E7EB' }} />
+                        <div style={{ flex: 2, textAlign: 'center' }}>
+                          <div style={{ fontSize: '13px', fontWeight: 700, color: '#374151', lineHeight: 1.2 }}>
+                            {pkg.post_type === 'featured' ? 'Featured' : 'Standard'}
+                          </div>
+                          <div style={{ fontSize: '11px', color: '#6B7280', marginTop: '3px' }}>Listing type</div>
+                        </div>
                       </div>
 
-                      <div style={{ borderTop: '1px solid #E5E7EB', margin: '20px 0' }} />
-
-                      <ul style={{ listStyle: 'none', padding: 0, margin: '0 0 28px' }}>
-                        {[
-                          `${pkg.post_count} job post${pkg.post_count !== 1 ? 's' : ''}`,
-                          `Active for ${pkg.duration_days} days`,
-                          pkg.post_type === 'featured' ? 'Featured listing' : 'Standard listing',
-                          pkg.includes_newsletter ? 'Newsletter inclusion' : null,
-                        ].filter(Boolean).map((feature, fi) => (
-                          <li key={fi} style={{
-                            display: 'flex',
-                            alignItems: 'center',
-                            gap: '10px',
-                            marginBottom: '10px',
-                            fontSize: '15px',
-                            color: '#374151',
-                          }}>
-                            <svg viewBox="0 0 20 20" fill="#0FBB0F" width={16} height={16}>
-                              <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" />
-                            </svg>
-                            {feature}
-                          </li>
-                        ))}
+                      {/* Feature list */}
+                      <ul style={{ listStyle: 'none', padding: 0, margin: '0 0 24px' }}>
+                        {FEATURE_ROWS.map((row, fi) => {
+                          const included = tier ? row.tiers.includes(tier) : false
+                          const note = tier ? row.note?.[tier] : undefined
+                          return (
+                            <li key={fi} style={{
+                              display: 'flex', alignItems: 'center', gap: '10px',
+                              padding: '7px 0', fontSize: '14px',
+                              color: included ? '#374151' : '#9CA3AF',
+                              borderBottom: fi < FEATURE_ROWS.length - 1 ? '1px solid #F3F4F6' : undefined,
+                            }}>
+                              {included ? (
+                                <svg viewBox="0 0 20 20" fill="#0FBB0F" width={16} height={16} style={{ flexShrink: 0 }}>
+                                  <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" />
+                                </svg>
+                              ) : (
+                                <svg viewBox="0 0 20 20" fill="#D1D5DB" width={16} height={16} style={{ flexShrink: 0 }}>
+                                  <path fillRule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clipRule="evenodd" />
+                                </svg>
+                              )}
+                              <span style={{ flex: 1 }}>{row.label}</span>
+                              {included && note && (
+                                <span style={{ fontSize: '12px', color: '#6B7280', fontWeight: 500 }}>{note}</span>
+                              )}
+                            </li>
+                          )
+                        })}
                       </ul>
 
+                      {/* Social proof / save note */}
+                      {isStandard && (
+                        <p style={{ fontSize: '13px', color: '#0FBB0F', fontWeight: 600, textAlign: 'center', margin: '0 0 16px' }}>
+                          Chosen by 70% of our employers
+                        </p>
+                      )}
+                      {isExtended && (
+                        <p style={{ fontSize: '13px', color: '#9CA3AF', textAlign: 'center', margin: '0 0 16px' }}>
+                          Save compared to buying Basic × 3
+                        </p>
+                      )}
+                      {isBasic && (
+                        <p style={{ fontSize: '13px', color: 'transparent', margin: '0 0 16px' }}>
+                          &nbsp;
+                        </p>
+                      )}
+
+                      {/* CTA */}
                       <a
                         href="/register?role=employer"
+                        className="pkg-btn"
                         style={{
                           display: 'block',
                           width: '100%',
-                          padding: '12px',
-                          background: isPopular ? '#033BB0' : 'white',
-                          color: isPopular ? 'white' : '#033BB0',
+                          padding: '14px',
                           border: '2px solid #033BB0',
-                          borderRadius: '8px',
+                          borderRadius: '10px',
                           fontWeight: 700,
                           fontSize: '15px',
                           textAlign: 'center',
@@ -468,7 +465,7 @@ export default async function WhyPostPage() {
             </div>
 
             <AnimatedSection animation="fade-up" delay={300}>
-              <p style={{ textAlign: 'center', color: '#9CA3AF', fontSize: '14px', marginTop: '24px' }}>
+              <p style={{ textAlign: 'center', color: '#9CA3AF', fontSize: '14px', marginTop: '32px' }}>
                 All prices in USD. Need a custom plan?{' '}
                 <a href="/contact" style={{ color: '#033BB0' }}>Contact us</a>
               </p>
@@ -478,59 +475,40 @@ export default async function WhyPostPage() {
         </section>
       )}
 
-      {/* ── Section 5: Final CTA ── */}
-      <section style={{
-        background: 'linear-gradient(135deg, #022a8a 0%, #033BB0 100%)',
-        padding: '80px 24px',
-        textAlign: 'center',
-      }}>
+      {/* ── Section 5: FAQ ── */}
+      <EmployerFAQ />
+
+      {/* ── Section 6: Final CTA ── */}
+      <section style={{ background: 'linear-gradient(135deg, #022a8a 0%, #033BB0 100%)', padding: '80px 24px', textAlign: 'center' }}>
         <AnimatedSection animation="fade-up">
-          <h2 style={{
-            color: 'white',
-            fontSize: 'clamp(26px, 4vw, 40px)',
-            fontWeight: 800,
-            margin: '0 0 16px',
-          }}>
+          <h2 style={{ color: 'white', fontSize: 'clamp(26px, 4vw, 40px)', fontWeight: 800, margin: '0 0 16px' }}>
             Ready to Find Your Next Hire?
           </h2>
-          <p style={{
-            color: 'rgba(255,255,255,0.8)',
-            fontSize: '17px',
-            maxWidth: '460px',
-            margin: '0 auto 36px',
-            lineHeight: 1.7,
-          }}>
-            Join 100+ employers already using UmmahJobs to build their teams
-            with halal-conscious talent.
+          <p style={{ color: 'rgba(255,255,255,0.8)', fontSize: '17px', maxWidth: '460px', margin: '0 auto 36px', lineHeight: 1.7 }}>
+            Join 100+ employers already using UmmahJobs to build their teams with halal-conscious talent.
           </p>
           <div style={{ display: 'flex', gap: '16px', justifyContent: 'center', flexWrap: 'wrap' }}>
-            <a
-              href="/register?role=employer"
-              style={{
-                padding: '16px 40px',
-                background: '#0FBB0F',
-                color: 'white',
-                borderRadius: '8px',
-                fontWeight: 700,
-                fontSize: '16px',
-                textDecoration: 'none',
-              }}
-            >
-              Post a Job — Bismillah
+            <a href="/register?role=employer" style={{
+              padding: '16px 40px',
+              background: '#0FBB0F',
+              color: 'white',
+              borderRadius: '8px',
+              fontWeight: 700,
+              fontSize: '16px',
+              textDecoration: 'none',
+            }}>
+              Post a Job
             </a>
-            <a
-              href="/contact"
-              style={{
-                padding: '16px 40px',
-                background: 'rgba(255,255,255,0.12)',
-                color: 'white',
-                border: '2px solid rgba(255,255,255,0.35)',
-                borderRadius: '8px',
-                fontWeight: 600,
-                fontSize: '16px',
-                textDecoration: 'none',
-              }}
-            >
+            <a href="/contact" style={{
+              padding: '16px 40px',
+              background: 'rgba(255,255,255,0.12)',
+              color: 'white',
+              border: '2px solid rgba(255,255,255,0.35)',
+              borderRadius: '8px',
+              fontWeight: 600,
+              fontSize: '16px',
+              textDecoration: 'none',
+            }}>
               Talk to Us
             </a>
           </div>

@@ -76,7 +76,7 @@ export default function ApplySection({ jobId, applyType, applyUrl }: Props) {
         className="block w-full text-center px-5 py-3 rounded-xl text-sm font-semibold text-white transition-opacity hover:opacity-90"
         style={{ backgroundColor: '#033BB0' }}
       >
-        Apply Now — Bismillah →
+        Apply Now →
       </a>
     )
   }
@@ -152,7 +152,7 @@ export default function ApplySection({ jobId, applyType, applyUrl }: Props) {
           className="block w-full text-center px-5 py-3 rounded-xl text-sm font-semibold text-white transition-opacity hover:opacity-90"
           style={{ backgroundColor: '#033BB0' }}
         >
-          Apply Now — Bismillah →
+          Apply Now →
         </button>
       )
     }
@@ -222,7 +222,7 @@ export default function ApplySection({ jobId, applyType, applyUrl }: Props) {
             className="flex-1 px-4 py-2.5 rounded-lg text-sm font-semibold text-white disabled:opacity-60 transition-opacity hover:opacity-90"
             style={{ backgroundColor: '#033BB0' }}
           >
-            {applyState === 'loading' ? 'Submitting — Bismillah…' : 'Submit Application — Bismillah'}
+            {applyState === 'loading' ? 'Submitting…' : 'Submit Application'}
           </button>
           <button
             type="button"
