@@ -7,7 +7,6 @@ import { api } from '@/lib/api'
 import type { CreditBalance, Employer, Job, PaginatedResponse } from '@/types'
 import { CrescentIcon } from '@/components/ui/IslamicIcons'
 import DailyQuoteWidget from '@/components/ui/DailyQuoteWidget'
-import IslamicPattern from '@/components/ui/IslamicPattern'
 import BismillahWatermark from '@/components/ui/BismillahWatermark'
 
 function StatusBadge({ status }: { status: string }) {
@@ -56,7 +55,6 @@ export default function EmployerDashboardPage() {
     <div className="max-w-6xl mx-auto">
       {/* Welcome */}
       <div className="mb-8" style={{ position: 'relative', overflow: 'hidden', minHeight: '120px' }}>
-        <IslamicPattern opacity={0.06} />
         <BismillahWatermark />
         <div style={{ position: 'relative', zIndex: 1 }}>
           <h1 className="text-2xl font-extrabold text-gray-900">

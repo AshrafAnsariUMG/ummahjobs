@@ -18,7 +18,14 @@
 }
 
 body {
-  background: var(--background);
+  background: linear-gradient(
+    160deg,
+    rgba(15, 187, 15, 0.03) 0%,
+    #F9FAFB 30%,
+    #F9FAFB 70%,
+    rgba(3, 59, 176, 0.03) 100%
+  );
+  min-height: 100vh;
   color: var(--foreground);
   font-family: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
   -webkit-font-smoothing: antialiased;

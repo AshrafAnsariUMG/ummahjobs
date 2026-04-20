@@ -8,7 +8,6 @@ import type { Candidate, JobApplication, SavedJob } from '@/types'
 import { timeAgo } from '@/lib/timeAgo'
 import { CrescentIcon } from '@/components/ui/IslamicIcons'
 import DailyQuoteWidget from '@/components/ui/DailyQuoteWidget'
-import IslamicPattern from '@/components/ui/IslamicPattern'
 import BismillahWatermark from '@/components/ui/BismillahWatermark'
 import SectionHeading from '@/components/ui/SectionHeading'
 import { getStorageUrl } from '@/lib/imageUtils'
@@ -73,7 +72,6 @@ export default function CandidateDashboardPage() {
     <div className="max-w-5xl mx-auto">
       {/* Welcome header */}
       <div className="mb-6" style={{ position: 'relative', overflow: 'hidden', minHeight: '120px' }}>
-        <IslamicPattern opacity={0.06} />
         <BismillahWatermark />
         <div style={{ position: 'relative', zIndex: 1 }}>
           <h1 className="text-2xl font-extrabold text-gray-900">

@@ -1,4 +1,4 @@
-import Link from 'next/link'
+import AboutCTACard from '@/components/about/AboutCTACard'
 
 export const metadata = {
   title: 'About Us | UmmahJobs',
@@ -15,21 +15,6 @@ export default function AboutPage() {
         padding: '80px 24px',
         textAlign: 'center',
       }}>
-        {/* Badge */}
-        <div style={{
-          display: 'inline-block',
-          background: 'rgba(15,187,15,0.15)',
-          border: '1px solid rgba(15,187,15,0.3)',
-          borderRadius: '20px',
-          padding: '4px 16px',
-          color: '#86efac',
-          fontSize: '13px',
-          marginBottom: '20px',
-          fontWeight: 500,
-        }}>
-          Serving the Muslim Community
-        </div>
-
         <h1 style={{
           color: 'white',
           fontSize: 'clamp(32px, 5vw, 48px)',
@@ -600,61 +585,7 @@ export default function AboutPage() {
             </div>
 
             {/* Right — CTA card */}
-            <div style={{
-              flexShrink: 0,
-              width: '100%',
-              maxWidth: '360px',
-              background: 'linear-gradient(135deg, #033BB0, #0256CC)',
-              borderRadius: '16px',
-              padding: '32px',
-              color: 'white',
-            }}>
-              <h3 style={{
-                fontSize: '20px',
-                fontWeight: 700,
-                marginBottom: '8px',
-                lineHeight: 1.3,
-              }}>
-                Ready to find your<br />halal career?
-              </h3>
-
-              <p style={{
-                fontSize: '14px',
-                color: 'rgba(255,255,255,0.8)',
-                lineHeight: 1.6,
-                marginBottom: '24px',
-              }}>
-                Join thousands of Muslim professionals on UmmahJobs today.
-                It&apos;s free to register.
-              </p>
-
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-                <Link
-                  href="/jobs"
-                  className="block text-center text-sm font-semibold rounded-xl transition-opacity hover:opacity-90"
-                  style={{
-                    padding: '12px 24px',
-                    background: 'white',
-                    color: '#033BB0',
-                    textDecoration: 'none',
-                  }}
-                >
-                  Browse Jobs
-                </Link>
-                <Link
-                  href="/register"
-                  className="block text-center text-sm font-semibold rounded-xl transition-opacity hover:opacity-90"
-                  style={{
-                    padding: '12px 24px',
-                    background: '#0FBB0F',
-                    color: 'white',
-                    textDecoration: 'none',
-                  }}
-                >
-                  Register Free
-                </Link>
-              </div>
-            </div>
+            <AboutCTACard />
 
           </div>
         </div>

@@ -2,7 +2,6 @@ import Link from 'next/link'
 import type { Job, JobCategory } from '@/types'
 import JobCard from '@/components/jobs/JobCard'
 import SectionHeading from '@/components/ui/SectionHeading'
-import IslamicPattern from '@/components/ui/IslamicPattern'
 import MANLeaderboard from '@/components/ads/MANLeaderboard'
 import HeroSearch from '@/components/home/HeroSearch'
 import FeaturedJobsCarousel from '@/components/home/FeaturedJobsCarousel'
@@ -84,7 +83,6 @@ export default async function HomePage() {
   const [heroLine2Green, ...heroLine2BlueParts] = heroLine2Raw.trim().split(' ')
   const heroLine2Blue = heroLine2BlueParts.join(' ')
   const heroSub  = settings.hero_subheading || 'Connect with Muslim-friendly employers and build a career aligned with your values and faith.'
-  const statJobs = settings.stat_jobs || '247'
 
   const visibleCategories = categories.slice(0, 12)
 
@@ -103,20 +101,33 @@ export default async function HomePage() {
       <section
         style={{
           background: 'linear-gradient(160deg, #F0F4FF 0%, #FFFFFF 50%, #F0FFF0 100%)',
-          paddingTop: '64px',
           paddingBottom: 0,
           borderBottom: '1px solid #F3F4F6',
           overflow: 'hidden',
-          position: 'relative',
         }}
       >
-        <IslamicPattern opacity={0.04} size={36} />
-{/* Centered content */}
-        <div style={{ maxWidth: '860px', margin: '0 auto', padding: '0 24px', textAlign: 'center', position: 'relative', zIndex: 1 }}>
+        {/* Illustration — full width, sits directly below navbar */}
+        <div style={{ width: '100%', lineHeight: 0 }}>
+          <img
+            src="/images/illustration.webp"
+            alt="Muslim professionals"
+            style={{
+              width: '100%',
+              height: 'auto',
+              maxHeight: '280px',
+              objectFit: 'contain',
+              objectPosition: 'center center',
+              display: 'block',
+            }}
+          />
+        </div>
+
+        {/* Centered content */}
+        <div style={{ maxWidth: '960px', margin: '0 auto', padding: '40px 24px 64px', textAlign: 'center' }}>
 
           {/* Heading */}
           <h1 style={{
-            fontSize: 'clamp(36px, 5vw, 58px)',
+            fontSize: 'clamp(36px, 5vw, 56px)',
             fontWeight: 800,
             lineHeight: 1.1,
             marginBottom: '16px',
@@ -147,51 +158,6 @@ export default async function HomePage() {
             statCandidates={settings.stat_candidates}
             statEmployers={settings.stat_employers}
           />
-        </div>
-
-        {/* Full-width illustration — outside centered container */}
-        <div style={{
-          width: '100%',
-          marginTop: '48px',
-          position: 'relative',
-          overflow: 'hidden',
-          lineHeight: 0,
-          zIndex: 1,
-        }}>
-          <img
-            src="/images/illustration.webp"
-            alt="Muslim professionals"
-            style={{
-              width: '100%',
-              maxHeight: '220px',
-              objectFit: 'contain',
-              objectPosition: 'center center',
-              display: 'block',
-            }}
-          />
-          {/* Stat pill — flows below on mobile, floats over on sm+ */}
-          <div className="relative mt-2 mx-auto w-fit sm:absolute sm:bottom-4 sm:left-1/2 sm:-translate-x-1/2 sm:mt-0" style={{
-            background: 'white',
-            borderRadius: '12px',
-            boxShadow: '0 4px 16px rgba(0,0,0,0.12)',
-            padding: '10px 20px',
-            display: 'flex',
-            alignItems: 'center',
-            gap: '8px',
-            whiteSpace: 'nowrap',
-            fontSize: '14px',
-            fontWeight: 500,
-            color: '#111827',
-          }}>
-            <div style={{
-              width: '8px',
-              height: '8px',
-              borderRadius: '50%',
-              background: '#0FBB0F',
-              flexShrink: 0,
-            }} />
-            {statJobs} New Jobs This Week
-          </div>
         </div>
       </section>
 
