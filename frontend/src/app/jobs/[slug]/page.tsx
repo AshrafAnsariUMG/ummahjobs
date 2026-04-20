@@ -18,7 +18,7 @@ const SITE = process.env.NEXT_PUBLIC_SITE_URL ?? 'https://ummahjobs.com'
 
 async function getJob(slug: string): Promise<Job | null> {
   try {
-    const res = await fetch(`${API}/api/jobs/${slug}`, { next: { revalidate: 300 } })
+    const res = await fetch(`${API}/api/jobs/${slug}`, { cache: 'no-store' })
     if (res.status === 404) return null
     if (!res.ok) return null
     return res.json()
@@ -41,12 +41,16 @@ function formatSalary(job: Job): string | null {
 }
 
 export async function generateMetadata({ params }: PageProps) {
-  const { slug } = await params
-  const job = await getJob(slug)
-  if (!job) return {}
-  return {
-    title: `${job.title} at ${job.employer.company_name ?? 'UmmahJobs'} | UmmahJobs`,
-    description: job.description?.slice(0, 155) ?? '',
+  try {
+    const { slug } = await params
+    const job = await getJob(slug)
+    if (!job) return {}
+    return {
+      title: `${job.title} at ${job.employer.company_name ?? 'UmmahJobs'} | UmmahJobs`,
+      description: job.description?.slice(0, 155) ?? '',
+    }
+  } catch {
+    return {}
   }
 }
 

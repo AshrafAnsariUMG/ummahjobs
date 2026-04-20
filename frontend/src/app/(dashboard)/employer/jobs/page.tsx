@@ -125,6 +125,8 @@ export default function EmployerJobsPage() {
       showToast('Job deleted.', 'success')
       setDeleteConfirm(null)
       fetchJobs()
+      const secret = process.env.NEXT_PUBLIC_REVALIDATION_SECRET
+      fetch(`/api/revalidate?secret=${secret}`, { method: 'POST' }).catch(() => {})
     } catch {
       showToast('Failed to delete job.', 'error')
     } finally {
