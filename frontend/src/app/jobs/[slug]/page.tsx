@@ -1,6 +1,7 @@
 import { notFound } from 'next/navigation'
 import Link from 'next/link'
 import type { Job } from '@/types'
+import AnimatedSection from '@/components/ui/AnimatedSection'
 import BookmarkButton from '@/components/jobs/BookmarkButton'
 import ShareButtons from '@/components/jobs/ShareButtons'
 import AIMatchScore from '@/components/jobs/AIMatchScore'
@@ -74,7 +75,8 @@ export default async function JobDetailPage({ params }: PageProps) {
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
       <div className="flex flex-col lg:flex-row gap-8">
         {/* Main */}
-        <main className="flex-1 min-w-0 space-y-6">
+        <AnimatedSection animation="fade-left" className="flex-1 min-w-0">
+        <main className="space-y-6">
           {/* Header card */}
           <div className="bg-white rounded-2xl border border-gray-200 p-6">
             {/* Breadcrumb */}
@@ -180,9 +182,11 @@ export default async function JobDetailPage({ params }: PageProps) {
             />
           </div>
         </main>
+        </AnimatedSection>
 
         {/* Sidebar */}
-        <aside className="w-full lg:w-72 shrink-0 space-y-4">
+        <AnimatedSection animation="fade-right" className="w-full lg:w-72 shrink-0">
+        <aside className="space-y-4">
           {/* Apply card */}
           <div className="bg-white rounded-2xl border border-gray-200 p-6">
             <h3 className="font-bold text-gray-900 mb-4">Apply for this role</h3>
@@ -294,6 +298,7 @@ export default async function JobDetailPage({ params }: PageProps) {
             </Link>
           </div>
         </aside>
+        </AnimatedSection>
       </div>
     </div>
   )

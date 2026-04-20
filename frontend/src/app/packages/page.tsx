@@ -1,5 +1,6 @@
 import Link from 'next/link'
 import type { Package } from '@/types'
+import AnimatedSection from '@/components/ui/AnimatedSection'
 
 const API = process.env.NEXT_PUBLIC_API_URL
 
@@ -82,11 +83,11 @@ export default async function PackagesPage() {
       <section className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
         {packages.length > 0 ? (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 items-start">
-            {packages.map((pkg) => {
+            {packages.map((pkg, index) => {
               const recommended = isRecommended(pkg, packages)
               return (
+                <AnimatedSection key={pkg.id} animation="fade-up" delay={index * 150}>
                 <div
-                  key={pkg.id}
                   className={`bg-white rounded-2xl border-2 p-8 relative transition-shadow hover:shadow-md ${
                     recommended ? 'border-blue-500 shadow-lg' : 'border-gray-200'
                   }`}
@@ -158,6 +159,7 @@ export default async function PackagesPage() {
                     Get Started
                   </Link>
                 </div>
+                </AnimatedSection>
               )
             })}
           </div>

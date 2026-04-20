@@ -1,4 +1,5 @@
 import AboutCTACard from '@/components/about/AboutCTACard'
+import AnimatedSection from '@/components/ui/AnimatedSection'
 
 export const metadata = {
   title: 'About Us | UmmahJobs',
@@ -9,6 +10,7 @@ export default function AboutPage() {
   return (
     <div style={{ position: 'relative' }}>
 
+<AnimatedSection animation="fade-up">
 {/* ── Section 1: Hero Banner ── */}
       <section style={{
         background: 'linear-gradient(135deg, #022E8A 0%, #033BB0 50%, #0256CC 100%)',
@@ -36,7 +38,9 @@ export default function AboutPage() {
           in a workplace that respects their values and faith.
         </p>
       </section>
+      </AnimatedSection>
 
+      <AnimatedSection animation="fade-up">
       {/* ── Section 2: Mission Statement ── */}
       <section style={{ background: 'white', padding: '80px 24px' }}>
         <div style={{ maxWidth: '900px', margin: '0 auto' }}>
@@ -135,7 +139,9 @@ export default function AboutPage() {
           </div>
         </div>
       </section>
+      </AnimatedSection>
 
+      <AnimatedSection animation="fade-up">
       {/* ── Section 3: Values / What We Believe ── */}
       <section style={{ background: '#F8F9FA', padding: '80px 24px' }}>
         <div style={{ maxWidth: '1100px', margin: '0 auto' }}>
@@ -250,7 +256,9 @@ export default function AboutPage() {
           </div>
         </div>
       </section>
+      </AnimatedSection>
 
+      <AnimatedSection animation="fade-up">
       {/* ── Section 4: Stats Strip ── */}
       <section style={{
         background: 'linear-gradient(135deg, #033BB0, #0256CC)',
@@ -282,7 +290,9 @@ export default function AboutPage() {
           </div>
         </div>
       </section>
+      </AnimatedSection>
 
+      <AnimatedSection animation="fade-up">
       {/* ── Section 5: Our Story ── */}
       <section style={{ background: 'white', padding: '80px 24px' }}>
         <div style={{ maxWidth: '900px', margin: '0 auto' }}>
@@ -392,7 +402,9 @@ export default function AboutPage() {
           </div>
         </div>
       </section>
+      </AnimatedSection>
 
+      <AnimatedSection animation="fade-up">
       {/* ── Section 6: Ummah Media Group ── */}
       <section style={{ background: '#F8F9FA', padding: '64px 24px', textAlign: 'center' }}>
         <div style={{ maxWidth: '700px', margin: '0 auto' }}>
@@ -462,7 +474,9 @@ export default function AboutPage() {
           </div>
         </div>
       </section>
+      </AnimatedSection>
 
+      <AnimatedSection animation="fade-up">
       {/* ── Section 7: Contact + CTA ── */}
       <section style={{ background: 'white', padding: '64px 24px' }}>
         <div style={{ maxWidth: '800px', margin: '0 auto' }}>
@@ -569,6 +583,7 @@ export default function AboutPage() {
           </div>
         </div>
       </section>
+      </AnimatedSection>
 
     </div>
   )

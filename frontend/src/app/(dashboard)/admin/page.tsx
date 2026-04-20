@@ -13,15 +13,19 @@ interface AdminStats {
   total_employers: number
   total_candidates: number
   total_applications: number
+  jobs_today: number
+  applications_today: number
+  messages_today: number
+  revenue_month: number
 }
 
 interface AuditEntry {
   id: number
   action: string
+  admin_name: string
+  target_name: string | null
   notes: string | null
   created_at: string
-  admin: { id: string; display_name: string; email: string } | null
-  target_user: { id: string; display_name: string; email: string } | null
 }
 
 interface AuditResponse {
@@ -89,6 +93,10 @@ export default function AdminDashboardPage() {
               total_employers: d.total_employers,
               total_candidates: d.total_candidates,
               total_applications: 0,
+              jobs_today: 0,
+              applications_today: 0,
+              messages_today: 0,
+              revenue_month: 0,
             })
           })
           .catch(() => {})
@@ -170,24 +178,24 @@ export default function AdminDashboardPage() {
         />
       </div>
 
-      {/* Secondary stats (placeholders) */}
+      {/* Secondary stats */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
-        <StatCard label="Jobs Today" value="—" color="#6b7280" placeholder icon={
+        <StatCard label="Jobs Today" value={loadingStats ? '…' : (stats?.jobs_today ?? 0)} color="#0FBB0F" icon={
           <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
             <path strokeLinecap="round" strokeLinejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
           </svg>
         } />
-        <StatCard label="Applications Today" value="—" color="#6b7280" placeholder icon={
+        <StatCard label="Applications Today" value={loadingStats ? '…' : (stats?.applications_today ?? 0)} color="#0FBB0F" icon={
           <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
             <path strokeLinecap="round" strokeLinejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
           </svg>
         } />
-        <StatCard label="Messages Today" value="—" color="#6b7280" placeholder icon={
+        <StatCard label="Messages Today" value={loadingStats ? '…' : (stats?.messages_today ?? 0)} color="#0FBB0F" icon={
           <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
             <path strokeLinecap="round" strokeLinejoin="round" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" />
           </svg>
         } />
-        <StatCard label="Revenue (Month)" value="$0" color="#6b7280" placeholder icon={
+        <StatCard label="Revenue (Month)" value={loadingStats ? '…' : '$' + (stats?.revenue_month ?? 0).toFixed(2)} color="#059669" icon={
           <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
             <path strokeLinecap="round" strokeLinejoin="round" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
           </svg>
@@ -269,7 +277,7 @@ export default function AdminDashboardPage() {
                       {formatDate(entry.created_at)}
                     </td>
                     <td className="py-2.5 pr-4 text-xs text-gray-700 whitespace-nowrap">
-                      {entry.admin?.display_name ?? '—'}
+                      {entry.admin_name ?? '—'}
                     </td>
                     <td className="py-2.5 pr-4">
                       <span className="inline-block px-2 py-0.5 rounded text-xs font-medium bg-blue-50 text-blue-700">
@@ -277,7 +285,7 @@ export default function AdminDashboardPage() {
                       </span>
                     </td>
                     <td className="py-2.5 pr-4 text-xs text-gray-600 whitespace-nowrap">
-                      {entry.target_user?.display_name ?? '—'}
+                      {entry.target_name ?? '—'}
                     </td>
                     <td className="py-2.5 text-xs text-gray-400 max-w-xs truncate">
                       {entry.notes ?? '—'}

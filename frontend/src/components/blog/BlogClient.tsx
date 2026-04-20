@@ -4,6 +4,7 @@ import { useState, useMemo } from 'react'
 import Link from 'next/link'
 import type { BlogPost } from '@/types'
 import { getBlogImageUrl } from '@/lib/blogUtils'
+import AnimatedSection from '@/components/ui/AnimatedSection'
 
 const BLOG_CATEGORIES = ['All', 'Education', 'Information', 'Interview', 'Job Seeking', 'Learn', 'Skill']
 
@@ -138,8 +139,10 @@ export default function BlogClient({ posts }: { posts: BlogPost[] }) {
         {/* Posts grid */}
         {filtered.length > 0 ? (
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-            {filtered.map((post) => (
-              <PostCard key={post.id} post={post} />
+            {filtered.map((post, index) => (
+              <AnimatedSection key={post.id} animation="fade-up" delay={index * 100}>
+                <PostCard post={post} />
+              </AnimatedSection>
             ))}
           </div>
         ) : (

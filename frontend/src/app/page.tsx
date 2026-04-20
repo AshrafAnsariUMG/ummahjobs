@@ -5,9 +5,8 @@ import SectionHeading from '@/components/ui/SectionHeading'
 import MANLeaderboard from '@/components/ads/MANLeaderboard'
 import HeroSearch from '@/components/home/HeroSearch'
 import FeaturedJobsCarousel from '@/components/home/FeaturedJobsCarousel'
-import StatsCounter from '@/components/home/StatsCounter'
-import NewsletterSignup from '@/components/home/NewsletterSignup'
 import CategoryGrid from '@/components/home/CategoryGrid'
+import AnimatedSection from '@/components/ui/AnimatedSection'
 
 const API = process.env.NEXT_PUBLIC_API_URL
 
@@ -52,50 +51,67 @@ async function getCategories(): Promise<JobCategory[]> {
   }
 }
 
-async function getStats(): Promise<{
-  total_jobs: number
-  total_employers: number
-  total_candidates: number
-  total_categories: number
-} | null> {
-  try {
-    const res = await fetch(`${API}/api/jobs/stats`, { next: { revalidate: 300 } })
-    if (!res.ok) return null
-    return res.json()
-  } catch {
-    return null
-  }
-}
-
+const STAT_CARDS = [
+  {
+    icon: (
+      <svg width={28} height={28} fill="none" viewBox="0 0 24 24" stroke="white" strokeWidth={1.5}>
+        <path strokeLinecap="round" strokeLinejoin="round" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+      </svg>
+    ),
+    value: '100+',
+    label: 'Trusted Employers',
+    sub: 'Muslim-friendly companies',
+  },
+  {
+    icon: (
+      <svg width={28} height={28} fill="none" viewBox="0 0 24 24" stroke="white" strokeWidth={1.5}>
+        <path strokeLinecap="round" strokeLinejoin="round" d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+      </svg>
+    ),
+    value: '26',
+    label: 'Job Categories',
+    sub: 'From tech to Islamic studies',
+  },
+  {
+    icon: (
+      <svg width={28} height={28} fill="none" viewBox="0 0 24 24" stroke="white" strokeWidth={1.5}>
+        <path strokeLinecap="round" strokeLinejoin="round" d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+      </svg>
+    ),
+    value: 'Global',
+    label: 'Worldwide Reach',
+    sub: 'Jobs across 50+ countries',
+  },
+  {
+    icon: (
+      <svg width={28} height={28} fill="none" viewBox="0 0 24 24" stroke="white" strokeWidth={1.5}>
+        <path strokeLinecap="round" strokeLinejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+      </svg>
+    ),
+    value: 'Free',
+    label: 'Free to Register',
+    sub: 'No cost for job seekers',
+  },
+]
 
 export default async function HomePage() {
-  const [featuredJobs, latestJobs, categories, stats, settings] = await Promise.all([
+  const [featuredJobs, latestJobs, categories, settings] = await Promise.all([
     getFeaturedJobs(),
     getLatestJobs(),
     getCategories(),
-    getStats(),
     getSiteSettings(),
   ])
 
   const heroLine1 = settings.hero_heading_line1 || 'Find Your Next'
   const heroLine2Raw = settings.hero_heading_line2 || 'Halal Opportunity'
-  // Split line 2 so the first word is green, the rest is blue
   const [heroLine2Green, ...heroLine2BlueParts] = heroLine2Raw.trim().split(' ')
   const heroLine2Blue = heroLine2BlueParts.join(' ')
-  const heroSub  = settings.hero_subheading || 'Connect with Muslim-friendly employers and build a career aligned with your values and faith.'
-  const heroFontDesktop     = settings.hero_font_size_desktop ?? '56'
-  const heroFontMobile      = settings.hero_font_size_mobile  ?? '36'
-  const illustrationHeight  = settings.illustration_height    ?? '260'
+  const heroSub = settings.hero_subheading || 'Connect with Muslim-friendly employers and build a career aligned with your values and faith.'
+  const heroFontDesktop    = settings.hero_font_size_desktop ?? '56'
+  const heroFontMobile     = settings.hero_font_size_mobile  ?? '36'
+  const illustrationHeight = settings.illustration_height    ?? '260'
 
   const visibleCategories = categories.slice(0, 12)
-
-  const statItems = stats
-    ? [
-        { label: 'Active Jobs', value: stats.total_jobs },
-        { label: 'Employers', value: stats.total_employers },
-        { label: 'Categories', value: stats.total_categories },
-      ]
-    : []
 
   return (
     <div>
@@ -131,37 +147,40 @@ export default async function HomePage() {
         <div style={{ maxWidth: '960px', margin: '0 auto', padding: '40px 24px 64px', textAlign: 'center' }}>
 
           {/* Heading */}
-          <h1 style={{
-            fontSize: `clamp(${heroFontMobile}px, 5vw, ${heroFontDesktop}px)`,
-            fontWeight: 800,
-            lineHeight: 1.1,
-            marginBottom: '16px',
-            color: '#111827',
-          }}>
-            {heroLine1}
-            <br />
-            <span style={{ color: '#0FBB0F' }}>{heroLine2Green}</span>
-            {heroLine2Blue && (
-              <> <span style={{ color: '#033BB0' }}>{heroLine2Blue}</span></>
-            )}
-          </h1>
+          <AnimatedSection animation="fade-up">
+            <h1 style={{
+              fontSize: `clamp(${heroFontMobile}px, 5vw, ${heroFontDesktop}px)`,
+              fontWeight: 800,
+              lineHeight: 1.1,
+              marginBottom: '16px',
+              color: '#111827',
+            }}>
+              {heroLine1}
+              <br />
+              <span style={{ color: '#0FBB0F' }}>{heroLine2Green}</span>
+              {heroLine2Blue && (
+                <> <span style={{ color: '#033BB0' }}>{heroLine2Blue}</span></>
+              )}
+            </h1>
 
-          {/* Subheading */}
-          <p style={{
-            fontSize: '18px',
-            color: '#6B7280',
-            lineHeight: 1.6,
-            maxWidth: '560px',
-            margin: '0 auto 32px',
-          }}>
-            {heroSub}
-          </p>
+            <p style={{
+              fontSize: '18px',
+              color: '#6B7280',
+              lineHeight: 1.6,
+              maxWidth: '560px',
+              margin: '0 auto 32px',
+            }}>
+              {heroSub}
+            </p>
+          </AnimatedSection>
 
-          {/* Search bar + stats + popular pills */}
-          <HeroSearch
-            categories={categories}
-            statEmployers={settings.stat_employers}
-          />
+          {/* Search bar */}
+          <AnimatedSection animation="fade-up" delay={150}>
+            <HeroSearch
+              categories={categories}
+              statEmployers={settings.stat_employers}
+            />
+          </AnimatedSection>
         </div>
       </section>
 
@@ -170,40 +189,50 @@ export default async function HomePage() {
 
       {/* ── Featured Jobs ── */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
-        <SectionHeading
-          title="Featured Jobs"
-          subtitle="Hand-picked opportunities from top Muslim-friendly employers"
-          action={{ label: 'View all →', href: '/jobs?featured=1' }}
-          size="lg"
-        />
-        <FeaturedJobsCarousel jobs={featuredJobs} />
+        <AnimatedSection animation="fade-up">
+          <SectionHeading
+            title="Featured Jobs"
+            subtitle="Hand-picked opportunities from top Muslim-friendly employers"
+            action={{ label: 'View all →', href: '/jobs?featured=1' }}
+            size="lg"
+          />
+        </AnimatedSection>
+        <AnimatedSection animation="fade-up" delay={100}>
+          <FeaturedJobsCarousel jobs={featuredJobs} />
+        </AnimatedSection>
       </section>
 
       {/* ── Latest Jobs ── */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
-        <SectionHeading
-          title="Latest Jobs"
-          subtitle="Fresh opportunities added daily"
-          action={{ label: 'Browse all jobs →', href: '/jobs' }}
-          size="lg"
-        />
+        <AnimatedSection animation="fade-right">
+          <SectionHeading
+            title="Latest Jobs"
+            subtitle="Fresh opportunities added daily"
+            action={{ label: 'Browse all jobs →', href: '/jobs' }}
+            size="lg"
+          />
+        </AnimatedSection>
 
         {latestJobs.length > 0 ? (
           <>
             <div className="space-y-3">
-              {latestJobs.map((job) => (
-                <JobCard key={job.id} job={job} variant="list" />
+              {latestJobs.map((job, index) => (
+                <AnimatedSection key={job.id} animation="fade-up" delay={index * 80}>
+                  <JobCard job={job} variant="list" />
+                </AnimatedSection>
               ))}
             </div>
-            <div className="text-center mt-8">
-              <Link
-                href="/jobs"
-                className="inline-block px-8 py-3 rounded-xl text-sm font-semibold border-2 transition-colors"
-                style={{ color: '#033BB0', borderColor: '#033BB0' }}
-              >
-                Load More Jobs
-              </Link>
-            </div>
+            <AnimatedSection animation="fade-up" delay={200}>
+              <div className="text-center mt-8">
+                <Link
+                  href="/jobs"
+                  className="inline-block px-8 py-3 rounded-xl text-sm font-semibold border-2 transition-colors"
+                  style={{ color: '#033BB0', borderColor: '#033BB0' }}
+                >
+                  Load More Jobs
+                </Link>
+              </div>
+            </AnimatedSection>
           </>
         ) : (
           <div className="bg-white rounded-xl border border-dashed border-gray-300 p-10 text-center">
@@ -218,15 +247,23 @@ export default async function HomePage() {
       {/* ── Categories Grid ── */}
       <section className="bg-white border-t border-b border-gray-100 py-12">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <SectionHeading
-            title="Browse by Category"
-            subtitle="Explore opportunities across all fields"
-            action={{ label: 'View all →', href: '/jobs' }}
-            size="lg"
-            className="mb-8"
-          />
+          <AnimatedSection animation="fade-left">
+            <SectionHeading
+              title="Browse by Category"
+              subtitle="Explore opportunities across all fields"
+              action={{ label: 'View all →', href: '/jobs' }}
+              size="lg"
+              className="mb-8"
+            />
+          </AnimatedSection>
 
-          <CategoryGrid categories={visibleCategories} />
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-3">
+            {visibleCategories.map((cat, index) => (
+              <AnimatedSection key={cat.id} animation="fade-up" delay={index * 60}>
+                <CategoryGrid categories={[cat]} />
+              </AnimatedSection>
+            ))}
+          </div>
 
           {categories.length > 12 && (
             <div className="text-center mt-6">
@@ -239,29 +276,116 @@ export default async function HomePage() {
       </section>
 
       {/* ── Stats ── */}
-      {statItems.length > 0 && (
-        <section style={{ background: 'linear-gradient(135deg, #033BB0 0%, #0256CC 100%)' }}>
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-14">
-            <h2 className="text-2xl font-bold text-white text-center mb-8">
-              Trusted by the Muslim Professional Community
-            </h2>
-            <StatsCounter stats={statItems} />
+      <section style={{ background: 'linear-gradient(135deg, #033BB0 0%, #0256CC 100%)' }}>
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-14">
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-8">
+            {STAT_CARDS.map((stat, i) => (
+              <AnimatedSection key={i} animation="fade-up" delay={i * 100}>
+                <div style={{ textAlign: 'center' }}>
+                  <div style={{
+                    width: '64px',
+                    height: '64px',
+                    borderRadius: '16px',
+                    background: 'rgba(255,255,255,0.12)',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    margin: '0 auto 16px',
+                  }}>
+                    {stat.icon}
+                  </div>
+                  <p style={{ color: 'white', fontSize: '36px', fontWeight: 800, lineHeight: 1, marginBottom: '6px' }}>
+                    {stat.value}
+                  </p>
+                  <p style={{ color: 'white', fontWeight: 600, fontSize: '15px', marginBottom: '4px' }}>
+                    {stat.label}
+                  </p>
+                  <p style={{ color: 'rgba(255,255,255,0.6)', fontSize: '13px' }}>
+                    {stat.sub}
+                  </p>
+                </div>
+              </AnimatedSection>
+            ))}
           </div>
-        </section>
-      )}
-
-      {/* ── Newsletter ── */}
-      <section style={{ backgroundColor: '#033BB0' }} className="py-14 px-4">
-        <div className="max-w-2xl mx-auto text-center">
-          <h2 className="text-2xl font-bold text-white mb-2">
-            Stay Updated with Halal Opportunities
-          </h2>
-          <p className="mb-8" style={{ color: 'rgba(255,255,255,0.75)', fontSize: 15 }}>
-            Join 2,000+ Muslim professionals getting weekly job alerts.
-          </p>
-          <NewsletterSignup dark />
         </div>
       </section>
+
+      {/* ── Employer CTA ── */}
+      <AnimatedSection animation="fade-up">
+        <section style={{
+          background: 'linear-gradient(135deg, #022a8a 0%, #033BB0 100%)',
+          padding: '80px 24px',
+          textAlign: 'center',
+        }}>
+          <p style={{
+            color: 'rgba(255,255,255,0.7)',
+            fontSize: '13px',
+            fontWeight: 600,
+            letterSpacing: '1px',
+            textTransform: 'uppercase',
+            marginBottom: '16px',
+          }}>
+            For Employers
+          </p>
+          <h2 style={{
+            color: 'white',
+            fontSize: 'clamp(28px, 4vw, 42px)',
+            fontWeight: 800,
+            margin: '0 0 16px',
+            maxWidth: '600px',
+            marginLeft: 'auto',
+            marginRight: 'auto',
+          }}>
+            Hire Muslim Talent Today
+          </h2>
+          <p style={{
+            color: 'rgba(255,255,255,0.8)',
+            fontSize: '17px',
+            maxWidth: '500px',
+            margin: '0 auto 36px',
+            lineHeight: 1.7,
+          }}>
+            Post your job and reach thousands of qualified Muslim professionals
+            worldwide. Halal-conscious hiring starts here.
+          </p>
+          <div style={{ display: 'flex', gap: '16px', justifyContent: 'center', flexWrap: 'wrap' }}>
+            <a
+              href="/register?role=employer"
+              style={{
+                padding: '14px 32px',
+                background: '#0FBB0F',
+                color: 'white',
+                borderRadius: '8px',
+                fontWeight: 700,
+                fontSize: '16px',
+                textDecoration: 'none',
+                display: 'inline-block',
+              }}
+            >
+              Post a Job — Bismillah
+            </a>
+            <a
+              href="/packages"
+              style={{
+                padding: '14px 32px',
+                background: 'rgba(255,255,255,0.15)',
+                color: 'white',
+                border: '2px solid rgba(255,255,255,0.4)',
+                borderRadius: '8px',
+                fontWeight: 600,
+                fontSize: '16px',
+                textDecoration: 'none',
+                display: 'inline-block',
+              }}
+            >
+              View Packages
+            </a>
+          </div>
+          <p style={{ color: 'rgba(255,255,255,0.5)', fontSize: '13px', marginTop: '24px' }}>
+            Trusted by 100+ employers • No hidden fees • Cancel anytime
+          </p>
+        </section>
+      </AnimatedSection>
     </div>
   )
 }

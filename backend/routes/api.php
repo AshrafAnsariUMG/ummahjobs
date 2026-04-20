@@ -147,11 +147,19 @@ Route::middleware(['auth:sanctum', 'role:admin'])->prefix('admin')->group(functi
     // Stats
     Route::get('stats', function () {
         return response()->json([
-            'total_users'        => App\Models\User::count(),
-            'total_jobs'         => App\Models\Job::where('status', 'active')->count(),
-            'total_employers'    => App\Models\Employer::count(),
-            'total_candidates'   => App\Models\Candidate::count(),
-            'total_applications' => App\Models\JobApplication::count(),
+            'total_users'          => App\Models\User::count(),
+            'total_jobs'           => App\Models\Job::where('status', 'active')->count(),
+            'total_employers'      => App\Models\Employer::count(),
+            'total_candidates'     => App\Models\Candidate::count(),
+            'total_applications'   => App\Models\JobApplication::count(),
+            'jobs_today'           => App\Models\Job::whereDate('created_at', today())->count(),
+            'applications_today'   => Illuminate\Support\Facades\DB::table('job_applications')->whereDate('applied_at', today())->count(),
+            'messages_today'       => Illuminate\Support\Facades\DB::table('messages')->whereDate('created_at', today())->count(),
+            'revenue_month'        => (float) Illuminate\Support\Facades\DB::table('stripe_orders')
+                ->whereMonth('created_at', now()->month)
+                ->whereYear('created_at', now()->year)
+                ->where('status', 'completed')
+                ->sum('amount'),
         ]);
     });
 

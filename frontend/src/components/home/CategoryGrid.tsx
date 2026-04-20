@@ -10,7 +10,7 @@ interface Props {
 
 export default function CategoryGrid({ categories }: Props) {
   return (
-    <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-3">
+    <>
       {categories.map((cat, idx) => {
         const isGreen = idx % 2 === 1
         const iconColor = isGreen ? '#0FBB0F' : '#033BB0'
@@ -45,6 +45,6 @@ export default function CategoryGrid({ categories }: Props) {
           </Link>
         )
       })}
-    </div>
+    </>
   )
 }

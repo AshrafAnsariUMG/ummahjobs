@@ -3,6 +3,7 @@
 import { useState } from 'react'
 
 export default function FooterNewsletter() {
+  const [firstName, setFirstName] = useState('')
   const [email, setEmail] = useState('')
   const [submitted, setSubmitted] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
@@ -17,7 +18,7 @@ export default function FooterNewsletter() {
       const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/newsletter/subscribe`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
-        body: JSON.stringify({ email }),
+        body: JSON.stringify({ email, first_name: firstName }),
       })
 
       if (res.ok) {
@@ -41,8 +42,27 @@ export default function FooterNewsletter() {
     )
   }
 
+  const inputStyle: React.CSSProperties = {
+    width: '100%',
+    padding: '10px 14px',
+    borderRadius: '6px',
+    border: '1px solid rgba(255,255,255,0.2)',
+    background: 'rgba(255,255,255,0.1)',
+    color: 'white',
+    fontSize: '14px',
+    outline: 'none',
+    boxSizing: 'border-box',
+  }
+
   return (
     <form onSubmit={handleSubmit} className="flex flex-col gap-2">
+      <input
+        type="text"
+        placeholder="Your first name"
+        value={firstName}
+        onChange={(e) => setFirstName(e.target.value)}
+        style={inputStyle}
+      />
       <div className="flex gap-2">
         <input
           type="email"
@@ -50,8 +70,7 @@ export default function FooterNewsletter() {
           value={email}
           onChange={(e) => setEmail(e.target.value)}
           placeholder="your@email.com"
-          className="flex-1 min-w-0 px-3 py-2 rounded-lg text-sm bg-white/10 border border-white/20 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:border-transparent"
-          style={{ '--tw-ring-color': '#033BB0' } as React.CSSProperties}
+          style={{ ...inputStyle, flex: 1 }}
         />
         <button
           type="submit"

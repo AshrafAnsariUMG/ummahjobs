@@ -9,6 +9,7 @@ interface AuditEntry {
   action: string
   admin_name: string
   target_user_id: string | null
+  target_name: string | null
   notes: string | null
   created_at: string
 }
@@ -116,7 +117,7 @@ export default function AdminAuditLogPage() {
           actionLabel(e.action).toLowerCase().includes(q) ||
           e.admin_name.toLowerCase().includes(q) ||
           (e.notes ?? '').toLowerCase().includes(q) ||
-          (e.target_user_id ?? '').toLowerCase().includes(q)
+          (e.target_name ?? '').toLowerCase().includes(q)
         )
       })
     : entries
@@ -217,12 +218,8 @@ export default function AdminAuditLogPage() {
                     <td className="px-4 py-3">
                       <ActionBadge action={entry.action} />
                     </td>
-                    <td className="px-4 py-3 text-xs text-gray-500 font-mono">
-                      {entry.target_user_id
-                        ? entry.target_user_id.length > 12
-                          ? entry.target_user_id.slice(0, 12) + '…'
-                          : entry.target_user_id
-                        : <span className="text-gray-300">System</span>}
+                    <td className="px-4 py-3 text-xs text-gray-600 whitespace-nowrap">
+                      {entry.target_name ?? (entry.target_user_id ? <span className="font-mono text-gray-400">{entry.target_user_id.slice(0, 8)}…</span> : <span className="text-gray-300">—</span>)}
                     </td>
                     <td className="px-4 py-3 text-xs text-gray-600 max-w-xs">
                       {entry.notes ?? <span className="text-gray-300">—</span>}

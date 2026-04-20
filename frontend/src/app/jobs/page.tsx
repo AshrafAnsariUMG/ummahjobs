@@ -7,6 +7,7 @@ import MANLeaderboard from '@/components/ads/MANLeaderboard'
 import IslamicEmptyState from '@/components/ui/IslamicEmptyState'
 import { SearchIcon } from '@/components/ui/IslamicIcons'
 import SortDropdown from '@/components/jobs/SortDropdown'
+import AnimatedSection from '@/components/ui/AnimatedSection'
 
 const API = process.env.NEXT_PUBLIC_API_URL
 
@@ -96,12 +97,12 @@ export default async function JobsPage({ searchParams }: PageProps) {
 
       <div className="flex gap-8">
         {/* Sidebar */}
-        <div className="hidden lg:block w-56 shrink-0">
+        <AnimatedSection animation="fade-left" className="hidden lg:block w-56 shrink-0">
           <FilterSidebarWrapper categories={categories} jobTypes={jobTypes} />
-        </div>
+        </AnimatedSection>
 
         {/* Main */}
-        <div className="flex-1 min-w-0">
+        <AnimatedSection animation="fade-right" className="flex-1 min-w-0">
           {/* Results bar with sort */}
           <div className="flex items-center justify-between mb-4">
             <p className="text-sm text-gray-500">
@@ -169,7 +170,7 @@ export default async function JobsPage({ searchParams }: PageProps) {
               />
             </div>
           )}
-        </div>
+        </AnimatedSection>
       </div>
     </div>
   )

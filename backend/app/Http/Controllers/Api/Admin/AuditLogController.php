@@ -23,15 +23,18 @@ class AuditLogController extends Controller
 
         $log = $query->paginate(20);
 
-        $adminIds = $log->pluck('admin_id')->unique()->filter();
-        $admins   = User::whereIn('id', $adminIds)->pluck('display_name', 'id');
+        $adminIds  = $log->pluck('admin_id')->unique()->filter();
+        $targetIds = $log->pluck('target_user_id')->unique()->filter();
+        $allIds    = $adminIds->merge($targetIds)->unique();
+        $users     = User::whereIn('id', $allIds)->pluck('display_name', 'id');
 
-        $items = $log->map(function ($entry) use ($admins) {
+        $items = $log->map(function ($entry) use ($users) {
             return [
                 'id'             => $entry->id,
                 'action'         => $entry->action,
-                'admin_name'     => $admins[$entry->admin_id] ?? 'Unknown',
+                'admin_name'     => $users[$entry->admin_id] ?? 'Unknown',
                 'target_user_id' => $entry->target_user_id,
+                'target_name'    => $entry->target_user_id ? ($users[$entry->target_user_id] ?? null) : null,
                 'notes'          => $entry->notes,
                 'created_at'     => $entry->created_at,
             ];
