@@ -29,6 +29,7 @@ export default function EmployerDashboardPage() {
   const [recentJobs, setRecentJobs] = useState<Job[]>([])
   const [totalJobs, setTotalJobs] = useState(0)
   const [activeCount, setActiveCount] = useState(0)
+  const [totalApplications, setTotalApplications] = useState<number | null>(null)
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
@@ -37,13 +38,16 @@ export default function EmployerDashboardPage() {
       api.get('/api/employer/profile'),
       api.get('/api/employer/jobs?per_page=5'),
       api.get('/api/employer/jobs?status=active&per_page=1'),
+      api.get('/api/employer/jobs?per_page=100'),
     ])
-      .then(([bal, emp, jobs, active]: [CreditBalance, Employer, PaginatedResponse<Job>, PaginatedResponse<Job>]) => {
+      .then(([bal, emp, jobs, active, allJobs]: [CreditBalance, Employer, PaginatedResponse<Job>, PaginatedResponse<Job>, PaginatedResponse<Job>]) => {
         setBalance(bal)
         setEmployer(emp)
         setRecentJobs(jobs.data ?? [])
         setTotalJobs(jobs.meta?.total ?? 0)
         setActiveCount(active.meta?.total ?? 0)
+        const appSum = (allJobs.data ?? []).reduce((sum, j) => sum + (j.applications_count ?? 0), 0)
+        setTotalApplications(appSum)
       })
       .catch(() => {})
       .finally(() => setLoading(false))
@@ -83,7 +87,7 @@ export default function EmployerDashboardPage() {
             highlight: (balance?.total_credits ?? 0) > 0,
           },
           { label: 'Active Listings', value: loading ? '—' : String(activeCount) },
-          { label: 'Total Applications', value: '0', sub: <span className="text-xs text-gray-400">Coming soon</span> },
+          { label: 'Total Applications', value: loading ? '—' : String(totalApplications ?? 0) },
           { label: 'Profile Views', value: loading ? '—' : String(employer?.views_count ?? 0) },
         ].map((stat) => (
           <div key={stat.label} className="bg-white rounded-xl border border-gray-200 p-5">

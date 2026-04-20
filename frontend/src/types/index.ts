@@ -258,6 +258,7 @@ export interface Job {
   status: string
   expires_at: string | null
   views_count: number
+  applications_count?: number
   created_at: string
   employer: Employer
   category: JobCategory | null

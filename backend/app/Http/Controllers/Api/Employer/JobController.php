@@ -124,7 +124,7 @@ class JobController
             ->update(['status' => 'expired']);
 
         $status = $request->status ?? 'all';
-        $query  = Job::where('employer_id', $employer->id)->with('category');
+        $query  = Job::where('employer_id', $employer->id)->with('category')->withCount('applications');
 
         if ($status !== 'all') {
             $query->where('status', $status);
