@@ -3,6 +3,7 @@
 namespace App\Console\Commands;
 
 use App\Models\Job;
+use App\Services\RevalidationService;
 use Illuminate\Console\Attributes\Description;
 use Illuminate\Console\Attributes\Signature;
 use Illuminate\Console\Command;
@@ -18,5 +19,9 @@ class ExpireJobs extends Command
             ->update(['status' => 'expired']);
 
         $this->info("Marked {$count} jobs as expired.");
+
+        if ($count > 0) {
+            RevalidationService::trigger();
+        }
     }
 }

@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Employer;
+use App\Services\RevalidationService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
@@ -66,6 +67,8 @@ class EmployerController extends Controller
             ]);
         }
 
+        RevalidationService::trigger(['/employers/why-post']);
+
         return response()->json($employer->load('user:id,email,is_active'));
     }
 
@@ -97,6 +100,8 @@ class EmployerController extends Controller
             'created_at'     => now(),
             'updated_at'     => now(),
         ]);
+
+        RevalidationService::trigger(['/employers/why-post']);
 
         return response()->json($employer->fresh()->load('user:id,email,is_active'));
     }

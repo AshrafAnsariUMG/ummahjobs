@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Services\RevalidationService;
 use App\Services\SiteSettingsService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -36,6 +37,8 @@ class SiteSettingsController extends Controller
 
         $this->settings->setMany($data);
 
+        RevalidationService::trigger(['/', '/about', '/blog', '/employers/why-post']);
+
         return response()->json(['message' => 'Settings saved.']);
     }
 
@@ -53,6 +56,8 @@ class SiteSettingsController extends Controller
         $url  = Storage::disk('public')->url($path);
 
         $this->settings->set('logo_path', $url);
+
+        RevalidationService::trigger(['/', '/about', '/blog', '/employers/why-post']);
 
         return response()->json(['url' => $url]);
     }

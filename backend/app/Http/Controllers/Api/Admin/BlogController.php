@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\BlogPost;
+use App\Services\RevalidationService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
@@ -62,6 +63,8 @@ class BlogController extends Controller
             'published_at'        => $request->published_at,
         ]);
 
+        RevalidationService::trigger(['/blog']);
+
         return response()->json(['post' => $post, 'slug' => $post->slug], 201);
     }
 
@@ -97,6 +100,8 @@ class BlogController extends Controller
 
         $post->update($data);
 
+        RevalidationService::trigger(['/blog']);
+
         return response()->json(['post' => $post->fresh()]);
     }
 
@@ -104,6 +109,8 @@ class BlogController extends Controller
     {
         $post = BlogPost::where('slug', $slug)->firstOrFail();
         $post->delete();
+
+        RevalidationService::trigger(['/blog']);
 
         return response()->json(['message' => 'Post deleted.']);
     }

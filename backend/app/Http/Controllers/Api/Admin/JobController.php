@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Employer;
 use App\Models\Job;
+use App\Services\RevalidationService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
@@ -77,6 +78,8 @@ class JobController extends Controller
             'updated_at' => now(),
         ]);
 
+        RevalidationService::trigger();
+
         return response()->json([
             'job'     => $job,
             'slug'    => $job->slug,
@@ -131,6 +134,8 @@ class JobController extends Controller
         $job = Job::findOrFail($id);
         $job->update($request->only(['status', 'is_featured', 'is_urgent']));
 
+        RevalidationService::trigger();
+
         return response()->json($job->load(['employer:id,company_name,slug', 'category:id,name']));
     }
 
@@ -147,6 +152,8 @@ class JobController extends Controller
             'created_at' => now(),
             'updated_at' => now(),
         ]);
+
+        RevalidationService::trigger();
 
         return response()->json(['message' => 'Job deleted.']);
     }

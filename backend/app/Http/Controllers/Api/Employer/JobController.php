@@ -6,6 +6,7 @@ use App\Models\Job;
 use App\Models\JobApplication;
 use App\Services\EmployerPackageService;
 use App\Services\JDWriterService;
+use App\Services\RevalidationService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
@@ -107,6 +108,8 @@ class JobController
             'expires_at'           => now()->addDays($package->duration_days),
         ]);
 
+        RevalidationService::trigger();
+
         return response()->json(['job' => $job, 'slug' => $job->slug], 201);
     }
 
@@ -175,6 +178,8 @@ class JobController
             'apply_url', 'is_urgent',
         ]));
 
+        RevalidationService::trigger();
+
         return response()->json($job->fresh('category'));
     }
 
@@ -194,6 +199,8 @@ class JobController
         }
 
         $job->delete();
+
+        RevalidationService::trigger();
 
         return response()->json(['message' => 'Job deleted.']);
     }
