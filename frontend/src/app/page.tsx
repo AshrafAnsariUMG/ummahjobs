@@ -108,23 +108,22 @@ export default async function HomePage() {
           overflow: 'hidden',
         }}
       >
-        {/* Illustration — centered at natural proportions */}
+        {/* Illustration — responsive on mobile, admin-controlled height on desktop */}
+        <style>{`
+          .hero-illustration { width: 100%; height: auto; max-height: 160px; object-fit: contain; display: block; }
+          @media (min-width: 640px) { .hero-illustration { width: auto; height: ${illustrationHeight}px; max-height: none; } }
+        `}</style>
         <div style={{
           width: '100%',
           display: 'flex',
           justifyContent: 'center',
           overflow: 'hidden',
-          marginBottom: '32px',
+          marginTop: '32px',
         }}>
           <img
             src="/images/illustration.webp"
             alt="Muslim professionals"
-            style={{
-              height: `${illustrationHeight}px`,
-              width: 'auto',
-              objectFit: 'contain',
-              display: 'block',
-            }}
+            className="hero-illustration"
           />
         </div>
 
