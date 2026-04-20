@@ -83,8 +83,9 @@ export default async function HomePage() {
   const [heroLine2Green, ...heroLine2BlueParts] = heroLine2Raw.trim().split(' ')
   const heroLine2Blue = heroLine2BlueParts.join(' ')
   const heroSub  = settings.hero_subheading || 'Connect with Muslim-friendly employers and build a career aligned with your values and faith.'
-  const heroFontDesktop = settings.hero_font_size_desktop ?? '56'
-  const heroFontMobile  = settings.hero_font_size_mobile  ?? '36'
+  const heroFontDesktop     = settings.hero_font_size_desktop ?? '56'
+  const heroFontMobile      = settings.hero_font_size_mobile  ?? '36'
+  const illustrationHeight  = settings.illustration_height    ?? '260'
 
   const visibleCategories = categories.slice(0, 12)
 
@@ -119,7 +120,7 @@ export default async function HomePage() {
             src="/images/illustration.webp"
             alt="Muslim professionals"
             style={{
-              height: '260px',
+              height: `${illustrationHeight}px`,
               width: 'auto',
               objectFit: 'contain',
               display: 'block',

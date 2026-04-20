@@ -158,6 +158,11 @@ Route::middleware(['auth:sanctum', 'role:admin'])->prefix('admin')->group(functi
     // Audit log
     Route::get('audit-log', [Admin\AuditLogController::class, 'index']);
 
+    // Reviews
+    Route::get('reviews', [Admin\ReviewController::class, 'index']);
+    Route::put('reviews/{id}', [Admin\ReviewController::class, 'update']);
+    Route::delete('reviews/{id}', [Admin\ReviewController::class, 'destroy']);
+
     // Jobs (post before {id} routes)
     Route::post('jobs', [Admin\JobController::class, 'store']);
     Route::get('jobs', [Admin\JobController::class, 'index']);
