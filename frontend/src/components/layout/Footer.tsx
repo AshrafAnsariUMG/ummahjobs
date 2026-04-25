@@ -167,7 +167,57 @@ export default function Footer() {
           </div>
         </div>
 
-        <div className="border-t border-gray-700 pt-6 text-center">
+        <div style={{
+          borderTop: '1px solid rgba(255,255,255,0.08)',
+          paddingTop: '24px',
+          marginTop: '24px',
+          textAlign: 'center',
+        }}>
+          <p style={{
+            fontSize: '10px',
+            fontWeight: 600,
+            letterSpacing: '1.5px',
+            color: 'rgba(255,255,255,0.3)',
+            textTransform: 'uppercase',
+            marginBottom: '14px',
+          }}>
+            Part of the Ummah Ecosystem
+          </p>
+          <div style={{
+            display: 'flex',
+            flexWrap: 'wrap',
+            justifyContent: 'center',
+            gap: '8px 24px',
+          }}>
+            {[
+              { label: 'UmmahPlaces',       url: 'https://ummahplaces.com/?utm_source=ummahjobs&utm_medium=footer' },
+              { label: 'UmmahPass',         url: 'https://ummahpass.io/?utm_source=ummahjobs&utm_medium=footer' },
+              { label: 'ummah.email',       url: 'https://ummah.email/join?utm_source=ummahjobs&utm_medium=footer' },
+              { label: 'UmmahBuzz',         url: 'https://ummahbuzz.com/?utm_source=ummahjobs&utm_medium=footer' },
+              { label: 'UmmahCauses',       url: 'https://ummahcauses.org/?utm_source=ummahjobs&utm_medium=footer' },
+              { label: 'Muslim Ad Network', url: 'https://muslimadnetwork.com/?utm_source=ummahjobs&utm_medium=footer' },
+            ].map((item, i) => (
+              <a
+                key={i}
+                href={item.url}
+                target="_blank"
+                rel="noopener noreferrer"
+                style={{
+                  fontSize: '13px',
+                  color: 'rgba(255,255,255,0.45)',
+                  textDecoration: 'none',
+                  transition: 'color 0.15s',
+                }}
+                onMouseEnter={(e) => (e.currentTarget.style.color = 'rgba(255,255,255,0.85)')}
+                onMouseLeave={(e) => (e.currentTarget.style.color = 'rgba(255,255,255,0.45)')}
+              >
+                {item.label}
+              </a>
+            ))}
+          </div>
+        </div>
+
+        <div className="border-t border-gray-700 pt-6 mt-6 text-center">
           <p className="text-xs text-gray-500">
             © 2026 Ummah Media Group LLC. All rights reserved.
           </p>
