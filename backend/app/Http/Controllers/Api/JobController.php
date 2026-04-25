@@ -11,6 +11,7 @@ use App\Models\JobMatchCache;
 use App\Services\JobMatchService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class JobController extends Controller
 {
@@ -40,13 +41,19 @@ class JobController extends Controller
         }
 
         if ($request->job_type) {
-            $query->where('job_type', $request->job_type);
+            // Frontend sends job_type slug (e.g. "full-time"); DB stores name ("Full Time")
+            $jobTypeRow = DB::table('job_types')
+                ->where('slug', $request->job_type)
+                ->first();
+            $jobTypeName = $jobTypeRow ? $jobTypeRow->name : $request->job_type;
+            $query->whereRaw('LOWER(job_type) = ?', [strtolower($jobTypeName)]);
         }
 
         if ($request->location) {
-            $query->where(function ($q) use ($request) {
-                $q->where('location', 'like', '%' . $request->location . '%')
-                  ->orWhere('country', 'like', '%' . $request->location . '%');
+            $loc = strtolower($request->location);
+            $query->where(function ($q) use ($loc) {
+                $q->whereRaw('LOWER(location) LIKE ?', ['%' . $loc . '%'])
+                  ->orWhereRaw('LOWER(country) LIKE ?', ['%' . $loc . '%']);
             });
         }
 
@@ -64,50 +71,64 @@ class JobController extends Controller
         }
 
         if ($request->experience_level) {
-            $query->where('experience_level', $request->experience_level);
+            $query->whereRaw('LOWER(experience_level) LIKE ?', ['%' . strtolower($request->experience_level) . '%']);
         }
 
         if ($request->career_level) {
-            $query->where('career_level', $request->career_level);
+            $query->whereRaw('LOWER(career_level) = ?', [strtolower($request->career_level)]);
         }
 
         if ($request->salary_min) {
-            $query->where('salary_max', '>=', $request->salary_min);
+            $query->where('salary_min', '>=', (int) $request->salary_min);
         }
 
         if ($request->salary_max) {
-            $query->where('salary_min', '<=', $request->salary_max);
+            $query->where('salary_max', '<=', (int) $request->salary_max);
         }
 
-        if ($request->featured) {
+        if ($request->featured === 'true' || $request->featured === '1') {
             $query->where('is_featured', true);
         }
 
         if ($request->remote === 'true' || $request->remote === '1') {
             $query->where(function ($q) {
-                $q->where('location', 'like', '%remote%')
-                  ->orWhere('country', 'like', '%remote%');
+                $q->whereRaw('LOWER(location) LIKE ?', ['%remote%'])
+                  ->orWhereRaw('LOWER(country) LIKE ?', ['%remote%'])
+                  ->orWhereRaw('LOWER(job_type) LIKE ?', ['%remote%']);
             });
         }
 
         if ($request->work_type && $request->work_type !== 'all') {
-            match ($request->work_type) {
-                'remote'  => $query->where(function ($q) {
-                    $q->where('location', 'like', '%remote%')
-                      ->orWhere('country', 'like', '%remote%');
-                }),
-                'hybrid'  => $query->where(function ($q) {
-                    $q->where('location', 'like', '%hybrid%')
-                      ->orWhere('description', 'like', '%hybrid%');
-                }),
-                'on-site' => $query->where(function ($q) {
-                    $q->where('location', 'not like', '%remote%')
-                      ->where('location', 'not like', '%hybrid%')
-                      ->whereNotNull('location')
-                      ->where('location', '!=', '');
-                }),
-                default   => null,
-            };
+            $workTypes = is_array($request->work_type)
+                ? $request->work_type
+                : [$request->work_type];
+
+            $query->where(function ($q) use ($workTypes) {
+                foreach ($workTypes as $type) {
+                    $t = strtolower(trim($type));
+                    if ($t === 'on-site') {
+                        $q->orWhere(function ($inner) {
+                            $inner->whereRaw('LOWER(COALESCE(job_type, \'\')) NOT LIKE ?', ['%remote%'])
+                                  ->whereRaw('LOWER(COALESCE(job_type, \'\')) NOT LIKE ?', ['%hybrid%'])
+                                  ->whereRaw('LOWER(COALESCE(location, \'\')) NOT LIKE ?', ['%remote%'])
+                                  ->whereRaw('LOWER(COALESCE(location, \'\')) NOT LIKE ?', ['%hybrid%'])
+                                  ->where(function ($loc) {
+                                      $loc->where(function ($a) {
+                                          $a->whereNotNull('location')->where('location', '!=', '');
+                                      })->orWhere(function ($b) {
+                                          $b->whereNotNull('country')->where('country', '!=', '');
+                                      });
+                                  });
+                        });
+                    } else {
+                        $q->orWhere(function ($inner) use ($t) {
+                            $inner->orWhereRaw('LOWER(location) LIKE ?', ['%' . $t . '%'])
+                                  ->orWhereRaw('LOWER(country) LIKE ?', ['%' . $t . '%'])
+                                  ->orWhereRaw('LOWER(job_type) LIKE ?', ['%' . $t . '%']);
+                        });
+                    }
+                }
+            });
         }
 
         match ($request->sort) {
