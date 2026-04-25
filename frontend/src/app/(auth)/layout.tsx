@@ -1,6 +1,7 @@
 'use client'
 
 import type { ReactNode } from 'react'
+import MinimalFooter from '@/components/layout/MinimalFooter'
 
 export default function AuthLayout({ children }: { children: ReactNode }) {
   return (
@@ -113,12 +114,18 @@ export default function AuthLayout({ children }: { children: ReactNode }) {
         flex: 1,
         display: 'flex',
         flexDirection: 'column',
-        justifyContent: 'center',
-        alignItems: 'center',
-        padding: '48px 40px',
         background: 'white',
         overflowY: 'auto',
+        minHeight: '100vh',
       }}>
+        <div style={{
+          flex: 1,
+          display: 'flex',
+          flexDirection: 'column',
+          justifyContent: 'center',
+          alignItems: 'center',
+          padding: '48px 40px',
+        }}>
         {/* Mobile logo */}
         <div className="lg:hidden" style={{ marginBottom: '32px' }}>
           <a href="/" style={{
@@ -158,6 +165,8 @@ export default function AuthLayout({ children }: { children: ReactNode }) {
           </a>
           {children}
         </div>
+        </div>
+        <MinimalFooter />
       </div>
 
     </div>

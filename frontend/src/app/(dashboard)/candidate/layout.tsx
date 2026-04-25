@@ -7,6 +7,7 @@ import { useAuth } from '@/context/AuthContext'
 import { api } from '@/lib/api'
 import type { Candidate } from '@/types'
 import { getStorageUrl } from '@/lib/imageUtils'
+import MinimalFooter from '@/components/layout/MinimalFooter'
 
 const navLinks = [
   {
@@ -244,6 +245,7 @@ export default function CandidateLayout({ children }: { children: React.ReactNod
         </div>
 
         <main className="flex-1 p-6 lg:p-8">{children}</main>
+        <MinimalFooter />
       </div>
     </div>
   )

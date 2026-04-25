@@ -5,6 +5,7 @@ import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
 import { useAuth } from '@/context/AuthContext'
 import { api } from '@/lib/api'
+import MinimalFooter from '@/components/layout/MinimalFooter'
 
 const navLinks = [
   {
@@ -230,6 +231,7 @@ export default function EmployerLayout({ children }: { children: React.ReactNode
         </div>
 
         <main className="flex-1 p-6 lg:p-8">{children}</main>
+        <MinimalFooter />
       </div>
     </div>
   )
