@@ -18,7 +18,7 @@ class JobController extends Controller
     public function index(Request $request): JsonResponse
     {
         $query = Job::with([
-            'employer:id,company_name,slug,logo_path,is_verified',
+            'employer:id,company_name,slug,logo_path',
             'category:id,name,slug',
         ])
             ->where('status', 'active')
@@ -155,7 +155,7 @@ class JobController extends Controller
     public function show(string $slug): JsonResponse
     {
         $job = Job::with([
-            'employer:id,company_name,slug,logo_path,cover_photo_path,is_verified,category,email,socials',
+            'employer:id,company_name,slug,logo_path,cover_photo_path,category,email,socials',
             'category:id,name,slug',
         ])
             ->where('slug', $slug)

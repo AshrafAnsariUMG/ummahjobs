@@ -14,7 +14,7 @@ function getFeatures(pkg: Package): { label: string; included: boolean }[] {
     { label: 'Featured listing placement', included: pkg.post_type === 'featured' },
     { label: 'AI job description generator', included: true },
     { label: 'Candidate match scoring', included: true },
-    { label: 'Company profile + Halal Verified', included: true },
+    { label: 'Company profile page', included: true },
     { label: 'Newsletter inclusion', included: pkg.includes_newsletter === true || nameLower === 'extended' },
     { label: 'Priority support', included: nameLower === 'extended' },
   ]

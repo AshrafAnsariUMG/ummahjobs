@@ -16,10 +16,6 @@ const FAQ_ITEMS = [
     a: 'Featured listings appear at the top of search results and in the Featured Jobs carousel on the homepage. They get significantly more visibility than standard listings.',
   },
   {
-    q: 'What is the Halal Verified badge?',
-    a: 'The Halal Verified badge signals to candidates that your company offers a Muslim-friendly work environment. Our team reviews your profile before awarding the badge.',
-  },
-  {
     q: 'Can I message candidates directly?',
     a: 'Yes. All plans include built-in messaging so you can contact any candidate who applies to your job directly within the platform.',
   },
@@ -38,10 +34,6 @@ const FAQ_ITEMS = [
   {
     q: 'Is there a free trial?',
     a: 'Candidates can always register for free. For employers, our Basic package at $8 is a low-risk way to try the platform.',
-  },
-  {
-    q: 'How do I get the Halal Verified badge?',
-    a: 'After setting up your company profile, contact us via the Contact page to request verification. Our team will review your profile within 2-3 business days.',
   },
 ]
 

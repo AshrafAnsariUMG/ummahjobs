@@ -40,16 +40,17 @@ const FEATURE_ROWS: { label: string; tiers: Tier[]; note?: Partial<Record<Tier, 
   { label: 'Featured listing (carousel + top of search)', tiers: ['standard', 'extended'] },
   { label: 'AI job description generator', tiers: ['basic', 'standard', 'extended'] },
   { label: 'Candidate match scoring', tiers: ['basic', 'standard', 'extended'] },
-  { label: 'Company profile + Halal Verified badge', tiers: ['basic', 'standard', 'extended'] },
+  { label: 'Company profile page', tiers: ['basic', 'standard', 'extended'] },
   { label: 'Newsletter inclusion', tiers: ['extended'] },
   { label: 'Priority support', tiers: ['extended'] },
+  { label: 'Priority search placement', tiers: ['extended'] },
 ]
 
 const STEPS = [
   {
     step: '01',
     title: 'Create Your Account',
-    desc: 'Sign up as an employer in under 2 minutes. Set up your company profile and get your Halal Verified badge.',
+    desc: 'Sign up as an employer in under 2 minutes. Set up your company profile and start posting jobs.',
     icon: `<svg viewBox="0 0 24 24" fill="none" stroke="#033BB0" strokeWidth="1.5" width="32" height="32"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><line x1="19" y1="8" x2="19" y2="14"/><line x1="22" y1="11" x2="16" y2="11"/></svg>`,
   },
   {
@@ -82,11 +83,11 @@ const FEATURES = [
     icon: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" width="24" height="24"><circle cx="12" cy="12" r="10"/><path d="M8 14s1.5 2 4 2 4-2 4-2"/><line x1="9" y1="9" x2="9.01" y2="9"/><line x1="15" y1="9" x2="15.01" y2="9"/></svg>`,
   },
   {
-    title: 'Halal Verified Badge',
-    desc: 'Get verified as a Muslim-friendly employer and stand out to candidates.',
+    title: 'CV & Profile Matching',
+    desc: 'Candidates upload their CV and profile — our engine matches them to your job requirements automatically.',
     color: '#FFF7ED',
     iconColor: '#D97706',
-    icon: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" width="24" height="24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>`,
+    icon: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" width="24" height="24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="9" y1="13" x2="15" y2="13"/><line x1="9" y1="17" x2="15" y2="17"/></svg>`,
   },
   {
     title: 'Built-in Messaging',

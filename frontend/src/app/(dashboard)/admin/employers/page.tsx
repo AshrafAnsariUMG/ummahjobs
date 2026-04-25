@@ -31,7 +31,6 @@ interface EmployersResponse {
   meta: { current_page: number; last_page: number; per_page: number; total: number }
 }
 
-type VerifiedFilter = 'all' | 'verified' | 'unverified'
 
 interface Package {
   id: number
@@ -220,7 +219,6 @@ function EditEmployerModal({
     address: employer.address ?? '',
     map_lat: String(employer.map_lat ?? ''),
     map_lng: String(employer.map_lng ?? ''),
-    is_verified: employer.is_verified,
     show_profile: employer.show_profile,
   })
   const [socials, setSocials] = useState<SocialEntry[]>(normalizeSocials(employer.socials))
@@ -474,17 +472,6 @@ function EditEmployerModal({
                 {/* Toggles */}
                 <div className="flex items-center gap-6 pt-1">
                   <label className="flex items-center gap-2 cursor-pointer">
-                    <input type="checkbox" checked={form.is_verified} onChange={(e) => set('is_verified', e.target.checked)} className="sr-only" />
-                    <div
-                      className="relative w-9 h-5 rounded-full transition-colors"
-                      style={{ backgroundColor: form.is_verified ? '#0FBB0F' : '#D1D5DB' }}
-                      onClick={() => set('is_verified', !form.is_verified)}
-                    >
-                      <div className={`absolute top-0.5 w-4 h-4 bg-white rounded-full shadow transition-transform ${form.is_verified ? 'translate-x-4' : 'translate-x-0.5'}`} />
-                    </div>
-                    <span className="text-xs font-medium text-gray-700">Halal Verified</span>
-                  </label>
-                  <label className="flex items-center gap-2 cursor-pointer">
                     <div
                       className="relative w-9 h-5 rounded-full transition-colors"
                       style={{ backgroundColor: form.show_profile ? '#033BB0' : '#D1D5DB' }}
@@ -602,13 +589,11 @@ function EditEmployerModal({
 
 function ActionsMenu({
   employer,
-  onVerifyToggle,
   onProfileToggle,
   onGrantCredits,
   onEditProfile,
 }: {
   employer: AdminEmployer
-  onVerifyToggle: () => void
   onProfileToggle: () => void
   onGrantCredits: () => void
   onEditProfile: () => void
@@ -658,12 +643,6 @@ function ActionsMenu({
             Grant Credits
           </button>
           <button
-            onClick={() => { setOpen(false); onVerifyToggle() }}
-            className={`block w-full text-left px-4 py-2 text-sm hover:bg-gray-50 ${employer.is_verified ? 'text-red-600' : 'text-green-700'}`}
-          >
-            {employer.is_verified ? 'Remove Verified' : 'Grant Halal Verified'}
-          </button>
-          <button
             onClick={() => { setOpen(false); onProfileToggle() }}
             className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-50"
           >
@@ -675,12 +654,6 @@ function ActionsMenu({
   )
 }
 
-const VERIFIED_TABS: { key: VerifiedFilter; label: string }[] = [
-  { key: 'all', label: 'All' },
-  { key: 'verified', label: 'Verified' },
-  { key: 'unverified', label: 'Unverified' },
-]
-
 export default function AdminEmployersPage() {
   const { showToast } = useToast()
   const [employers, setEmployers] = useState<AdminEmployer[]>([])
@@ -689,7 +662,6 @@ export default function AdminEmployersPage() {
 
   const [search, setSearch] = useState('')
   const [debouncedSearch, setDebouncedSearch] = useState('')
-  const [verifiedFilter, setVerifiedFilter] = useState<VerifiedFilter>('all')
   const [page, setPage] = useState(1)
   const [grantCreditsTarget, setGrantCreditsTarget] = useState<AdminEmployer | null>(null)
   const [editTarget, setEditTarget] = useState<AdminEmployer | null>(null)
@@ -699,33 +671,19 @@ export default function AdminEmployersPage() {
     return () => clearTimeout(t)
   }, [search])
 
-  useEffect(() => { setPage(1) }, [debouncedSearch, verifiedFilter])
+  useEffect(() => { setPage(1) }, [debouncedSearch])
 
   useEffect(() => {
     setLoading(true)
     const params = new URLSearchParams()
     params.set('page', String(page))
     if (debouncedSearch) params.set('search', debouncedSearch)
-    if (verifiedFilter === 'verified') params.set('is_verified', '1')
-    if (verifiedFilter === 'unverified') params.set('is_verified', '0')
 
     api.get(`/api/admin/employers?${params}`)
       .then((d: EmployersResponse) => { setEmployers(d.data); setMeta(d.meta) })
       .catch(() => showToast('Failed to load employers.', 'error'))
       .finally(() => setLoading(false))
-  }, [page, debouncedSearch, verifiedFilter])
-
-  async function handleVerifyToggle(employer: AdminEmployer) {
-    const newVal = !employer.is_verified
-    setEmployers((prev) => prev.map((e) => e.id === employer.id ? { ...e, is_verified: newVal } : e))
-    try {
-      await api.put(`/api/admin/employers/${employer.id}`, { is_verified: newVal })
-      showToast(newVal ? 'JazakAllah Khayran! Halal Verified granted.' : 'Verified status removed.', 'success')
-    } catch {
-      setEmployers((prev) => prev.map((e) => e.id === employer.id ? { ...e, is_verified: !newVal } : e))
-      showToast('Failed to update employer.', 'error')
-    }
-  }
+  }, [page, debouncedSearch])
 
   async function handleProfileToggle(employer: AdminEmployer) {
     const newVal = !employer.show_profile
@@ -772,7 +730,7 @@ export default function AdminEmployersPage() {
       {/* Header */}
       <div className="mb-6">
         <h1 className="text-2xl font-extrabold text-gray-900">Employers</h1>
-        <p className="text-sm text-gray-500 mt-1">Manage employer accounts and Halal Verified status · {meta.total.toLocaleString()} total</p>
+        <p className="text-sm text-gray-500 mt-1">Manage employer accounts · {meta.total.toLocaleString()} total</p>
       </div>
 
       {/* Filter bar */}
@@ -791,20 +749,6 @@ export default function AdminEmployersPage() {
               style={{ '--tw-ring-color': '#033BB0' } as React.CSSProperties}
             />
           </div>
-        </div>
-        <div className="flex gap-1 mt-3 border-b border-gray-100">
-          {VERIFIED_TABS.map((tab) => (
-            <button
-              key={tab.key}
-              onClick={() => setVerifiedFilter(tab.key)}
-              className="px-3 py-2 text-sm font-medium border-b-2 transition-colors"
-              style={verifiedFilter === tab.key
-                ? { borderColor: '#033BB0', color: '#033BB0' }
-                : { borderColor: 'transparent', color: '#6b7280' }}
-            >
-              {tab.label}
-            </button>
-          ))}
         </div>
       </div>
 
@@ -826,7 +770,6 @@ export default function AdminEmployersPage() {
                   <tr>
                     <th className="text-left text-xs font-medium text-gray-500 uppercase px-5 py-3">Company</th>
                     <th className="text-left text-xs font-medium text-gray-500 uppercase px-4 py-3">Category</th>
-                    <th className="text-left text-xs font-medium text-gray-500 uppercase px-4 py-3">Halal Verified</th>
                     <th className="text-left text-xs font-medium text-gray-500 uppercase px-4 py-3">Profile</th>
                     <th className="text-left text-xs font-medium text-gray-500 uppercase px-4 py-3">Joined</th>
                     <th className="px-4 py-3"></th>
@@ -857,19 +800,6 @@ export default function AdminEmployersPage() {
                           <span className="px-2 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-600">{emp.category}</span>
                         ) : <span className="text-xs text-gray-300">—</span>}
                       </td>
-                      {/* Halal Verified */}
-                      <td className="px-4 py-3">
-                        {emp.is_verified ? (
-                          <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold border" style={{ backgroundColor: '#E6F9E6', color: '#0FBB0F', borderColor: '#0FBB0F' }}>
-                            <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>
-                              <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
-                            </svg>
-                            Halal Verified
-                          </span>
-                        ) : (
-                          <span className="px-2.5 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-500">Unverified</span>
-                        )}
-                      </td>
                       {/* Profile visibility */}
                       <td className="px-4 py-3">
                         <span className={`px-2 py-0.5 rounded-full text-xs font-medium ${emp.show_profile ? 'bg-blue-50 text-blue-700' : 'bg-gray-100 text-gray-400'}`}>
@@ -883,7 +813,6 @@ export default function AdminEmployersPage() {
                       <td className="px-4 py-3 text-right">
                         <ActionsMenu
                           employer={emp}
-                          onVerifyToggle={() => handleVerifyToggle(emp)}
                           onProfileToggle={() => handleProfileToggle(emp)}
                           onGrantCredits={() => setGrantCreditsTarget(emp)}
                           onEditProfile={() => setEditTarget(emp)}

@@ -123,12 +123,6 @@ export default async function JobDetailPage({ params }: PageProps) {
                       >
                         {job.employer.company_name}
                       </Link>
-                      {job.employer.is_verified && (
-                        <span className="inline-flex items-center gap-1 text-xs font-medium" style={{ color: '#0FBB0F' }}>
-                          <span style={{ width: 6, height: 6, borderRadius: '50%', backgroundColor: '#0FBB0F', display: 'inline-block', flexShrink: 0 }} />
-                          Halal Verified
-                        </span>
-                      )}
                     </div>
                   </div>
                   <div className="flex items-center gap-2 shrink-0">
@@ -281,12 +275,6 @@ export default async function JobDetailPage({ params }: PageProps) {
                 <p className="text-sm font-semibold text-gray-900">{job.employer.company_name}</p>
                 <div className="flex items-center gap-1.5 flex-wrap">
                   {job.employer.category && <p className="text-xs text-gray-500">{job.employer.category}</p>}
-                  {job.employer.is_verified && (
-                    <span className="inline-flex items-center gap-1 text-xs font-medium" style={{ color: '#0FBB0F' }}>
-                      <span style={{ width: 5, height: 5, borderRadius: '50%', backgroundColor: '#0FBB0F', display: 'inline-block', flexShrink: 0 }} />
-                      Halal Verified
-                    </span>
-                  )}
                 </div>
               </div>
             </div>

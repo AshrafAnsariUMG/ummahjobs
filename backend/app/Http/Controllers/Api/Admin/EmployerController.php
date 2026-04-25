@@ -20,10 +20,6 @@ class EmployerController extends Controller
             $query->where('company_name', 'like', '%' . $request->search . '%');
         }
 
-        if ($request->has('is_verified') && $request->is_verified !== '') {
-            $query->where('is_verified', filter_var($request->is_verified, FILTER_VALIDATE_BOOLEAN));
-        }
-
         $employers = $query->paginate(20);
 
         return response()->json([
@@ -49,23 +45,11 @@ class EmployerController extends Controller
     public function update(Request $request, string $id)
     {
         $request->validate([
-            'is_verified'  => 'sometimes|boolean',
             'show_profile' => 'sometimes|boolean',
         ]);
 
         $employer = Employer::findOrFail($id);
-        $employer->update($request->only(['is_verified', 'show_profile']));
-
-        if ($request->has('is_verified')) {
-            DB::table('admin_audit_log')->insert([
-                'admin_id'       => $request->user()->id,
-                'action'         => $request->is_verified ? 'verify_employer' : 'unverify_employer',
-                'target_user_id' => $employer->user_id,
-                'notes'          => $employer->company_name,
-                'created_at'     => now(),
-                'updated_at'     => now(),
-            ]);
-        }
+        $employer->update($request->only(['show_profile']));
 
         RevalidationService::trigger(['/employers/why-post']);
 
@@ -86,7 +70,6 @@ class EmployerController extends Controller
             'socials'      => 'nullable|array',
             'map_lat'      => 'nullable|numeric|between:-90,90',
             'map_lng'      => 'nullable|numeric|between:-180,180',
-            'is_verified'  => 'sometimes|boolean',
             'show_profile' => 'sometimes|boolean',
         ]);
 

@@ -166,19 +166,6 @@ export default async function EmployerProfilePage({ params }: PageProps) {
             <h1 style={{ fontSize: '24px', fontWeight: '700', color: '#111827', margin: 0 }}>
               {employer.company_name}
             </h1>
-            {employer.is_verified && (
-              <span style={{
-                background: '#DCFCE7',
-                color: '#166534',
-                border: '1px solid #BBF7D0',
-                borderRadius: '20px',
-                padding: '2px 10px',
-                fontSize: '12px',
-                fontWeight: '500',
-              }}>
-                ✓ Halal Verified
-              </span>
-            )}
           </div>
           <p style={{ color: '#6B7280', fontSize: '15px', margin: '4px 0 0' }}>
             {employer.category ?? 'Company'}
