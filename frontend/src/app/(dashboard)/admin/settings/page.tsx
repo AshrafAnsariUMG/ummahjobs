@@ -24,6 +24,11 @@ const TABS: { id: string; label: string }[] = [
   { id: 'social', label: 'Social' },
 ]
 
+const DESCRIPTION_OVERRIDES: Record<string, string> = {
+  hero_heading_line1: "First line — displayed in dark color (e.g. 'Connecting Muslim Job Seekers')",
+  hero_heading_line2: "Second line — the word 'Halal' renders in green, all other words render in blue (e.g. 'with Halal Employment Opportunities')",
+}
+
 export default function AdminSettingsPage() {
   const [grouped, setGrouped] = useState<GroupedSettings>({})
   const [activeTab, setActiveTab] = useState('general')
@@ -222,8 +227,8 @@ export default function AdminSettingsPage() {
               >
                 {setting.label}
               </label>
-              {setting.description && (
-                <p className="text-xs text-gray-400 mt-1">{setting.description}</p>
+              {(DESCRIPTION_OVERRIDES[setting.key] ?? setting.description) && (
+                <p className="text-xs text-gray-400 mt-1">{DESCRIPTION_OVERRIDES[setting.key] ?? setting.description}</p>
               )}
             </div>
             <div className="flex-1">

@@ -104,8 +104,6 @@ export default async function HomePage() {
 
   const heroLine1 = settings.hero_heading_line1 || 'Find Your Next'
   const heroLine2Raw = settings.hero_heading_line2 || 'Halal Opportunity'
-  const [heroLine2Green, ...heroLine2BlueParts] = heroLine2Raw.trim().split(' ')
-  const heroLine2Blue = heroLine2BlueParts.join(' ')
   const heroSub = settings.hero_subheading || 'Connect with Muslim-friendly employers and build a career aligned with your values and faith.'
   const heroFontDesktop    = settings.hero_font_size_desktop ?? '56'
   const heroFontMobile     = settings.hero_font_size_mobile  ?? '36'
@@ -157,10 +155,14 @@ export default async function HomePage() {
             }}>
               {heroLine1}
               <br />
-              <span style={{ color: '#0FBB0F' }}>{heroLine2Green}</span>
-              {heroLine2Blue && (
-                <> <span style={{ color: '#033BB0' }}>{heroLine2Blue}</span></>
-              )}
+              {heroLine2Raw.trim().split(' ').map((word, i) => (
+                <span
+                  key={i}
+                  style={{ color: word.toLowerCase() === 'halal' ? '#0FBB0F' : '#033BB0' }}
+                >
+                  {word}{' '}
+                </span>
+              ))}
             </h1>
 
             <p style={{

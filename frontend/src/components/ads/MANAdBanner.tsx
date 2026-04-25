@@ -39,12 +39,28 @@ export default function MANAd({ size, className }: MANAdProps) {
   }, [])
 
   return (
-    <div
-      className={className}
-      style={{ display: 'flex', justifyContent: 'center', minHeight: config.height }}
-      dangerouslySetInnerHTML={{
-        __html: `<ins class="bbbac5e5" data-key="${config.key}"></ins>`,
-      }}
-    />
+    <div className={className} style={{ textAlign: 'center' }}>
+      <div
+        style={{ display: 'flex', justifyContent: 'center', minHeight: config.height, overflow: 'hidden' }}
+        dangerouslySetInnerHTML={{
+          __html: `<ins class="bbbac5e5" data-key="${config.key}"></ins>`,
+        }}
+      />
+      <div style={{ marginTop: '4px' }}>
+        <a
+          href="https://muslimadnetwork.com?utm_source=UmmahJobs"
+          target="_blank"
+          rel="noopener noreferrer"
+          style={{
+            fontSize: '10px',
+            color: '#9CA3AF',
+            textDecoration: 'none',
+            fontFamily: 'Arial, sans-serif',
+          }}
+        >
+          Ads by Muslim Ad Network
+        </a>
+      </div>
+    </div>
   )
 }
