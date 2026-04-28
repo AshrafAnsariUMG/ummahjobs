@@ -9,7 +9,7 @@ class RevalidationService
 {
     public static function trigger(array $paths = []): void
     {
-        $secret      = env('REVALIDATION_SECRET');
+        $secret      = config('services.app.revalidation_secret');
         $frontendUrl = config('services.app.frontend_url');
 
         if (!$secret || !$frontendUrl) {

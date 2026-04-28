@@ -144,20 +144,22 @@ export default function AuthLayout({ children }: { children: ReactNode }) {
 
         {/* Form container */}
         <div style={{ width: '100%', maxWidth: '400px' }}>
-          <a href="/" style={{
-            display: 'inline-flex',
-            alignItems: 'center',
-            gap: '6px',
-            fontSize: '14px',
-            color: '#6B7280',
-            textDecoration: 'none',
-            marginBottom: '24px',
-          }}>
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} width={16} height={16}>
-              <path d="M19 12H5M12 5l-7 7 7 7" />
-            </svg>
-            Back to Home
-          </a>
+          <div className="hidden lg:block">
+            <a href="/" style={{
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: '6px',
+              fontSize: '14px',
+              color: '#6B7280',
+              textDecoration: 'none',
+              marginBottom: '24px',
+            }}>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} width={16} height={16}>
+                <path d="M19 12H5M12 5l-7 7 7 7" />
+              </svg>
+              Back to Home
+            </a>
+          </div>
           {children}
         </div>
         </div>

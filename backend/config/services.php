@@ -42,7 +42,8 @@ return [
     ],
 
     'app' => [
-        'frontend_url' => env('FRONTEND_URL', 'http://localhost:3003'),
+        'frontend_url'       => env('FRONTEND_URL', 'http://localhost:3003'),
+        'revalidation_secret' => env('REVALIDATION_SECRET'),
     ],
 
     'flodesk' => [

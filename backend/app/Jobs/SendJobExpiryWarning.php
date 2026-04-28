@@ -26,7 +26,7 @@ class SendJobExpiryWarning implements ShouldQueue
 
         $user = $job->employer->user;
 
-        $dashboardUrl = env('FRONTEND_URL') . '/employer/dashboard';
+        $dashboardUrl = config('app.frontend_url') . '/employer/dashboard';
         $mailer = new GmailMailerService();
         $expiryDate = $job->expires_at->format('M d, Y');
         $body = ET::heading('Your job listing expires soon')

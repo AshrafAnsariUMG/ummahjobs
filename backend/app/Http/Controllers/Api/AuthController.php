@@ -76,7 +76,7 @@ class AuthController extends Controller
 
         if ($user->legacy_password) {
             $token = Password::broker()->createToken($user);
-            $url = env('FRONTEND_URL') . '/reset-password?token='
+            $url = config('app.frontend_url') . '/reset-password?token='
                 . urlencode($token) . '&email='
                 . urlencode($user->email);
             try {
@@ -157,7 +157,7 @@ class AuthController extends Controller
 
         if ($user) {
             $token = Password::broker()->createToken($user);
-            $url = env('FRONTEND_URL') . '/reset-password?token='
+            $url = config('app.frontend_url') . '/reset-password?token='
                 . urlencode($token) . '&email='
                 . urlencode($user->email);
             try {

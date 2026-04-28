@@ -6,8 +6,8 @@ class EmailTemplateService
 {
     public static function wrap(string $preheader, string $bodyHtml): string
     {
-        $logoUrl     = env('FRONTEND_URL') . '/images/logo.png';
-        $frontendUrl = env('FRONTEND_URL', 'https://ummahjobs.com');
+        $logoUrl     = config('app.frontend_url') . '/images/logo.png';
+        $frontendUrl = config('app.frontend_url');
         $year        = date('Y');
 
         return <<<HTML

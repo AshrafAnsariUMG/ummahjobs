@@ -27,7 +27,7 @@ class SendPackageConfirmation implements ShouldQueue
             return;
         }
 
-        $dashboardUrl = env('FRONTEND_URL') . '/employer/post-job';
+        $dashboardUrl = config('app.frontend_url') . '/employer/post-job';
         $mailer = new GmailMailerService();
         $packageDetails = '
             <table cellpadding="0" cellspacing="0" border="0" width="100%">
