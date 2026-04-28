@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
 import { useAuth } from '@/context/AuthContext'
+import { api } from '@/lib/api'
 import MinimalFooter from '@/components/layout/MinimalFooter'
 
 const navLinks = [
@@ -72,6 +73,15 @@ const navLinks = [
     ),
   },
   {
+    href: '/admin/feedback',
+    label: 'Feedback',
+    icon: (
+      <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+        <path strokeLinecap="round" strokeLinejoin="round" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" />
+      </svg>
+    ),
+  },
+  {
     href: '/admin/packages',
     label: 'Packages',
     icon: (
@@ -115,12 +125,20 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   const router = useRouter()
   const pathname = usePathname()
   const [mobileOpen, setMobileOpen] = useState(false)
+  const [openFeedbackCount, setOpenFeedbackCount] = useState(0)
 
   useEffect(() => {
     if (!isLoading && (!isAuthenticated || role !== 'admin')) {
       router.replace('/login')
     }
   }, [isLoading, isAuthenticated, role, router])
+
+  useEffect(() => {
+    if (!isAuthenticated || role !== 'admin') return
+    api.get('/api/admin/feedback/stats')
+      .then((d: { open: number }) => setOpenFeedbackCount(d.open))
+      .catch(() => {})
+  }, [isAuthenticated, role])
 
   if (isLoading) {
     return (
@@ -164,6 +182,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
             const isActive = link.exact
               ? pathname === link.href
               : pathname === link.href || pathname.startsWith(link.href + '/')
+            const isFeedback = link.href === '/admin/feedback'
             return (
               <Link
                 key={link.href}
@@ -177,7 +196,21 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                 style={isActive ? { backgroundColor: '#033BB0' } : undefined}
               >
                 {link.icon}
-                {link.label}
+                <span className="flex-1">{link.label}</span>
+                {isFeedback && openFeedbackCount > 0 && (
+                  <span
+                    className="text-white font-bold rounded-full flex items-center justify-center shrink-0"
+                    style={{
+                      backgroundColor: '#ef4444',
+                      minWidth: 18,
+                      height: 18,
+                      fontSize: 10,
+                      padding: '0 4px',
+                    }}
+                  >
+                    {openFeedbackCount > 9 ? '9+' : openFeedbackCount}
+                  </span>
+                )}
               </Link>
             )
           })}

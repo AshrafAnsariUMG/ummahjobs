@@ -6,6 +6,7 @@ use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\BlogController;
 use App\Http\Controllers\Api\MessageController;
 use App\Http\Controllers\Api\ContactController;
+use App\Http\Controllers\Api\FeedbackController;
 use App\Http\Controllers\Api\NewsletterController;
 use App\Http\Controllers\Api\Admin;
 use App\Http\Controllers\Api\Candidate;
@@ -45,6 +46,12 @@ Route::prefix('jobs')->group(function () {
 Route::prefix('employers')->group(function () {
     Route::get('/{slug}', [EmployerController::class, 'show']);
     Route::get('/{slug}/reviews', [EmployerController::class, 'reviews']);
+});
+
+// User feedback routes
+Route::middleware('auth:sanctum')->group(function () {
+    Route::post('feedback', [FeedbackController::class, 'store']);
+    Route::get('feedback', [FeedbackController::class, 'index']);
 });
 
 // Auth required routes
@@ -201,6 +208,11 @@ Route::middleware(['auth:sanctum', 'role:admin'])->prefix('admin')->group(functi
     Route::get('packages', [Admin\PackageController::class, 'index']);
     Route::put('packages/{id}', [Admin\PackageController::class, 'update']);
     Route::delete('packages/{id}', [Admin\PackageController::class, 'destroy']);
+
+    // Feedback (stats before {id} to avoid collision)
+    Route::get('feedback/stats', [Admin\FeedbackController::class, 'stats']);
+    Route::get('feedback', [Admin\FeedbackController::class, 'index']);
+    Route::put('feedback/{id}', [Admin\FeedbackController::class, 'update']);
 
     // Blog (upload-image before {slug} to avoid collision)
     Route::get('blog', [Admin\BlogController::class, 'index']);

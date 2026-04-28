@@ -8,6 +8,7 @@ import { api } from '@/lib/api'
 import type { Candidate } from '@/types'
 import { getStorageUrl } from '@/lib/imageUtils'
 import MinimalFooter from '@/components/layout/MinimalFooter'
+import FeedbackModal from '@/components/ui/FeedbackModal'
 
 const navLinks = [
   {
@@ -73,6 +74,7 @@ export default function CandidateLayout({ children }: { children: React.ReactNod
   const [mobileOpen, setMobileOpen] = useState(false)
   const [profilePhoto, setProfilePhoto] = useState<string | null>(null)
   const [unreadCount, setUnreadCount] = useState(0)
+  const [feedbackOpen, setFeedbackOpen] = useState(false)
 
   useEffect(() => {
     if (!isLoading && (!isAuthenticated || role !== 'candidate')) {
@@ -212,6 +214,38 @@ export default function CandidateLayout({ children }: { children: React.ReactNod
               <p className="text-xs text-gray-400">Candidate</p>
             </div>
           </div>
+          <Link
+            href="/candidate/feedback"
+            onClick={() => setMobileOpen(false)}
+            className="flex items-center gap-2 text-xs text-gray-500 hover:text-gray-900 transition-colors px-1 mb-2"
+          >
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} className="w-3.5 h-3.5">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+            </svg>
+            My Feedback
+          </Link>
+          <button
+            onClick={() => setFeedbackOpen(true)}
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: '8px',
+              width: '100%',
+              padding: '10px 16px',
+              background: 'transparent',
+              border: '1px dashed #E5E7EB',
+              borderRadius: '8px',
+              color: '#6B7280',
+              fontSize: '14px',
+              cursor: 'pointer',
+              marginBottom: '8px',
+            }}
+          >
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} width={16} height={16}>
+              <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
+            </svg>
+            Send Feedback
+          </button>
           <button
             onClick={logout}
             className="w-full text-left text-xs text-gray-500 hover:text-red-600 transition-colors px-1"
@@ -220,6 +254,7 @@ export default function CandidateLayout({ children }: { children: React.ReactNod
           </button>
         </div>
       </aside>
+      <FeedbackModal isOpen={feedbackOpen} onClose={() => setFeedbackOpen(false)} userRole="candidate" />
 
       {/* Mobile overlay */}
       {mobileOpen && (
