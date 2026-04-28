@@ -37,7 +37,12 @@ class StripeService
             'mode'           => 'payment',
             'success_url'    => config('services.app.frontend_url') . '/employer/packages?success=1',
             'cancel_url'     => config('services.app.frontend_url') . '/employer/packages?cancelled=1',
-            'customer_email' => $user->email,
+            'customer_email'       => $user->email,
+            'receipt_email'        => null,
+            'payment_intent_data'  => [
+                'receipt_email' => null,
+                'description'   => 'UmmahJobs — ' . $package->name . ' Package',
+            ],
             'metadata'       => [
                 'employer_id' => $employer->id,
                 'package_id'  => $package->id,
