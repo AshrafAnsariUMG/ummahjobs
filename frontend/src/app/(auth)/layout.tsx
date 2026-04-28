@@ -81,11 +81,6 @@ export default function AuthLayout({ children }: { children: ReactNode }) {
           />
         </div>
 
-        {/* Copyright */}
-        <div style={{ color: 'rgba(255,255,255,0.4)', fontSize: '12px' }}>
-          © 2026 Ummah Media Group LLC
-        </div>
-
         {/* Decorative circles */}
         <div style={{
           position: 'absolute',

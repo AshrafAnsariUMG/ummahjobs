@@ -112,6 +112,9 @@ function GeometricAccent({ hovered }: { hovered: boolean }) {
 export default function JobCard({ job, variant = 'list', matchScore }: JobCardProps) {
   const [isHovered, setIsHovered] = useState(false)
 
+  const companyName = job.employer?.company_name ?? job.external_employer_name ?? 'Unknown Company'
+  const logoPath = job.employer?.logo_path ?? null
+
   if (variant === 'carousel') {
     return (
       <Link
@@ -130,14 +133,14 @@ export default function JobCard({ job, variant = 'list', matchScore }: JobCardPr
         <GeometricAccent hovered={isHovered} />
         <div className="flex items-start gap-3 mb-3" style={{ position: 'relative', zIndex: 1 }}>
           <div className="w-12 h-12 rounded-lg border border-gray-100 overflow-hidden flex items-center justify-center shrink-0 relative">
-            {getStorageUrl(job.employer.logo_path) ? (
+            {getStorageUrl(logoPath) ? (
               <img
-                src={getStorageUrl(job.employer.logo_path)!}
-                alt={job.employer.company_name}
+                src={getStorageUrl(logoPath)!}
+                alt={companyName}
                 className="w-full h-full object-contain"
               />
             ) : (
-              <LogoFallback name={job.employer.company_name} size="md" />
+              <LogoFallback name={companyName} size="md" />
             )}
           </div>
           <div className="min-w-0">
@@ -156,7 +159,7 @@ export default function JobCard({ job, variant = 'list', matchScore }: JobCardPr
         </div>
 
         <p className="text-xs text-gray-500 mb-3 flex items-center gap-1.5" style={{ position: 'relative', zIndex: 1 }}>
-          {job.employer.company_name}
+          {companyName}
         </p>
 
         <div className="flex flex-wrap gap-1.5" style={{ position: 'relative', zIndex: 1 }}>
@@ -200,14 +203,14 @@ export default function JobCard({ job, variant = 'list', matchScore }: JobCardPr
       <GeometricAccent hovered={isHovered} />
 
       <div className="w-10 h-10 rounded-lg border border-gray-100 overflow-hidden flex items-center justify-center shrink-0" style={{ position: 'relative', zIndex: 1 }}>
-        {getStorageUrl(job.employer.logo_path) ? (
+        {getStorageUrl(logoPath) ? (
           <img
-            src={getStorageUrl(job.employer.logo_path)!}
-            alt={job.employer.company_name}
+            src={getStorageUrl(logoPath)!}
+            alt={companyName}
             className="w-full h-full object-contain"
           />
         ) : (
-          <LogoFallback name={job.employer.company_name} size="sm" />
+          <LogoFallback name={companyName} size="sm" />
         )}
       </div>
 
@@ -217,7 +220,7 @@ export default function JobCard({ job, variant = 'list', matchScore }: JobCardPr
             <h3 className="font-semibold text-gray-900 text-sm truncate">{job.title}</h3>
             <p className="text-xs text-gray-500 mt-0.5 flex items-center gap-1.5 flex-wrap">
               <span>
-                {job.employer.company_name}
+                {companyName}
                 {job.category && (
                   <span className="text-gray-400"> · {job.category.name}</span>
                 )}

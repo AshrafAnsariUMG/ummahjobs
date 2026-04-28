@@ -123,9 +123,9 @@ class MigrateWpJobs extends Command
             ->get()
             ->groupBy('object_id');
 
-        $inserted          = 0;
-        $skippedDupe       = 0;
-        $skippedNoEmployer = 0;
+        $inserted             = 0;
+        $skippedDupe          = 0;
+        $insertedAsExternal   = 0;
 
         foreach ($wpJobs as $wpJob) {
             $meta  = $allMeta[$wpJob->ID]  ?? collect();
@@ -141,11 +141,29 @@ class MigrateWpJobs extends Command
 
             // ── Resolve employer ──
             $employer = $this->resolveEmployer($wpJob, $meta, $idMap, $employers);
+            $isExternal = false;
+            $externalName = null;
+            $externalWebsite = null;
 
             if (!$employer) {
-                $this->warn("  SKIP (no employer): {$wpJob->post_title}");
-                $skippedNoEmployer++;
-                continue;
+                // Extract external company name from WP employer post or meta
+                $empPostId = $this->getMeta($meta, '_job_employer_posted_by');
+                if ($empPostId) {
+                    $empPost = DB::connection('wp_import')
+                        ->table('wp_posts')
+                        ->where('ID', (int)$empPostId)
+                        ->first();
+                    if ($empPost && $empPost->post_title) {
+                        $externalName = html_entity_decode($empPost->post_title);
+                    }
+                }
+                if (!$externalName) {
+                    $externalName = $this->getMeta($meta, '_company_name')
+                        ?: html_entity_decode($wpJob->post_title);
+                }
+                $externalWebsite = $this->getMeta($meta, '_company_website')
+                    ?: $this->getMeta($meta, '_company_url');
+                $isExternal = true;
             }
 
             // ── Job type from job_listing_type taxonomy ──
@@ -223,8 +241,11 @@ class MigrateWpJobs extends Command
             $description = trim(preg_replace('/<!--.*?-->/s', '', $wpJob->post_content ?? ''));
 
             DB::table('jobs')->insert([
-                'employer_id'         => $employer->id,
-                'employer_package_id' => null,
+                'employer_id'               => $isExternal ? null : $employer->id,
+                'external_employer_name'    => $isExternal ? $externalName : null,
+                'external_employer_website' => $isExternal ? $externalWebsite : null,
+                'external_employer_email'   => null,
+                'employer_package_id'       => null,
                 'category_id'         => $categoryId,
                 'title'               => html_entity_decode($wpJob->post_title),
                 'slug'                => $slug,
@@ -249,16 +270,22 @@ class MigrateWpJobs extends Command
                 'updated_at'          => $wpJob->post_modified,
             ]);
 
-            $inserted++;
-            $statusLabel = strtoupper($status);
-            $this->line("  OK [{$statusLabel}]: {$wpJob->post_title} → {$employer->company_name}");
+            if ($isExternal) {
+                $insertedAsExternal++;
+                $statusLabel = strtoupper($status);
+                $this->line("  OK [{$statusLabel}] (EXTERNAL): {$wpJob->post_title} → {$externalName}");
+            } else {
+                $inserted++;
+                $statusLabel = strtoupper($status);
+                $this->line("  OK [{$statusLabel}]: {$wpJob->post_title} → {$employer->company_name}");
+            }
         }
 
         $this->info('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
         $this->info('Jobs migration complete!');
-        $this->info("Inserted:              {$inserted}");
+        $this->info("Inserted (internal):   {$inserted}");
+        $this->info("Inserted (external):   {$insertedAsExternal}");
         $this->info("Skipped (dupes):       {$skippedDupe}");
-        $this->info("Skipped (no employer): {$skippedNoEmployer}");
         $this->info('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
 
         return Command::SUCCESS;

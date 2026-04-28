@@ -255,11 +255,15 @@ export interface Job {
   apply_url: string | null
   is_featured: boolean
   is_urgent: boolean
+  is_external: boolean
   status: string
   expires_at: string | null
   views_count: number
   applications_count?: number
   created_at: string
-  employer: Employer
+  external_employer_name: string | null
+  external_employer_website: string | null
+  external_employer_email: string | null
+  employer: Employer | null
   category: JobCategory | null
 }

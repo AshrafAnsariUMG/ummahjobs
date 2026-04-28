@@ -45,8 +45,9 @@ export async function generateMetadata({ params }: PageProps) {
     const { slug } = await params
     const job = await getJob(slug)
     if (!job) return {}
+    const cn = job.employer?.company_name ?? job.external_employer_name ?? 'UmmahJobs'
     return {
-      title: `${job.title} at ${job.employer.company_name ?? 'UmmahJobs'} | UmmahJobs`,
+      title: `${job.title} at ${cn} | UmmahJobs`,
       description: job.description?.slice(0, 155) ?? '',
     }
   } catch {
@@ -60,7 +61,9 @@ export default async function JobDetailPage({ params }: PageProps) {
   if (!job) notFound()
 
   const salary = formatSalary(job)
-  const logoSrc = getStorageUrl(job.employer.logo_path)
+  const isExternal = job.is_external || !job.employer
+  const companyName = job.employer?.company_name ?? job.external_employer_name ?? 'Unknown Company'
+  const logoSrc = job.employer ? getStorageUrl(job.employer.logo_path) : null
   const jobUrl = `${SITE}/jobs/${job.slug}`
 
   // Suppress WP term IDs (pure numbers) that weren't resolved during migration
@@ -103,10 +106,10 @@ export default async function JobDetailPage({ params }: PageProps) {
               <div className="w-16 h-16 rounded-xl border border-gray-100 overflow-hidden shrink-0 flex items-center justify-center bg-gray-50">
                 {logoSrc ? (
                   // eslint-disable-next-line @next/next/no-img-element
-                  <img src={logoSrc} alt={job.employer.company_name ?? ''} width={64} height={64} className="object-contain" />
+                  <img src={logoSrc} alt={companyName} width={64} height={64} className="object-contain" />
                 ) : (
                   <span className="text-xl font-bold" style={{ color: '#033BB0' }}>
-                    {job.employer.company_name?.charAt(0)?.toUpperCase() ?? '?'}
+                    {companyName.charAt(0).toUpperCase()}
                   </span>
                 )}
               </div>
@@ -116,13 +119,29 @@ export default async function JobDetailPage({ params }: PageProps) {
                   <div>
                     <h1 className="text-2xl font-extrabold text-gray-900">{job.title}</h1>
                     <div className="flex items-center gap-2 mt-0.5 flex-wrap">
-                      <Link
-                        href={`/employers/${job.employer.slug}`}
-                        className="text-sm font-medium hover:underline"
-                        style={{ color: '#033BB0' }}
-                      >
-                        {job.employer.company_name}
-                      </Link>
+                      {isExternal ? (
+                        job.external_employer_website ? (
+                          <a
+                            href={job.external_employer_website}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="text-sm font-medium hover:underline"
+                            style={{ color: '#033BB0' }}
+                          >
+                            {companyName} ↗
+                          </a>
+                        ) : (
+                          <span className="text-sm font-medium text-gray-700">{companyName}</span>
+                        )
+                      ) : (
+                        <Link
+                          href={`/employers/${job.employer!.slug}`}
+                          className="text-sm font-medium hover:underline"
+                          style={{ color: '#033BB0' }}
+                        >
+                          {companyName}
+                        </Link>
+                      )}
                     </div>
                   </div>
                   <div className="flex items-center gap-2 shrink-0">
@@ -160,7 +179,7 @@ export default async function JobDetailPage({ params }: PageProps) {
             {/* Share */}
             <div className="mt-5 pt-5 border-t border-gray-100">
               <ErrorBoundary>
-                <ShareButtons title={`${job.title} at ${job.employer.company_name}`} url={jobUrl} />
+                <ShareButtons title={`${job.title} at ${companyName}`} url={jobUrl} />
               </ErrorBoundary>
             </div>
           </div>
@@ -197,9 +216,11 @@ export default async function JobDetailPage({ params }: PageProps) {
               />
             </ErrorBoundary>
 
-            <ErrorBoundary>
-              <MessageEmployerButton employerUserId={job.employer.user_id} />
-            </ErrorBoundary>
+            {!isExternal && job.employer && (
+              <ErrorBoundary>
+                <MessageEmployerButton employerUserId={job.employer.user_id} />
+              </ErrorBoundary>
+            )}
 
             {job.expires_at && (
               <p className="text-xs text-gray-400 text-center mt-3">
@@ -264,30 +285,46 @@ export default async function JobDetailPage({ params }: PageProps) {
               <div className="w-10 h-10 rounded-lg border border-gray-100 overflow-hidden flex items-center justify-center bg-gray-50 shrink-0">
                 {logoSrc ? (
                   // eslint-disable-next-line @next/next/no-img-element
-                  <img src={logoSrc} alt={job.employer.company_name ?? ''} width={40} height={40} className="object-contain" />
+                  <img src={logoSrc} alt={companyName} width={40} height={40} className="object-contain" />
                 ) : (
                   <span className="text-sm font-bold" style={{ color: '#033BB0' }}>
-                    {job.employer.company_name?.charAt(0)?.toUpperCase() ?? '?'}
+                    {companyName.charAt(0).toUpperCase()}
                   </span>
                 )}
               </div>
               <div>
-                <p className="text-sm font-semibold text-gray-900">{job.employer.company_name}</p>
-                <div className="flex items-center gap-1.5 flex-wrap">
-                  {job.employer.category && <p className="text-xs text-gray-500">{job.employer.category}</p>}
-                </div>
+                <p className="text-sm font-semibold text-gray-900">{companyName}</p>
+                {!isExternal && job.employer?.category && (
+                  <p className="text-xs text-gray-500">{job.employer.category}</p>
+                )}
               </div>
             </div>
-            {job.employer.description && (
+            {!isExternal && job.employer?.description && (
               <p className="text-xs text-gray-600 line-clamp-3 mb-3">{job.employer.description}</p>
             )}
-            <Link
-              href={`/employers/${job.employer.slug}`}
-              className="text-xs font-medium hover:underline"
-              style={{ color: '#033BB0' }}
-            >
-              View company profile →
-            </Link>
+            {isExternal ? (
+              job.external_employer_website ? (
+                <a
+                  href={job.external_employer_website}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-xs font-medium hover:underline"
+                  style={{ color: '#033BB0' }}
+                >
+                  Visit company website →
+                </a>
+              ) : (
+                <p className="text-xs text-gray-400">External employer</p>
+              )
+            ) : (
+              <Link
+                href={`/employers/${job.employer!.slug}`}
+                className="text-xs font-medium hover:underline"
+                style={{ color: '#033BB0' }}
+              >
+                View company profile →
+              </Link>
+            )}
           </div>
         </aside>
         </AnimatedSection>

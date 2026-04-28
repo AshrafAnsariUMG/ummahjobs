@@ -12,7 +12,10 @@ class Job extends Model
         'salary_max', 'salary_currency', 'salary_type', 'experience_level',
         'career_level', 'apply_type', 'apply_url', 'is_featured', 'is_urgent',
         'status', 'expires_at', 'views_count',
+        'external_employer_name', 'external_employer_website', 'external_employer_email',
     ];
+
+    protected $appends = ['is_external'];
 
     protected function casts(): array
     {
@@ -21,6 +24,11 @@ class Job extends Model
             'is_urgent'   => 'boolean',
             'expires_at'  => 'datetime',
         ];
+    }
+
+    public function getIsExternalAttribute(): bool
+    {
+        return is_null($this->employer_id);
     }
 
     public function employer()
