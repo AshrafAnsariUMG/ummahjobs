@@ -5,6 +5,7 @@ use App\Http\Controllers\Api\Admin\SiteSettingsController;
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\BlogController;
 use App\Http\Controllers\Api\MessageController;
+use App\Http\Controllers\Api\ContactController;
 use App\Http\Controllers\Api\NewsletterController;
 use App\Http\Controllers\Api\Admin;
 use App\Http\Controllers\Api\Candidate;
@@ -77,6 +78,10 @@ Route::prefix('blog')->group(function () {
 // Newsletter
 Route::middleware('throttle:3,1')
     ->post('newsletter/subscribe', [NewsletterController::class, 'subscribe']);
+
+// Contact form — 3 submissions per hour per IP, honeypot checked in controller
+Route::middleware('throttle:3,60')
+    ->post('contact', [ContactController::class, 'submit']);
 
 // Employer authenticated routes
 Route::middleware('auth:sanctum')->prefix('employer')->group(function () {

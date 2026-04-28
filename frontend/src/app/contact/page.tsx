@@ -4,9 +4,10 @@ import { useState } from 'react'
 import Link from 'next/link'
 
 export default function ContactPage() {
-  const [form, setForm] = useState({ name: '', email: '', subject: '', message: '' })
+  const [form, setForm] = useState({ name: '', email: '', subject: '', message: '', website: '' })
   const [submitted, setSubmitted] = useState(false)
   const [sending, setSending] = useState(false)
+  const [error, setError] = useState<string | null>(null)
 
   function handleChange(e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) {
     setForm((prev) => ({ ...prev, [e.target.name]: e.target.value }))
@@ -15,10 +16,27 @@ export default function ContactPage() {
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
     setSending(true)
-    // Will be wired to real endpoint in S17
-    await new Promise((r) => setTimeout(r, 600))
-    setSending(false)
-    setSubmitted(true)
+    setError(null)
+    try {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/contact`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+        body: JSON.stringify(form),
+      })
+      if (res.status === 429) {
+        setError('Too many submissions. Please wait a while before trying again.')
+        return
+      }
+      if (!res.ok) {
+        setError('Failed to send. Please email us directly at mail@ummahjobs.com')
+        return
+      }
+      setSubmitted(true)
+    } catch {
+      setError('Failed to send. Please email us directly at mail@ummahjobs.com')
+    } finally {
+      setSending(false)
+    }
   }
 
   return (
@@ -49,6 +67,17 @@ export default function ContactPage() {
             </div>
           ) : (
             <form onSubmit={handleSubmit} className="space-y-4">
+              {/* Honeypot — hidden from humans, bots fill it in */}
+              <div style={{ position: 'absolute', left: '-9999px', top: '-9999px' }} aria-hidden="true">
+                <input
+                  type="text"
+                  name="website"
+                  value={form.website}
+                  onChange={handleChange}
+                  tabIndex={-1}
+                  autoComplete="off"
+                />
+              </div>
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1" htmlFor="name">
                   Name
@@ -116,6 +145,10 @@ export default function ContactPage() {
                   style={{ '--tw-ring-color': '#033BB0' } as React.CSSProperties}
                 />
               </div>
+
+              {error && (
+                <p className="text-sm text-red-600">{error}</p>
+              )}
 
               <button
                 type="submit"

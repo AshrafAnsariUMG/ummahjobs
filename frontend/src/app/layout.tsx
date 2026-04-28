@@ -22,11 +22,21 @@ export async function generateMetadata(): Promise<Metadata> {
       title: settings.seo_title || 'UmmahJobs — Halal Jobs for Muslim Professionals',
       description: settings.seo_description || 'Find halal jobs and connect with Muslim-friendly employers. Browse thousands of opportunities on UmmahJobs.com',
       openGraph: settings.seo_og_image ? { images: [settings.seo_og_image] } : undefined,
+      icons: {
+        icon: '/favicon.jpg',
+        shortcut: '/favicon.jpg',
+        apple: '/favicon.jpg',
+      },
     }
   } catch {
     return {
       title: 'UmmahJobs — Halal Jobs for Muslim Professionals',
       description: 'Find halal jobs and connect with Muslim-friendly employers. Browse thousands of opportunities on UmmahJobs.com',
+      icons: {
+        icon: '/favicon.jpg',
+        shortcut: '/favicon.jpg',
+        apple: '/favicon.jpg',
+      },
     }
   }
 }

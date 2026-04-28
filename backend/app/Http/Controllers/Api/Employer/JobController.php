@@ -71,42 +71,43 @@ class JobController
             'is_urgent'        => 'boolean',
         ]);
 
-        $package = $service->debitCredit($employer->id);
+        $job = \Illuminate\Support\Facades\DB::transaction(function () use ($request, $employer, $service) {
+            $package = $service->debitCredit($employer->id);
 
-        // Generate unique slug
-        $slug     = Str::slug($request->title);
-        $baseSlug = $slug;
-        $count    = 0;
-        while (Job::where('slug', $slug)->exists()) {
-            $slug = $baseSlug . '-' . ++$count;
-        }
+            $slug     = Str::slug($request->title);
+            $baseSlug = $slug;
+            $count    = 0;
+            while (Job::where('slug', $slug)->exists()) {
+                $slug = $baseSlug . '-' . ++$count;
+            }
 
-        $packageDef = $package->package;
-        $isFeatured = $packageDef && $packageDef->post_type === 'featured';
+            $packageDef = $package->package;
+            $isFeatured = $packageDef && $packageDef->post_type === 'featured';
 
-        $job = Job::create([
-            'employer_id'          => $employer->id,
-            'employer_package_id'  => $package->id,
-            'category_id'          => $request->category_id,
-            'title'                => $request->title,
-            'slug'                 => $slug,
-            'description'          => $request->description,
-            'job_type'             => $request->job_type,
-            'location'             => $request->location,
-            'country'              => $request->country,
-            'salary_min'           => $request->salary_min,
-            'salary_max'           => $request->salary_max,
-            'salary_currency'      => $request->salary_currency ?? 'USD',
-            'salary_type'          => $request->salary_type,
-            'experience_level'     => $request->experience_level,
-            'career_level'         => $request->career_level,
-            'apply_type'           => $request->apply_type,
-            'apply_url'            => $request->apply_url,
-            'is_featured'          => $isFeatured,
-            'is_urgent'            => $request->is_urgent ?? false,
-            'status'               => 'active',
-            'expires_at'           => now()->addDays($package->duration_days),
-        ]);
+            return Job::create([
+                'employer_id'          => $employer->id,
+                'employer_package_id'  => $package->id,
+                'category_id'          => $request->category_id,
+                'title'                => $request->title,
+                'slug'                 => $slug,
+                'description'          => $request->description,
+                'job_type'             => $request->job_type,
+                'location'             => $request->location,
+                'country'              => $request->country,
+                'salary_min'           => $request->salary_min,
+                'salary_max'           => $request->salary_max,
+                'salary_currency'      => $request->salary_currency ?? 'USD',
+                'salary_type'          => $request->salary_type,
+                'experience_level'     => $request->experience_level,
+                'career_level'         => $request->career_level,
+                'apply_type'           => $request->apply_type,
+                'apply_url'            => $request->apply_url,
+                'is_featured'          => $isFeatured,
+                'is_urgent'            => $request->is_urgent ?? false,
+                'status'               => 'active',
+                'expires_at'           => now()->addDays($package->duration_days),
+            ]);
+        });
 
         RevalidationService::trigger();
 

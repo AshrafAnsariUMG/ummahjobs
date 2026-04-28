@@ -42,8 +42,9 @@ class WebhookController
             );
 
             dispatch(new SendPackageConfirmation(
-                (int) $metadata->user_id,
-                (int) $metadata->package_id
+                (string) $metadata->user_id,
+                (int) $metadata->package_id,
+                $session->id
             ));
         }
 

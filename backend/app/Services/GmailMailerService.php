@@ -43,7 +43,8 @@ class GmailMailerService
         string $to,
         string $subject,
         string $body,
-        bool $isHtml = false
+        bool $isHtml = false,
+        ?string $replyTo = null
     ): bool {
         try {
             $accessToken = $this->getAccessToken();
@@ -53,6 +54,7 @@ class GmailMailerService
             $rawMessage =
                 "From: {$this->fromName} <{$this->fromAddress}>\r\n"
                 . "To: {$to}\r\n"
+                . ($replyTo ? "Reply-To: {$replyTo}\r\n" : '')
                 . "Subject: {$subject}\r\n"
                 . "MIME-Version: 1.0\r\n"
                 . "Content-Type: {$contentType}; charset=UTF-8\r\n"
@@ -87,8 +89,8 @@ class GmailMailerService
         }
     }
 
-    public function sendHtml(string $to, string $subject, string $htmlBody): bool
+    public function sendHtml(string $to, string $subject, string $htmlBody, ?string $replyTo = null): bool
     {
-        return $this->send($to, $subject, $htmlBody, true);
+        return $this->send($to, $subject, $htmlBody, true, $replyTo);
     }
 }
