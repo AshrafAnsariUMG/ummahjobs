@@ -239,6 +239,7 @@ export interface Message {
 
 export interface Job {
   id: number
+  employer_id: string | null
   title: string
   slug: string
   description: string

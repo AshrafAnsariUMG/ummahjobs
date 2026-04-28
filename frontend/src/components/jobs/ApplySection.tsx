@@ -9,11 +9,13 @@ interface Props {
   jobId: number
   applyType: string
   applyUrl: string | null
+  isExternal?: boolean
+  employerId?: string | null
 }
 
 type ApplyState = 'idle' | 'loading' | 'success' | 'duplicate' | 'error' | 'already_applied'
 
-export default function ApplySection({ jobId, applyType, applyUrl }: Props) {
+export default function ApplySection({ jobId, applyType, applyUrl, isExternal, employerId }: Props) {
   const { isAuthenticated, role, isLoading } = useAuth()
   const [applyState, setApplyState] = useState<ApplyState>('idle')
   const [coverLetter, setCoverLetter] = useState('')
@@ -64,6 +66,47 @@ export default function ApplySection({ jobId, applyType, applyUrl }: Props) {
     } catch {
       setApplyState('error')
     }
+  }
+
+  // External employer jobs — always redirect externally, never allow platform submission
+  if (isExternal || !employerId) {
+    if (applyUrl) {
+      return (
+        <a
+          href={applyUrl}
+          target="_blank"
+          rel="noopener noreferrer"
+          style={{
+            display: 'block',
+            width: '100%',
+            padding: '14px',
+            background: '#033BB0',
+            color: 'white',
+            textAlign: 'center',
+            borderRadius: '8px',
+            fontWeight: '600',
+            fontSize: '16px',
+            textDecoration: 'none',
+            boxSizing: 'border-box',
+          }}
+        >
+          Apply on Company Website →
+        </a>
+      )
+    }
+    return (
+      <div style={{
+        padding: '16px',
+        background: '#F9FAFB',
+        border: '1px solid #E5E7EB',
+        borderRadius: '8px',
+        textAlign: 'center',
+        color: '#6B7280',
+        fontSize: '14px',
+      }}>
+        Visit the company website to apply for this role.
+      </div>
+    )
   }
 
   // External apply — plain link, no auth needed

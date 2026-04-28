@@ -213,6 +213,8 @@ export default async function JobDetailPage({ params }: PageProps) {
                 jobId={job.id}
                 applyType={job.apply_type}
                 applyUrl={job.apply_url}
+                isExternal={job.is_external ?? false}
+                employerId={job.employer_id ?? null}
               />
             </ErrorBoundary>
 
