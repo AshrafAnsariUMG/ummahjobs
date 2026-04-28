@@ -100,6 +100,8 @@ Route::middleware('auth:sanctum')->prefix('employer')->group(function () {
     // Profile
     Route::get('profile', [Employer\ProfileController::class, 'show']);
     Route::put('profile', [Employer\ProfileController::class, 'update']);
+    Route::post('profile/logo', [Employer\ProfileController::class, 'uploadLogo']);
+    Route::post('profile/cover', [Employer\ProfileController::class, 'uploadCover']);
 
     // Jobs
     Route::post('jobs/generate-description', [Employer\JobController::class, 'generateDescription']);

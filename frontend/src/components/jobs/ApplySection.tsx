@@ -20,21 +20,38 @@ export default function ApplySection({ jobId, applyType, applyUrl, isExternal, e
   const [applyState, setApplyState] = useState<ApplyState>('idle')
   const [coverLetter, setCoverLetter] = useState('')
   const [showForm, setShowForm] = useState(false)
+  const [cvPath, setCvPath] = useState<string | null>(null)
+  const [profilePct, setProfilePct] = useState<number>(0)
+  const [noCvGate, setNoCvGate] = useState(false)
 
-  // Check if candidate has already applied (platform type only)
+  // Fetch candidate profile + already-applied check in parallel
   useEffect(() => {
     if (isLoading || !isAuthenticated || role !== 'candidate' || applyType !== 'platform') return
     const token = typeof window !== 'undefined' ? localStorage.getItem('uj_token') : null
     if (!token) return
-    fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/candidate/applications/check/${jobId}`, {
-      headers: { Authorization: `Bearer ${token}`, Accept: 'application/json' },
-    })
+    const headers = { Authorization: `Bearer ${token}`, Accept: 'application/json' }
+
+    fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/candidate/applications/check/${jobId}`, { headers })
+      .then((r) => r.ok ? r.json() : null)
+      .then((data) => { if (data?.applied) setApplyState('already_applied') })
+      .catch(() => null)
+
+    fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/candidate/profile`, { headers })
       .then((r) => r.ok ? r.json() : null)
       .then((data) => {
-        if (data?.applied) setApplyState('already_applied')
+        if (data) {
+          setCvPath(data.cv_path ?? null)
+          setProfilePct(data.profile_complete_pct ?? 0)
+        }
       })
       .catch(() => null)
   }, [isLoading, isAuthenticated, role, jobId, applyType])
+
+  function handleApplyClick() {
+    if (!cvPath) { setNoCvGate(true); return }
+    setNoCvGate(false)
+    setShowForm(true)
+  }
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
@@ -222,11 +239,41 @@ export default function ApplySection({ jobId, applyType, applyUrl, isExternal, e
     )
   }
 
+  // No CV gate
+  if (noCvGate) {
+    return (
+      <div className="rounded-xl border border-amber-200 bg-amber-50 p-4">
+        <div className="flex items-start gap-2 mb-3">
+          <svg className="w-5 h-5 text-amber-600 shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+            <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v2m0 4h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z" />
+          </svg>
+          <div>
+            <p className="text-sm font-semibold text-amber-800">CV required to apply</p>
+            <p className="text-xs text-amber-700 mt-0.5">Please upload your CV before submitting an application. Employers need it to review your candidacy.</p>
+          </div>
+        </div>
+        <Link
+          href="/candidate/profile/edit"
+          className="block w-full text-center px-4 py-2.5 rounded-lg text-sm font-semibold text-white"
+          style={{ backgroundColor: '#033BB0' }}
+        >
+          Upload CV →
+        </Link>
+        <button
+          onClick={() => setNoCvGate(false)}
+          className="w-full text-center text-xs text-gray-500 hover:text-gray-700 mt-2"
+        >
+          Cancel
+        </button>
+      </div>
+    )
+  }
+
   // Platform apply — candidate, ready to apply
   if (!showForm) {
     return (
       <button
-        onClick={() => setShowForm(true)}
+        onClick={handleApplyClick}
         className="block w-full text-center px-5 py-3 rounded-xl text-sm font-semibold text-white transition-opacity hover:opacity-90"
         style={{ backgroundColor: '#033BB0' }}
       >
@@ -237,6 +284,25 @@ export default function ApplySection({ jobId, applyType, applyUrl, isExternal, e
 
   return (
     <div className="rounded-xl border border-gray-200 bg-gray-50 p-4">
+      {/* Profile completion nudge */}
+      {profilePct < 70 && (
+        <div className="flex items-center justify-between bg-blue-50 border border-blue-100 rounded-lg px-3 py-2 mb-3 gap-2">
+          <div className="flex items-center gap-2 min-w-0">
+            <svg className="w-4 h-4 text-blue-500 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+            <p className="text-xs text-blue-700 truncate">Your profile is <strong>{profilePct}%</strong> complete — a fuller profile stands out to employers.</p>
+          </div>
+          <Link
+            href="/candidate/profile/edit"
+            className="text-xs font-semibold whitespace-nowrap hover:underline shrink-0"
+            style={{ color: '#033BB0' }}
+          >
+            Complete →
+          </Link>
+        </div>
+      )}
+
       <h4 className="text-sm font-semibold text-gray-900 mb-3">Apply for this position</h4>
       <form onSubmit={handleSubmit}>
         <label className="block text-xs font-medium text-gray-700 mb-1.5">

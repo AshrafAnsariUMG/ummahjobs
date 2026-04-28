@@ -40,11 +40,17 @@ export default function EmployerProfileEditPage() {
   const [employer, setEmployer] = useState<Employer | null>(null)
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
+  const [logoPreview, setLogoPreview] = useState<string | null>(null)
+  const [logoUploading, setLogoUploading] = useState(false)
+  const [coverPreview, setCoverPreview] = useState<string | null>(null)
+  const [coverUploading, setCoverUploading] = useState(false)
 
   useEffect(() => {
     api.get('/api/employer/profile')
       .then((emp: Employer) => {
         setEmployer(emp)
+        setLogoPreview(getStorageUrl(emp.logo_path ?? null))
+        setCoverPreview(getStorageUrl(emp.cover_photo_path ?? null))
         setForm({
           company_name: emp.company_name ?? '',
           category: emp.category ?? '',
@@ -79,6 +85,42 @@ export default function EmployerProfileEditPage() {
       ...prev,
       socials: prev.socials.map((s, idx) => idx === i ? { ...s, [field]: value } : s),
     }))
+  }
+
+  async function handleLogoUpload(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0]
+    if (!file) return
+    setLogoUploading(true)
+    const fd = new FormData()
+    fd.append('logo', file)
+    try {
+      const res = await api.upload('/api/employer/profile/logo', fd) as { logo_path: string }
+      setLogoPreview(getStorageUrl(res.logo_path))
+      showToast('JazakAllah Khayran! Logo updated.', 'success')
+    } catch {
+      showToast('Logo upload failed.', 'error')
+    } finally {
+      setLogoUploading(false)
+      e.target.value = ''
+    }
+  }
+
+  async function handleCoverUpload(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0]
+    if (!file) return
+    setCoverUploading(true)
+    const fd = new FormData()
+    fd.append('cover', file)
+    try {
+      const res = await api.upload('/api/employer/profile/cover', fd) as { cover_path: string }
+      setCoverPreview(getStorageUrl(res.cover_path))
+      showToast('JazakAllah Khayran! Cover photo updated.', 'success')
+    } catch {
+      showToast('Cover upload failed.', 'error')
+    } finally {
+      setCoverUploading(false)
+      e.target.value = ''
+    }
   }
 
   async function handleSave() {
@@ -117,37 +159,67 @@ export default function EmployerProfileEditPage() {
         <p className="text-sm text-gray-400 mt-1">Update your public company profile</p>
       </div>
 
-      {/* File uploads (disabled until S10) */}
+      {/* Logo upload */}
       <div className="bg-white rounded-2xl border border-gray-200 p-5 mb-5">
-        <h2 className="font-semibold text-gray-900 mb-4 text-sm">Media</h2>
-        <div className="grid sm:grid-cols-2 gap-4">
-          <div>
-            <p className="text-xs font-medium text-gray-700 mb-2">Company Logo</p>
-            {getStorageUrl(employer?.logo_path ?? null) && (
-              <img src={getStorageUrl(employer?.logo_path ?? null)!} alt="Logo" className="w-16 h-16 rounded-xl object-contain border border-gray-200 mb-2" />
+        <h2 className="font-semibold text-gray-900 mb-4 text-sm">Company Logo</h2>
+        <div className="flex items-center gap-5 flex-wrap">
+          <div
+            className="shrink-0 flex items-center justify-center rounded-xl border-2 border-gray-200 bg-gray-50 overflow-hidden"
+            style={{ width: 80, height: 80 }}
+          >
+            {logoPreview ? (
+              <img src={logoPreview} alt="Logo" style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
+            ) : (
+              <span className="text-3xl font-bold" style={{ color: '#033BB0' }}>
+                {employer?.company_name?.charAt(0) ?? 'E'}
+              </span>
             )}
-            <button
-              disabled
-              title="File upload coming soon"
-              className="px-3 py-2 rounded-lg text-xs font-medium border border-gray-200 text-gray-400 cursor-not-allowed"
-            >
-              Change Logo (coming soon)
-            </button>
           </div>
           <div>
-            <p className="text-xs font-medium text-gray-700 mb-2">Cover Photo</p>
-            {getStorageUrl(employer?.cover_photo_path ?? null) && (
-              <img src={getStorageUrl(employer?.cover_photo_path ?? null)!} alt="Cover" className="w-full h-16 rounded-xl object-cover border border-gray-200 mb-2" />
-            )}
-            <button
-              disabled
-              title="File upload coming soon"
-              className="px-3 py-2 rounded-lg text-xs font-medium border border-gray-200 text-gray-400 cursor-not-allowed"
+            <input
+              type="file"
+              id="logo-upload"
+              accept="image/*"
+              className="hidden"
+              onChange={handleLogoUpload}
+              disabled={logoUploading}
+            />
+            <label
+              htmlFor="logo-upload"
+              className="inline-block px-4 py-2 rounded-lg text-sm font-semibold border-2 cursor-pointer transition-colors"
+              style={{ borderColor: '#033BB0', color: '#033BB0', background: 'white', opacity: logoUploading ? 0.6 : 1, pointerEvents: logoUploading ? 'none' : 'auto' }}
             >
-              Change Cover (coming soon)
-            </button>
+              {logoUploading ? 'Uploading…' : 'Upload Logo'}
+            </label>
+            <p className="text-xs text-gray-400 mt-1.5">PNG, JPG, WebP or SVG — max 2MB</p>
           </div>
         </div>
+      </div>
+
+      {/* Cover photo upload */}
+      <div className="bg-white rounded-2xl border border-gray-200 p-5 mb-5">
+        <h2 className="font-semibold text-gray-900 mb-4 text-sm">Cover Photo</h2>
+        {coverPreview && (
+          <div className="w-full rounded-xl overflow-hidden border border-gray-200 mb-4" style={{ height: 160 }}>
+            <img src={coverPreview} alt="Cover" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+          </div>
+        )}
+        <input
+          type="file"
+          id="cover-upload"
+          accept="image/jpg,image/jpeg,image/png,image/webp"
+          className="hidden"
+          onChange={handleCoverUpload}
+          disabled={coverUploading}
+        />
+        <label
+          htmlFor="cover-upload"
+          className="inline-block px-4 py-2 rounded-lg text-sm font-semibold border-2 cursor-pointer"
+          style={{ borderColor: '#033BB0', color: '#033BB0', background: 'white', opacity: coverUploading ? 0.6 : 1, pointerEvents: coverUploading ? 'none' : 'auto' }}
+        >
+          {coverUploading ? 'Uploading…' : coverPreview ? 'Change Cover Photo' : 'Upload Cover Photo'}
+        </label>
+        <p className="text-xs text-gray-400 mt-1.5">PNG, JPG or WebP — max 5MB — recommended 1200×300px</p>
       </div>
 
       <div className="bg-white rounded-2xl border border-gray-200 p-5 mb-5 space-y-4">
