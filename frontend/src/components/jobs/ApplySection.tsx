@@ -77,6 +77,14 @@ export default function ApplySection({ jobId, applyType, applyUrl, isExternal, e
         }
       } else if (res.ok) {
         setApplyState('success')
+        // Matomo Goal 2 — Job Application (UMG site ID 3). Fires only on confirmed
+        // backend success so abandoned/duplicate submissions don't pollute the funnel.
+        if (typeof window !== 'undefined') {
+          const w = window as Window & { _paq?: unknown[] }
+          if (Array.isArray(w._paq)) {
+            w._paq.push(['trackGoal', 2])
+          }
+        }
       } else {
         setApplyState('error')
       }
