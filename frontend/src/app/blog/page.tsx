@@ -17,6 +17,20 @@ async function getBlogPosts(): Promise<BlogPost[]> {
 export const metadata = {
   title: 'Blog | UmmahJobs',
   description: 'Career advice, job seeking tips, and Islamic guidance for Muslim professionals.',
+  openGraph: {
+    title: 'Blog | UmmahJobs',
+    description: 'Career advice, job seeking tips, and Islamic guidance for Muslim professionals.',
+    url: 'https://ummahjobs.com/blog',
+    siteName: 'UmmahJobs',
+    type: 'website' as const,
+    images: [{ url: 'https://ummahjobs.com/images/logo.png', width: 1200, height: 630, alt: 'UmmahJobs Blog' }],
+  },
+  twitter: {
+    card: 'summary_large_image' as const,
+    title: 'Blog | UmmahJobs',
+    description: 'Career advice, job seeking tips, and Islamic guidance for Muslim professionals.',
+  },
+  alternates: { canonical: 'https://ummahjobs.com/blog' },
 }
 
 export default async function BlogPage() {

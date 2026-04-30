@@ -44,14 +44,33 @@ export async function generateMetadata({ params }: PageProps) {
   try {
     const { slug } = await params
     const job = await getJob(slug)
-    if (!job) return {}
+    if (!job) return { title: 'Job Not Found | UmmahJobs' }
     const cn = job.employer?.company_name ?? job.external_employer_name ?? 'UmmahJobs'
+    const plainDesc = job.description?.replace(/<[^>]*>/g, '').replace(/\s+/g, ' ').trim().slice(0, 155)
+      ?? `${job.title} at ${cn}. Apply now on UmmahJobs.`
+    const title = `${job.title} at ${cn} | UmmahJobs`
+    const url = `${SITE}/jobs/${slug}`
     return {
-      title: `${job.title} at ${cn} | UmmahJobs`,
-      description: job.description?.slice(0, 155) ?? '',
+      title,
+      description: plainDesc,
+      keywords: [job.title, cn, job.location, job.job_type, 'halal jobs', 'Muslim jobs', 'Islamic careers'].filter(Boolean).join(', '),
+      openGraph: {
+        title: `${job.title} at ${cn}`,
+        description: plainDesc,
+        url,
+        siteName: 'UmmahJobs',
+        type: 'article',
+        images: [{ url: `${SITE}/images/logo.png`, width: 1200, height: 630, alt: title }],
+      },
+      twitter: {
+        card: 'summary_large_image' as const,
+        title: `${job.title} at ${cn}`,
+        description: plainDesc,
+      },
+      alternates: { canonical: url },
     }
   } catch {
-    return {}
+    return { title: 'Job | UmmahJobs' }
   }
 }
 
@@ -78,8 +97,44 @@ export default async function JobDetailPage({ params }: PageProps) {
     ...(salary ? [{ label: salary }] : []),
   ]
 
+  const jsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'JobPosting',
+    title: job.title,
+    description: job.description?.replace(/<[^>]*>/g, '').replace(/\s+/g, ' ').trim(),
+    datePosted: job.created_at,
+    validThrough: job.expires_at ?? undefined,
+    employmentType: job.job_type?.toUpperCase().replace(/\s+/g, '_') ?? 'FULL_TIME',
+    hiringOrganization: {
+      '@type': 'Organization',
+      name: job.employer?.company_name ?? job.external_employer_name ?? 'UmmahJobs',
+      sameAs: job.employer ? `${SITE}/employers/${job.employer.slug}` : (job.external_employer_website ?? SITE),
+    },
+    ...(displayLocation && {
+      jobLocation: {
+        '@type': 'Place',
+        address: { '@type': 'PostalAddress', addressLocality: displayLocation },
+      },
+    }),
+    ...(job.salary_min && {
+      baseSalary: {
+        '@type': 'MonetaryAmount',
+        currency: job.salary_currency ?? 'GBP',
+        value: {
+          '@type': 'QuantitativeValue',
+          minValue: job.salary_min,
+          maxValue: job.salary_max ?? undefined,
+          unitText: job.salary_type?.toUpperCase() ?? 'YEAR',
+        },
+      },
+    }),
+    directApply: job.apply_type === 'platform',
+    url: jobUrl,
+  }
+
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
       <div className="flex flex-col lg:flex-row gap-8">
         {/* Main */}
         <AnimatedSection animation="fade-left" className="flex-1 min-w-0">

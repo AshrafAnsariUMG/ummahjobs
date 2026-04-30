@@ -6,7 +6,7 @@ class EmailTemplateService
 {
     public static function wrap(string $preheader, string $bodyHtml): string
     {
-        $logoUrl     = config('app.frontend_url') . '/images/logo.png';
+        $logoUrl     = 'https://ummahjobs.com/images/logo.png';
         $frontendUrl = config('app.frontend_url');
         $year        = date('Y');
 
@@ -29,9 +29,17 @@ class EmailTemplateService
 
           <!-- Header -->
           <tr>
-            <td style="background:#033BB0;border-radius:12px 12px 0 0;padding:28px 40px;text-align:center;">
-              <img src="{$logoUrl}" alt="UmmahJobs" height="40" style="height:40px;width:auto;filter:brightness(0) invert(1);" />
+            <td style="background:linear-gradient(135deg,#033BB0 0%,#0244b8 100%);border-radius:12px 12px 0 0;padding:28px 40px 20px;text-align:center;">
+              <div style="display:inline-block;background:white;border-radius:12px;padding:10px 20px;">
+                <img src="{$logoUrl}" alt="UmmahJobs" style="height:36px;width:auto;display:block;" />
+              </div>
+              <p style="color:rgba(255,255,255,0.6);font-size:13px;margin:10px 0 0;font-family:serif;letter-spacing:1px;">بِسْمِ اللهِ الرَّحْمٰنِ الرَّحِيْمِ</p>
             </td>
+          </tr>
+
+          <!-- Green accent strip -->
+          <tr>
+            <td style="background:linear-gradient(90deg,#033BB0 0%,#0FBB0F 50%,#033BB0 100%);height:4px;font-size:0;line-height:0;">&nbsp;</td>
           </tr>
 
           <!-- Body -->
@@ -50,6 +58,9 @@ class EmailTemplateService
               </p>
               <p style="margin:0;font-size:12px;color:#9CA3AF;">
                 &copy; {$year} Ummah Media Group LLC &bull; 515 Madison Ave Suite 9111, Manhattan, New York 10022
+              </p>
+              <p style="color:#9CA3AF;font-size:11px;text-align:center;margin-top:8px;">
+                May Allah bless your work with barakah
               </p>
             </td>
           </tr>

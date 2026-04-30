@@ -5,6 +5,20 @@ import type { Package } from '@/types'
 export const metadata = {
   title: 'Post a Job | UmmahJobs',
   description: 'Reach thousands of qualified Muslim professionals. Post your halal job listing on UmmahJobs today.',
+  openGraph: {
+    title: 'Post a Job | UmmahJobs',
+    description: 'Reach thousands of qualified Muslim professionals. Post your halal job listing on UmmahJobs today.',
+    url: 'https://ummahjobs.com/employers/why-post',
+    siteName: 'UmmahJobs',
+    type: 'website' as const,
+    images: [{ url: 'https://ummahjobs.com/images/logo.png', width: 1200, height: 630, alt: 'Post a Job on UmmahJobs' }],
+  },
+  twitter: {
+    card: 'summary_large_image' as const,
+    title: 'Post a Job | UmmahJobs',
+    description: 'Reach thousands of qualified Muslim professionals. Post your halal job listing on UmmahJobs today.',
+  },
+  alternates: { canonical: 'https://ummahjobs.com/employers/why-post' },
 }
 
 async function getPackages(): Promise<Package[]> {

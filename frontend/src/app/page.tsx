@@ -1,5 +1,17 @@
+import type { Metadata } from 'next'
 import Link from 'next/link'
 import type { Job, JobCategory } from '@/types'
+
+export const metadata: Metadata = {
+  alternates: { canonical: 'https://ummahjobs.com' },
+  openGraph: {
+    url: 'https://ummahjobs.com',
+    siteName: 'UmmahJobs',
+    type: 'website',
+    images: [{ url: 'https://ummahjobs.com/images/logo.png', width: 1200, height: 630, alt: 'UmmahJobs' }],
+  },
+  twitter: { card: 'summary_large_image' },
+}
 import JobCard from '@/components/jobs/JobCard'
 import SectionHeading from '@/components/ui/SectionHeading'
 import MANLeaderboard from '@/components/ads/MANLeaderboard'

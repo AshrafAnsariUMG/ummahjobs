@@ -4,6 +4,20 @@ import AnimatedSection from '@/components/ui/AnimatedSection'
 export const metadata = {
   title: 'About Us | UmmahJobs',
   description: 'UmmahJobs is a halal employment platform connecting Muslim job seekers with employers who respect their values and faith.',
+  openGraph: {
+    title: 'About Us | UmmahJobs',
+    description: 'UmmahJobs is a halal employment platform connecting Muslim job seekers with employers who respect their values and faith.',
+    url: 'https://ummahjobs.com/about',
+    siteName: 'UmmahJobs',
+    type: 'website' as const,
+    images: [{ url: 'https://ummahjobs.com/images/logo.png', width: 1200, height: 630, alt: 'About UmmahJobs' }],
+  },
+  twitter: {
+    card: 'summary_large_image' as const,
+    title: 'About Us | UmmahJobs',
+    description: 'UmmahJobs is a halal employment platform connecting Muslim job seekers with employers who respect their values and faith.',
+  },
+  alternates: { canonical: 'https://ummahjobs.com/about' },
 }
 
 export default function AboutPage() {

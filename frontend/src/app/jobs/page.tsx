@@ -1,6 +1,27 @@
+import type { Metadata } from 'next'
 import { Suspense } from 'react'
 import Link from 'next/link'
 import type { Job, JobCategory, JobType, PaginatedResponse } from '@/types'
+
+export const metadata: Metadata = {
+  title: 'Browse Halal Jobs | UmmahJobs',
+  description: 'Search thousands of halal job opportunities for Muslim professionals. Filter by category, location, job type and more.',
+  keywords: 'halal jobs, Muslim jobs, Islamic careers, halal employment, browse jobs',
+  openGraph: {
+    title: 'Browse Halal Jobs | UmmahJobs',
+    description: 'Search thousands of halal job opportunities for Muslim professionals.',
+    url: 'https://ummahjobs.com/jobs',
+    siteName: 'UmmahJobs',
+    type: 'website',
+    images: [{ url: 'https://ummahjobs.com/images/logo.png', width: 1200, height: 630, alt: 'UmmahJobs' }],
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Browse Halal Jobs | UmmahJobs',
+    description: 'Search thousands of halal job opportunities for Muslim professionals.',
+  },
+  alternates: { canonical: 'https://ummahjobs.com/jobs' },
+}
 import FilterSidebar from '@/components/jobs/FilterSidebar'
 import JobListWithScores from '@/components/jobs/JobListWithScores'
 import MANLeaderboard from '@/components/ads/MANLeaderboard'

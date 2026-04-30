@@ -76,6 +76,9 @@ export default function RegisterPage() {
 
       const data: AuthResponse = await api.post('/api/auth/register', body)
       login(data.token, data.user)
+      if (selectedRole === 'candidate') {
+        new Image().src = 'https://analytics.ummahmediagroup.com/matomo.php?idsite=3&rec=1&idgoal=1'
+      }
       router.push(selectedRole === 'employer' ? '/employer/dashboard' : '/candidate/dashboard')
     } catch (err: unknown) {
       const e = err as { status?: number; message?: string; errors?: FieldErrors }

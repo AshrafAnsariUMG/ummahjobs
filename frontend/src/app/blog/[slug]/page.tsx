@@ -43,10 +43,31 @@ function estimateReadTime(content: string): number {
 export async function generateMetadata({ params }: PageProps) {
   const { slug } = await params
   const post = await getPost(slug)
-  if (!post) return {}
+  if (!post) return { title: 'Blog | UmmahJobs' }
+  const description = post.excerpt?.slice(0, 155) ?? post.content?.replace(/<[^>]*>/g, '').trim().slice(0, 155) ?? post.title
+  const url = `${SITE}/blog/${slug}`
+  const ogImage = post.featured_image_path
+    ? `${process.env.NEXT_PUBLIC_API_URL}/storage/${post.featured_image_path}`
+    : `${SITE}/images/logo.png`
   return {
     title: `${post.title} | UmmahJobs Blog`,
-    description: post.excerpt?.slice(0, 155) ?? post.title,
+    description,
+    openGraph: {
+      title: post.title,
+      description,
+      url,
+      siteName: 'UmmahJobs',
+      type: 'article',
+      publishedTime: post.published_at,
+      images: [{ url: ogImage, width: 1200, height: 630, alt: post.title }],
+    },
+    twitter: {
+      card: 'summary_large_image' as const,
+      title: post.title,
+      description,
+      images: [ogImage],
+    },
+    alternates: { canonical: url },
   }
 }
 
