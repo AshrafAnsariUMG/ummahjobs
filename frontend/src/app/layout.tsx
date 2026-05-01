@@ -4,6 +4,7 @@ import './globals.css'
 import { AuthProvider } from '@/context/AuthContext'
 import ConditionalLayout from '@/components/layout/ConditionalLayout'
 import { ToastProvider } from '@/components/ui/Toast'
+import EpomRouteWatcher from '@/components/ads/EpomRouteWatcher'
 
 const API = process.env.NEXT_PUBLIC_API_URL
 
@@ -69,6 +70,8 @@ export default function RootLayout({
   return (
     <html lang="en" className={inter.variable}>
       <head>
+        {/* Muslim Ad Network — loaded once globally so EPOM can find all <ins> slots */}
+        <script async src="https://cdn77.aj2742.top/dcfc6ab7.js" />
         <script dangerouslySetInnerHTML={{ __html: `
   var _paq = window._paq = window._paq || [];
   _paq.push(['trackPageView']);
@@ -85,6 +88,7 @@ export default function RootLayout({
       <body>
         <AuthProvider>
           <ToastProvider>
+            <EpomRouteWatcher />
             <ConditionalLayout>{children}</ConditionalLayout>
           </ToastProvider>
         </AuthProvider>

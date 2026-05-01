@@ -6,6 +6,7 @@ import { useRouter } from 'next/navigation'
 import { api } from '@/lib/api'
 import { useToast } from '@/components/ui/Toast'
 import { getStorageUrl } from '@/lib/imageUtils'
+import RichTextEditor from '@/components/ui/RichTextEditor'
 
 interface EmployerResult {
   id: number
@@ -412,17 +413,12 @@ export default function AdminPostJobPage() {
           <h2 className="font-bold text-gray-900 mb-4">Description</h2>
           <div>
             <label className={labelClass}>Job Description *</label>
-            <textarea
+            <RichTextEditor
               value={description}
-              onChange={(e) => setDescription(e.target.value)}
-              rows={12}
-              className={`${inputClass} resize-y`}
-              style={{ ...ringStyle, minHeight: '400px' }}
+              onChange={setDescription}
               placeholder="Describe the role, responsibilities, requirements..."
-              required
+              minHeight="300px"
             />
-            {/* TODO: Add Generate Description button for admin (currently blocked —
-                POST /api/employer/jobs/generate-description requires employer role) */}
             <FieldError field="description" />
           </div>
         </div>

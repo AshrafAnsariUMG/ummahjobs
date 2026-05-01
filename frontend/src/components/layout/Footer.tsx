@@ -196,6 +196,9 @@ export default function Footer() {
               { label: 'UmmahBuzz',         url: 'https://ummahbuzz.com/?utm_source=ummahjobs&utm_medium=footer' },
               { label: 'UmmahCauses',       url: 'https://ummahcauses.org/?utm_source=ummahjobs&utm_medium=footer' },
               { label: 'Muslim Ad Network', url: 'https://muslimadnetwork.com/?utm_source=ummahjobs&utm_medium=footer' },
+              { label: 'DonateForIslam',   url: 'https://donateforislam.org/?utm_source=ummahjobs&utm_medium=footer' },
+              { label: 'Ummah.City',       url: 'https://ummah.city/?utm_source=ummahjobs&utm_medium=footer' },
+              { label: 'Ummah.Army',       url: 'https://ummah.army/?utm_source=ummahjobs&utm_medium=footer' },
             ].map((item, i) => (
               <a
                 key={i}

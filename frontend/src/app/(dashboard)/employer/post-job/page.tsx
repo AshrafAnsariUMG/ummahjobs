@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { api } from '@/lib/api'
 import { useToast } from '@/components/ui/Toast'
+import RichTextEditor from '@/components/ui/RichTextEditor'
 import type { CreditBalance, JobCategory } from '@/types'
 import { DuaHandsIcon } from '@/components/ui/IslamicIcons'
 
@@ -91,17 +92,18 @@ export default function PostJobPage() {
   const [generating, setGenerating] = useState(false)
   const [responsibilities, setResponsibilities] = useState('')
   const [errors, setErrors] = useState<Record<string, string>>({})
+  const [draftRestored, setDraftRestored] = useState(false)
 
   useEffect(() => {
-    // Restore draft if returning from packages page
     const draft = localStorage.getItem('uj_draft_job')
     if (draft) {
       try {
-        const data = JSON.parse(draft) as FormState
+        const data = JSON.parse(draft) as FormState & { step?: number }
         setForm(data)
-        setStep(3)
+        setStep(Math.min(data.step ?? 1, 2))
         localStorage.removeItem('uj_draft_job')
-        showToast('Your draft job has been restored!', 'success')
+        setDraftRestored(true)
+        showToast('Draft restored! Continue where you left off.', 'success')
       } catch {
         localStorage.removeItem('uj_draft_job')
       }
@@ -116,6 +118,12 @@ export default function PostJobPage() {
     }).catch(() => {})
   }, [])
 
+  useEffect(() => {
+    if (form.title || form.description) {
+      localStorage.setItem('uj_draft_job', JSON.stringify({ ...form, step, savedAt: new Date().toISOString() }))
+    }
+  }, [form, step])
+
   function set(key: keyof FormState, value: string | boolean) {
     setForm((prev) => ({ ...prev, [key]: value }))
     setErrors((prev) => ({ ...prev, [key]: '' }))
@@ -128,9 +136,13 @@ export default function PostJobPage() {
     return Object.keys(errs).length === 0
   }
 
+  function stripHtml(html: string) {
+    return html.replace(/<[^>]*>/g, '').replace(/&nbsp;/g, ' ').trim()
+  }
+
   function validateStep2() {
     const errs: Record<string, string> = {}
-    if (form.description.trim().length < 100) errs.description = 'Description must be at least 100 characters.'
+    if (stripHtml(form.description).length < 100) errs.description = 'Description must be at least 100 characters.'
     if (form.apply_type === 'external' && !form.apply_url.trim()) errs.apply_url = 'External URL is required.'
     setErrors(errs)
     return Object.keys(errs).length === 0
@@ -178,6 +190,7 @@ export default function PostJobPage() {
         salary_min: form.salary_min ? Number(form.salary_min) : null,
         salary_max: form.salary_max ? Number(form.salary_max) : null,
       })
+      localStorage.removeItem('uj_draft_job')
       // Bust the homepage cache so the new job appears immediately
       fetch(`/api/revalidate?secret=${process.env.NEXT_PUBLIC_REVALIDATION_SECRET}`, {
         method: 'POST',
@@ -205,6 +218,24 @@ export default function PostJobPage() {
         <h1 className="text-2xl font-extrabold text-gray-900">Post a Job</h1>
         <p className="text-sm text-gray-400 mt-1">Fill in the details to post your listing</p>
       </div>
+
+      {draftRestored && (
+        <div className="mb-4 flex items-center justify-between rounded-xl px-4 py-3 text-sm" style={{ backgroundColor: '#EFF6FF', border: '1px solid #BFDBFE' }}>
+          <span style={{ color: '#1D4ED8' }}>Draft restored — continue where you left off.</span>
+          <button
+            type="button"
+            onClick={() => {
+              localStorage.removeItem('uj_draft_job')
+              setForm(initialForm)
+              setStep(1)
+              setDraftRestored(false)
+            }}
+            style={{ color: '#6B7280', fontSize: '12px', background: 'none', border: 'none', cursor: 'pointer', textDecoration: 'underline' }}
+          >
+            Clear draft
+          </button>
+        </div>
+      )}
 
       <StepIndicator current={step} />
 
@@ -380,21 +411,26 @@ export default function PostJobPage() {
               <p className="text-xs text-gray-400 mb-2">
                 Edit the generated description or write your own.
               </p>
-              <textarea
-                value={form.description}
-                onChange={(e) => set('description', e.target.value)}
-                rows={8}
-                placeholder="Describe the role, responsibilities, requirements, and benefits…"
-                className="w-full px-3 py-2.5 text-sm rounded-lg border focus:outline-none focus:ring-2 focus:border-transparent resize-none"
-                style={{ borderColor: errors.description ? '#ef4444' : '#d1d5db', '--tw-ring-color': '#033BB0' } as React.CSSProperties}
-              />
+              <div style={{ borderColor: errors.description ? '#ef4444' : undefined }}>
+                <RichTextEditor
+                  value={form.description}
+                  onChange={(html) => setForm((prev) => ({ ...prev, description: html }))}
+                  placeholder="Describe the role, responsibilities, requirements, and benefits…"
+                  minHeight="240px"
+                />
+              </div>
               <div className="flex items-center justify-between mt-1">
                 {errors.description
                   ? <p className="text-xs text-red-500">{errors.description}</p>
                   : <span />}
-                <span className={`text-xs ${form.description.length < 100 ? 'text-gray-400' : 'text-green-600'}`}>
-                  {form.description.length} chars {form.description.length < 100 ? `(need ${100 - form.description.length} more)` : '✓'}
-                </span>
+                {(() => {
+                  const plain = stripHtml(form.description)
+                  return (
+                    <span className={`text-xs ${plain.length < 100 ? 'text-gray-400' : 'text-green-600'}`}>
+                      {plain.length} chars {plain.length < 100 ? `(need ${100 - plain.length} more)` : '✓'}
+                    </span>
+                  )
+                })()}
               </div>
             </div>
 
@@ -530,7 +566,7 @@ export default function PostJobPage() {
               <h3 className="font-bold text-gray-900 text-lg mb-1">{form.title}</h3>
               {form.location && <p className="text-sm text-gray-500 mb-3">📍 {form.location}{form.country ? `, ${form.country}` : ''}</p>}
               <p className="text-sm text-gray-700 leading-relaxed">
-                {form.description.slice(0, 300)}{form.description.length > 300 ? '…' : ''}
+                {(() => { const t = stripHtml(form.description); return t.slice(0, 300) + (t.length > 300 ? '…' : '') })()}
               </p>
               {(form.salary_min || form.salary_max) && (
                 <p className="text-sm font-medium mt-3" style={{ color: '#033BB0' }}>

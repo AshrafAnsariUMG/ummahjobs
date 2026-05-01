@@ -169,11 +169,10 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         } lg:translate-x-0`}
       >
         {/* Logo / Header */}
-        <div className="h-16 flex flex-col justify-center px-5 border-b border-gray-100 shrink-0">
-          <div className="flex items-center gap-1">
-            <span className="text-base font-bold" style={{ color: '#033BB0' }}>Admin Panel</span>
-          </div>
-          <p className="text-xs text-gray-400 mt-0.5">Ummah Media Group</p>
+        <div className="h-16 flex items-center px-5 border-b border-gray-100 shrink-0">
+          <Link href="/" style={{ textDecoration: 'none', display: 'block' }}>
+            <img src="/images/logo.png" alt="UmmahJobs" style={{ height: '32px', width: 'auto', display: 'block' }} />
+          </Link>
         </div>
 
         {/* Nav */}
@@ -264,7 +263,9 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
               <path strokeLinecap="round" strokeLinejoin="round" d="M4 6h16M4 12h16M4 18h16" />
             </svg>
           </button>
-          <span className="text-sm font-semibold" style={{ color: '#033BB0' }}>Admin Panel</span>
+          <a href="/" style={{ textDecoration: 'none' }}>
+            <img src="/images/logo.png" alt="UmmahJobs" style={{ height: '32px', width: 'auto', display: 'block' }} />
+          </a>
         </div>
 
         <main className="flex-1 p-6 lg:p-8">{children}</main>

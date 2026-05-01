@@ -110,6 +110,31 @@ class ProfileController
         return response()->json(['profile_photo_path' => $url]);
     }
 
+    public function uploadCover(Request $request): JsonResponse
+    {
+        $candidate = $request->user()->candidate;
+        if (!$candidate) {
+            return response()->json(['error' => 'Candidate profile not found.'], 403);
+        }
+
+        $request->validate([
+            'cover' => 'required|image|mimes:jpg,jpeg,png,webp|max:5120',
+        ]);
+
+        if ($candidate->cover_photo_path && str_starts_with($candidate->cover_photo_path, 'covers/')) {
+            Storage::disk('public')->delete($candidate->cover_photo_path);
+        }
+
+        $path = $request->file('cover')->store('covers', 'public');
+        $candidate->cover_photo_path = $path;
+        $candidate->save();
+
+        return response()->json([
+            'cover_path' => $path,
+            'message'    => 'Cover photo updated.',
+        ]);
+    }
+
     private function calcCompletion($candidate): float
     {
         $total  = count(self::COMPLETION_FIELDS);

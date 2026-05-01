@@ -86,6 +86,7 @@ export default function CandidateProfileEditPage() {
   const { showToast } = useToast()
   const photoInputRef = useRef<HTMLInputElement>(null)
   const cvInputRef = useRef<HTMLInputElement>(null)
+  const coverInputRef = useRef<HTMLInputElement>(null)
 
   const [candidate, setCandidate] = useState<Candidate | null>(null)
   const [categories, setCategories] = useState<JobCategory[]>([])
@@ -93,8 +94,10 @@ export default function CandidateProfileEditPage() {
   const [saving, setSaving] = useState(false)
   const [uploadingPhoto, setUploadingPhoto] = useState(false)
   const [uploadingCV, setUploadingCV] = useState(false)
+  const [uploadingCover, setUploadingCover] = useState(false)
   const [cvProgress, setCvProgress] = useState(0)
   const [photoPreview, setPhotoPreview] = useState<string | null>(null)
+  const [coverPreview, setCoverPreview] = useState<string | null>(null)
   const [newLang, setNewLang] = useState('')
 
   const [form, setForm] = useState<FormState>({
@@ -122,6 +125,7 @@ export default function CandidateProfileEditPage() {
         setCandidate(profile)
         setCategories(cats)
         setPhotoPreview(getStorageUrl(profile.profile_photo_path))
+        setCoverPreview(getStorageUrl((profile as Candidate & { cover_photo_path?: string }).cover_photo_path))
         setForm({
           title: profile.title ?? '',
           location: profile.location ?? '',
@@ -223,6 +227,25 @@ export default function CandidateProfileEditPage() {
     }
   }
 
+  async function handleCoverChange(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0]
+    if (!file) return
+    setUploadingCover(true)
+    setCoverPreview(URL.createObjectURL(file))
+    try {
+      const fd = new FormData()
+      fd.append('cover', file)
+      const res: { cover_path: string } = await api.upload('/api/candidate/profile/cover', fd)
+      setCoverPreview(`/storage/${res.cover_path}`)
+      showToast('Cover photo updated.', 'success')
+    } catch (err: unknown) {
+      const e = err as { message?: string }
+      showToast(e?.message ?? 'Failed to upload cover photo.', 'error')
+    } finally {
+      setUploadingCover(false)
+    }
+  }
+
   async function handleSave() {
     setSaving(true)
     try {
@@ -278,6 +301,49 @@ export default function CandidateProfileEditPage() {
             <div className="h-1.5 rounded-full" style={{ width: `${completionPct}%`, backgroundColor: '#033BB0' }} />
           </div>
         )}
+      </div>
+
+      {/* Section 0: Cover Photo */}
+      <div className="bg-white rounded-2xl border border-gray-200 p-5 mb-5">
+        <h2 className="font-semibold text-gray-900 text-sm mb-4">Profile Cover Photo</h2>
+        <div
+          style={{
+            width: '100%',
+            height: '120px',
+            borderRadius: '12px',
+            background: coverPreview ? `url(${coverPreview}) center/cover no-repeat` : 'linear-gradient(135deg, #033BB0, #0244b8)',
+            marginBottom: '12px',
+            border: '1px solid #E5E7EB',
+            position: 'relative',
+            overflow: 'hidden',
+          }}
+        >
+          {!coverPreview && (
+            <div style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'rgba(255,255,255,0.5)', fontSize: '13px' }}>
+              No cover photo set
+            </div>
+          )}
+          {uploadingCover && (
+            <div className="absolute inset-0 bg-black/40 flex items-center justify-center">
+              <svg className="animate-spin h-5 w-5 text-white" fill="none" viewBox="0 0 24 24">
+                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z" />
+              </svg>
+            </div>
+          )}
+        </div>
+        <div className="flex items-center gap-3">
+          <button
+            type="button"
+            onClick={() => coverInputRef.current?.click()}
+            disabled={uploadingCover}
+            style={{ display: 'inline-block', padding: '8px 16px', background: 'white', border: '2px solid #033BB0', borderRadius: '8px', color: '#033BB0', fontWeight: '600', fontSize: '14px', cursor: 'pointer', opacity: uploadingCover ? 0.6 : 1 }}
+          >
+            {uploadingCover ? 'Uploading…' : 'Upload Cover Photo'}
+          </button>
+          <span style={{ fontSize: '12px', color: '#6B7280' }}>PNG, JPG — max 5MB — recommended 1200×300px</span>
+        </div>
+        <input ref={coverInputRef} type="file" accept="image/*" className="hidden" onChange={handleCoverChange} />
       </div>
 
       {/* Section 1: Profile Photo */}

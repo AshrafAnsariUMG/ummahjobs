@@ -9,7 +9,7 @@ class Candidate extends Model
     protected $fillable = [
         'user_id', 'title', 'location', 'phone', 'gender', 'age_range',
         'experience_years', 'qualification', 'languages', 'skills', 'job_category',
-        'salary_type', 'socials', 'cv_path', 'profile_photo_path',
+        'salary_type', 'socials', 'cv_path', 'profile_photo_path', 'cover_photo_path',
         'show_profile', 'profile_complete_pct', 'views_count',
     ];
 

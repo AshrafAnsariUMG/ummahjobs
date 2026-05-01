@@ -132,9 +132,8 @@ export default function CandidateLayout({ children }: { children: React.ReactNod
       >
         {/* Logo */}
         <div className="h-16 flex items-center px-5 border-b border-gray-100 shrink-0">
-          <Link href="/" className="flex items-center gap-1">
-            <span className="text-lg font-bold" style={{ color: '#033BB0' }}>Ummah</span>
-            <span className="text-lg font-bold text-gray-500">Jobs</span>
+          <Link href="/" style={{ textDecoration: 'none', display: 'block' }}>
+            <img src="/images/logo.png" alt="UmmahJobs" style={{ height: '36px', width: 'auto', display: 'block' }} />
           </Link>
           <span className="ml-auto text-xs font-medium px-1.5 py-0.5 rounded text-white" style={{ backgroundColor: '#033BB0' }}>
             Candidate
@@ -276,7 +275,9 @@ export default function CandidateLayout({ children }: { children: React.ReactNod
               <path strokeLinecap="round" strokeLinejoin="round" d="M4 6h16M4 12h16M4 18h16" />
             </svg>
           </button>
-          <span className="text-sm font-semibold" style={{ color: '#033BB0' }}>UmmahJobs</span>
+          <a href="/" style={{ textDecoration: 'none' }}>
+            <img src="/images/logo.png" alt="UmmahJobs" style={{ height: '36px', width: 'auto', display: 'block' }} />
+          </a>
         </div>
 
         <main className="flex-1 p-6 lg:p-8">{children}</main>

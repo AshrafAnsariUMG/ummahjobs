@@ -123,6 +123,7 @@ Route::middleware('auth:sanctum')->prefix('candidate')->group(function () {
     Route::put('profile', [Candidate\ProfileController::class, 'update']);
     Route::post('profile/cv', [Candidate\ProfileController::class, 'uploadCV']);
     Route::post('profile/photo', [Candidate\ProfileController::class, 'uploadPhoto']);
+    Route::post('profile/cover', [Candidate\ProfileController::class, 'uploadCover']);
 
     // Saved jobs
     Route::get('saved-jobs', [Candidate\SavedJobController::class, 'index']);
