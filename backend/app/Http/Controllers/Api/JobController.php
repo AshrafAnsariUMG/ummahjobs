@@ -135,7 +135,7 @@ class JobController extends Controller
             'newest'   => $query->orderBy('created_at', 'desc'),
             'oldest'   => $query->orderBy('created_at', 'asc'),
             'featured' => $query->orderByDesc('is_featured')->orderByDesc('created_at'),
-            default    => $query->orderByDesc('is_featured')->orderByDesc('created_at'),
+            default    => $query->orderByDesc('created_at'),
         };
 
         $perPage = min((int) ($request->per_page ?? 12), 50);
@@ -180,7 +180,7 @@ class JobController extends Controller
                   ->orWhere('expires_at', '>', now());
             })
             ->orderByDesc('created_at')
-            ->limit(6)
+            ->limit(8)
             ->get();
 
         return response()->json($jobs);

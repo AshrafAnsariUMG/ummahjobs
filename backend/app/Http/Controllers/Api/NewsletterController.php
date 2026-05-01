@@ -16,19 +16,14 @@ class NewsletterController extends Controller
         ]);
 
         $service = new FlodeskService();
-        $result  = $service->subscribe(
+        $service->subscribe(
             $request->email,
-            $request->first_name ?? ''
+            $request->first_name ?? '',
+            '67b761b0de47463b8b7f285f'
         );
 
-        if ($result['success']) {
-            return response()->json([
-                'message' => "You're subscribed! JazakAllah Khayran for joining the UmmahJobs community.",
-            ]);
-        }
-
         return response()->json([
-            'message' => $result['error'] ?? 'Subscription failed.',
-        ], 422);
+            'message' => "You're subscribed! JazakAllah Khayran for joining the UmmahJobs community.",
+        ]);
     }
 }

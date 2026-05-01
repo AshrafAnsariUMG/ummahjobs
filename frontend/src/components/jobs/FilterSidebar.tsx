@@ -3,7 +3,6 @@
 import { useRouter, useSearchParams } from 'next/navigation'
 import { useCallback, useState } from 'react'
 import type { JobCategory, JobType } from '@/types'
-import MANAd from '@/components/ads/MANAdBanner'
 
 interface Props {
   categories: JobCategory[]
@@ -253,11 +252,6 @@ export default function FilterSidebar({ categories, jobTypes }: Props) {
         </div>
       </div>
 
-      {/* Sidebar ad */}
-      <div className="hidden lg:block" style={{ marginTop: '24px' }}>
-        <p style={{ fontSize: '10px', color: '#9CA3AF', textAlign: 'center', marginBottom: '4px' }}>Advertisement</p>
-        <MANAd size="sidebar-wide" />
-      </div>
     </aside>
   )
 }

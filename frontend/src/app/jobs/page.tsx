@@ -29,6 +29,7 @@ import IslamicEmptyState from '@/components/ui/IslamicEmptyState'
 import { SearchIcon } from '@/components/ui/IslamicIcons'
 import SortDropdown from '@/components/jobs/SortDropdown'
 import AnimatedSection from '@/components/ui/AnimatedSection'
+import FeaturedJobsCarousel from '@/components/home/FeaturedJobsCarousel'
 
 const API = process.env.NEXT_PUBLIC_API_URL
 
@@ -63,6 +64,16 @@ async function getJobTypes(): Promise<JobType[]> {
   }
 }
 
+async function getFeaturedJobs(): Promise<Job[]> {
+  try {
+    const res = await fetch(`${API}/api/jobs/featured`, { next: { revalidate: 300 } })
+    if (!res.ok) return []
+    return res.json()
+  } catch {
+    return []
+  }
+}
+
 interface PageProps {
   searchParams: Promise<Record<string, string>>
 }
@@ -79,10 +90,11 @@ export default async function JobsPage({ searchParams }: PageProps) {
   const params = await searchParams
   const page = params.page ?? '1'
 
-  const [jobsData, categories, jobTypes] = await Promise.all([
+  const [jobsData, categories, jobTypes, featuredJobs] = await Promise.all([
     getJobs({ ...params, per_page: '15' }),
     getCategories(),
     getJobTypes(),
+    getFeaturedJobs(),
   ])
 
   const { data: jobs, meta } = jobsData
@@ -124,6 +136,16 @@ export default async function JobsPage({ searchParams }: PageProps) {
 
         {/* Main */}
         <AnimatedSection animation="fade-right" className="flex-1 min-w-0">
+          {/* Featured carousel */}
+          {featuredJobs.length > 0 && (
+            <div className="mb-6">
+              <p className="text-xs font-semibold text-gray-400 uppercase tracking-widest mb-3">
+                Featured Opportunities
+              </p>
+              <FeaturedJobsCarousel jobs={featuredJobs} />
+            </div>
+          )}
+
           {/* Results bar with sort */}
           <div className="flex items-center justify-between mb-4">
             <p className="text-sm text-gray-500">

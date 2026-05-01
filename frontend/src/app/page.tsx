@@ -13,6 +13,7 @@ export const metadata: Metadata = {
   twitter: { card: 'summary_large_image' },
 }
 import JobCard from '@/components/jobs/JobCard'
+import NewsletterPopup from '@/components/ui/NewsletterPopup'
 import SectionHeading from '@/components/ui/SectionHeading'
 import MANLeaderboard from '@/components/ads/MANLeaderboard'
 import HeroSearch from '@/components/home/HeroSearch'
@@ -400,6 +401,7 @@ export default async function HomePage() {
           </p>
         </section>
       </AnimatedSection>
+      <NewsletterPopup />
     </div>
   )
 }

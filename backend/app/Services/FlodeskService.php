@@ -20,18 +20,19 @@ class FlodeskService
             return ['success' => true, 'mock' => true];
         }
 
-        $credentials = base64_encode($apiKey . ':');
+        $payload = [
+            'email'      => $email,
+            'first_name' => $firstName,
+            'status'     => 'active',
+        ];
+
+        if (!empty($segId)) {
+            $payload['segment_ids'] = [$segId];
+        }
 
         try {
-            // Step 1: Create/update subscriber
-            $response = Http::withHeaders([
-                'Authorization' => 'Basic ' . $credentials,
-                'Content-Type'  => 'application/json',
-            ])->put('https://api.flodesk.com/v1/subscribers', [
-                'email'      => $email,
-                'first_name' => $firstName,
-                'status'     => 'active',
-            ]);
+            $response = Http::withBasicAuth($apiKey, '')
+                ->post('https://api.flodesk.com/v1/subscribers', $payload);
 
             if (!$response->successful()) {
                 Log::error('Flodesk subscribe failed', [
@@ -40,17 +41,6 @@ class FlodeskService
                     'body'   => $response->body(),
                 ]);
                 return ['success' => false, 'error' => 'Subscription failed.'];
-            }
-
-            // Step 2: Add to segment if provided
-            if (!empty($segId)) {
-                Http::withHeaders([
-                    'Authorization' => 'Basic ' . $credentials,
-                    'Content-Type'  => 'application/json',
-                ])->post(
-                    'https://api.flodesk.com/v1/subscribers/' . urlencode($email) . '/segments',
-                    ['segment_ids' => [$segId]]
-                );
             }
 
             return ['success' => true];

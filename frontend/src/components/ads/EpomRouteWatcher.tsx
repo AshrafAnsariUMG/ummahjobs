@@ -6,6 +6,17 @@ import { useEffect, useRef } from 'react'
 const SCRIPT_SRC = 'https://cdn77.aj2742.top/dcfc6ab7.js'
 type EpomWindow = Window & { EpomAdServer?: Record<string, unknown> }
 
+function reloadEpom() {
+  const existing = document.querySelector<HTMLScriptElement>(`script[src="${SCRIPT_SRC}"]`)
+  if (existing) existing.remove()
+  delete (window as EpomWindow).EpomAdServer
+
+  const script = document.createElement('script')
+  script.src = SCRIPT_SRC
+  script.async = true
+  document.head.appendChild(script)
+}
+
 export default function EpomRouteWatcher() {
   const pathname = usePathname()
   const isFirst = useRef(true)
@@ -17,20 +28,16 @@ export default function EpomRouteWatcher() {
       return
     }
 
-    // Wait for the new page's <ins> elements to appear in the DOM, then
-    // do a full EPOM script reload so it scans them fresh
-    const t = setTimeout(() => {
-      const existing = document.querySelector<HTMLScriptElement>(`script[src="${SCRIPT_SRC}"]`)
-      if (existing) existing.remove()
-      delete (window as EpomWindow).EpomAdServer
+    // Fire twice: once early for fast/static pages, once later for slow dynamic
+    // pages (like /jobs) that make several API calls before streaming HTML.
+    // The second fire is a no-op if EPOM already filled slots from the first.
+    const t1 = setTimeout(reloadEpom, 400)
+    const t2 = setTimeout(reloadEpom, 1200)
 
-      const script = document.createElement('script')
-      script.src = SCRIPT_SRC
-      script.async = true
-      document.head.appendChild(script)
-    }, 300)
-
-    return () => clearTimeout(t)
+    return () => {
+      clearTimeout(t1)
+      clearTimeout(t2)
+    }
   }, [pathname])
 
   return null
