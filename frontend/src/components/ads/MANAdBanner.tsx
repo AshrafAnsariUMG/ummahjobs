@@ -22,6 +22,8 @@ export default function MANAd({ size, className }: MANAdProps) {
         data-key={config.key}
         style={{ display: 'inline-block', width: config.width, height: config.height }}
       />
+      {/* eslint-disable-next-line @next/next/no-sync-scripts */}
+      <script src="https://cdn77.aj2742.top/dcfc6ab7.js" />
       <div style={{ marginTop: '4px' }}>
         <a
           href="https://muslimadnetwork.com?utm_source=UmmahJobs"

@@ -175,7 +175,8 @@ export default async function BlogPostPage({ params }: PageProps) {
           {/* Advertisement */}
           <div>
             <p style={{ fontSize: '10px', color: '#9CA3AF', textAlign: 'center', marginBottom: '4px' }}>Advertisement</p>
-            <MANAd size="rectangle" />
+            <div className="hidden sm:block"><MANAd size="rectangle" /></div>
+            <div className="block sm:hidden"><MANAd size="mobile-banner" /></div>
           </div>
 
           {/* Recent posts */}
