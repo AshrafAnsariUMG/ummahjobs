@@ -2,7 +2,7 @@
 
 ## Project
 URL (dev): http://37.27.215.90:3003
-URL (live): https://ummahjobs.com (DNS not yet pointed)
+URL (live): https://ummahjobs.com (DNS pointed — site is live)
 Path: /var/www/ummahjobs
 Backend port: 8003
 Frontend port: 3003
@@ -28,7 +28,7 @@ sudo pm2 save
 
 ## Nginx
 Main config: /etc/nginx/sites-available/ummahjobs
-Status: NOT enabled yet — enable at go-live (S18)
+Status: Enabled — site is live on ummahjobs.com
 Routes: /api/* and /storage/* → :8003 | /* → :3003
 sudo nginx -t && sudo systemctl reload nginx
 
