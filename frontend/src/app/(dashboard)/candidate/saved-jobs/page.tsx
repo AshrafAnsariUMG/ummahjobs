@@ -45,13 +45,7 @@ export default function CandidateSavedJobsPage() {
         setTotal(res.total)
       })
       .catch((err: { status?: number; error?: string; message?: string }) => {
-        // May 2 2026 — Tafjeera reported saved jobs feature looks broken; root
-        // cause was a silent .catch swallowing 403s when the candidate profile
-        // doesn't exist yet (UmmahPass-OAuth users land here before completing
-        // onboarding). Surface the actual error so users know what to do.
-        if (err?.status === 403) {
-          setLoadError('Complete your candidate profile first to see saved jobs.')
-        } else if (err?.status === 401) {
+        if (err?.status === 401) {
           setLoadError('Session expired — please sign in again.')
         } else {
           setLoadError(err?.error || err?.message || 'Could not load saved jobs. Please try again.')

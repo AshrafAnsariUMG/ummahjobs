@@ -36,7 +36,7 @@ class AuthController extends Controller
         ]);
 
         if ($request->role === 'candidate') {
-            Candidate::create(['user_id' => $user->id]);
+            Candidate::firstOrCreate(['user_id' => $user->id]);
         } elseif ($request->role === 'employer') {
             $slug = Str::slug($request->company_name);
             if (Employer::where('slug', $slug)->exists()) {

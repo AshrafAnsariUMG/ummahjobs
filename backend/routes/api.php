@@ -126,6 +126,7 @@ Route::middleware('auth:sanctum')->prefix('candidate')->group(function () {
     Route::post('profile/cover', [Candidate\ProfileController::class, 'uploadCover']);
 
     // Saved jobs
+    Route::get('saved-jobs/check/{jobId}', [Candidate\SavedJobController::class, 'check']);
     Route::get('saved-jobs', [Candidate\SavedJobController::class, 'index']);
     Route::post('saved-jobs', [Candidate\SavedJobController::class, 'store']);
     Route::delete('saved-jobs/{jobId}', [Candidate\SavedJobController::class, 'destroy']);

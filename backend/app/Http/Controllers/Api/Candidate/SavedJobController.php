@@ -54,6 +54,20 @@ class SavedJobController
         return response()->json(['message' => 'Job saved.', 'saved_job' => $saved], 201);
     }
 
+    public function check(Request $request, int $jobId): JsonResponse
+    {
+        $candidate = $request->user()->candidate;
+        if (!$candidate) {
+            return response()->json(['saved' => false]);
+        }
+
+        $saved = SavedJob::where('candidate_id', $candidate->id)
+            ->where('job_id', $jobId)
+            ->exists();
+
+        return response()->json(['saved' => $saved]);
+    }
+
     public function destroy(Request $request, int $jobId): JsonResponse
     {
         $candidate = $request->user()->candidate;
