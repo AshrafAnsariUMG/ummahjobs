@@ -1,5 +1,7 @@
 'use client'
 
+import { useEffect } from 'react'
+
 const adConfig = {
   'leaderboard':   { key: 'db61a89ffa214858c2e9102633e15f2d', width: 728, height: 90  },
   'mobile-banner': { key: '5da772e096950ac945b62dcd00c35f1e', width: 320, height: 50  },
@@ -15,6 +17,16 @@ interface MANAdProps {
 export default function MANAd({ size, className }: MANAdProps) {
   const config = adConfig[size]
 
+  useEffect(() => {
+    const script = document.createElement('script')
+    script.src = 'https://cdn77.aj2742.top/dcfc6ab7.js'
+    script.async = true
+    document.head.appendChild(script)
+    return () => {
+      document.head.removeChild(script)
+    }
+  }, [])
+
   return (
     <div className={className} style={{ textAlign: 'center' }}>
       <ins
@@ -22,8 +34,6 @@ export default function MANAd({ size, className }: MANAdProps) {
         data-key={config.key}
         style={{ display: 'inline-block', width: config.width, height: config.height }}
       />
-      {/* eslint-disable-next-line @next/next/no-sync-scripts */}
-      <script src="https://cdn77.aj2742.top/dcfc6ab7.js" />
       <div style={{ marginTop: '4px' }}>
         <a
           href="https://muslimadnetwork.com?utm_source=UmmahJobs"
