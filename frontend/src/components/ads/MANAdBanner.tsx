@@ -32,7 +32,7 @@ export default function MANAd({ size, className }: MANAdProps) {
       <ins
         className="bbbac5e5"
         data-key={config.key}
-        style={{ display: 'inline-block', width: config.width, height: config.height }}
+        style={{ display: 'block', width: `${config.width}px`, height: `${config.height}px` }}
       />
       <div style={{ marginTop: '4px' }}>
         <a
