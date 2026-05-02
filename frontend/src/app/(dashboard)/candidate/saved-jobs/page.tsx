@@ -36,6 +36,7 @@ export default function CandidateSavedJobsPage() {
   const [loading, setLoading] = useState(true)
   const [sort, setSort] = useState<SortOrder>('newest')
   const [removing, setRemoving] = useState<number | null>(null)
+  const [loadError, setLoadError] = useState<string | null>(null)
 
   useEffect(() => {
     api.get('/api/candidate/saved-jobs')
@@ -43,7 +44,19 @@ export default function CandidateSavedJobsPage() {
         setSavedJobs(res.data)
         setTotal(res.total)
       })
-      .catch(() => {})
+      .catch((err: { status?: number; error?: string; message?: string }) => {
+        // May 2 2026 — Tafjeera reported saved jobs feature looks broken; root
+        // cause was a silent .catch swallowing 403s when the candidate profile
+        // doesn't exist yet (UmmahPass-OAuth users land here before completing
+        // onboarding). Surface the actual error so users know what to do.
+        if (err?.status === 403) {
+          setLoadError('Complete your candidate profile first to see saved jobs.')
+        } else if (err?.status === 401) {
+          setLoadError('Session expired — please sign in again.')
+        } else {
+          setLoadError(err?.error || err?.message || 'Could not load saved jobs. Please try again.')
+        }
+      })
       .finally(() => setLoading(false))
   }, [])
 
@@ -80,6 +93,22 @@ export default function CandidateSavedJobsPage() {
           {loading ? 'Loading…' : `${total} saved job${total !== 1 ? 's' : ''}`}
         </p>
       </div>
+
+      {/* Surface load errors instead of silently rendering empty state (Tafjeera May 1) */}
+      {!loading && loadError && (
+        <div className="mb-6 rounded-xl border border-amber-200 bg-amber-50 p-4">
+          <p className="text-sm font-semibold text-amber-900">Couldn&apos;t load saved jobs</p>
+          <p className="mt-1 text-sm text-amber-800">{loadError}</p>
+          {loadError.includes('candidate profile') && (
+            <Link
+              href="/candidate/profile"
+              className="mt-3 inline-flex items-center text-sm font-semibold text-amber-900 underline underline-offset-2"
+            >
+              Complete profile →
+            </Link>
+          )}
+        </div>
+      )}
 
       {/* Sort bar */}
       {!loading && savedJobs.length > 0 && (

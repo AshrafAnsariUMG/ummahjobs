@@ -23,6 +23,7 @@ export const metadata: Metadata = {
   alternates: { canonical: 'https://ummahjobs.com/jobs' },
 }
 import FilterSidebar from '@/components/jobs/FilterSidebar'
+import MobileFilterDrawer from '@/components/jobs/MobileFilterDrawer'
 import JobListWithScores from '@/components/jobs/JobListWithScores'
 import MANLeaderboard from '@/components/ads/MANLeaderboard'
 import IslamicEmptyState from '@/components/ui/IslamicEmptyState'
@@ -128,8 +129,14 @@ export default async function JobsPage({ searchParams }: PageProps) {
         </p>
       </div>
 
+      {/* Mobile filter trigger — visible only below lg (Tafjeera May 1: filters
+          not visible on mobile because the desktop sidebar is `hidden lg:block`) */}
+      <div className="lg:hidden mb-4">
+        <MobileFilterDrawer categories={categories} jobTypes={jobTypes} />
+      </div>
+
       <div className="flex gap-8">
-        {/* Sidebar */}
+        {/* Sidebar (desktop only) */}
         <AnimatedSection animation="fade-left" className="hidden lg:block w-56 shrink-0">
           <FilterSidebarWrapper categories={categories} jobTypes={jobTypes} />
         </AnimatedSection>
