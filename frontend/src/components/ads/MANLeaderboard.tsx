@@ -1,8 +1,18 @@
 'use client'
 
+import { useEffect, useState } from 'react'
 import MANAd from './MANAdBanner'
 
 export default function MANLeaderboard() {
+  const [isMobile, setIsMobile] = useState(false)
+
+  useEffect(() => {
+    const check = () => setIsMobile(window.innerWidth < 640)
+    check()
+    window.addEventListener('resize', check)
+    return () => window.removeEventListener('resize', check)
+  }, [])
+
   return (
     <div style={{
       width: '100%',
@@ -12,14 +22,10 @@ export default function MANLeaderboard() {
       background: '#f9fafb',
       borderBottom: '1px solid #f3f4f6',
     }}>
-      {/* Desktop: 728x90 */}
-      <div className="hidden sm:block">
-        <MANAd size="leaderboard" />
-      </div>
-      {/* Mobile: 320x50 */}
-      <div className="block sm:hidden">
-        <MANAd size="mobile-banner" />
-      </div>
+      {isMobile
+        ? <MANAd size="mobile-banner" />
+        : <MANAd size="leaderboard" />
+      }
     </div>
   )
 }
