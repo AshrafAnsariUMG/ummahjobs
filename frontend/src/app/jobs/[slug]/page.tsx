@@ -10,8 +10,8 @@ import ApplySection from '@/components/jobs/ApplySection'
 import { ErrorBoundary } from '@/components/ui/ErrorBoundary'
 import { categoryIcons, defaultIcon } from '@/lib/categoryIcons'
 import { formatJobDescription } from '@/lib/formatJobDescription'
-import MANAd from '@/components/ads/MANAdBanner'
 import { getStorageUrl } from '@/lib/imageUtils'
+import MANAd from '@/components/ads/MANAd'
 
 const API = process.env.NEXT_PUBLIC_API_URL
 const SITE = process.env.NEXT_PUBLIC_SITE_URL ?? 'https://ummahjobs.com'
@@ -253,6 +253,9 @@ export default async function JobDetailPage({ params }: PageProps) {
               dangerouslySetInnerHTML={{ __html: formatJobDescription(job.description) }}
             />
           </div>
+          <div className="block sm:hidden mt-6">
+            <MANAd size="mobile-banner" />
+          </div>
         </main>
         </AnimatedSection>
 
@@ -329,11 +332,8 @@ export default async function JobDetailPage({ params }: PageProps) {
             </dl>
           </div>
 
-          {/* Advertisement */}
-          <div>
-            <p style={{ fontSize: '10px', color: '#9CA3AF', textAlign: 'center', marginBottom: '4px' }}>Advertisement</p>
-            <div className="hidden sm:block"><MANAd size="rectangle" /></div>
-            <div className="block sm:hidden"><MANAd size="mobile-banner" /></div>
+          <div className="hidden sm:block">
+            <MANAd size="rectangle" />
           </div>
 
           {/* Employer mini-card */}

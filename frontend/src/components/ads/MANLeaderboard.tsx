@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import MANAd from './MANAdBanner'
+import MANAd from './MANAd'
 
 export default function MANLeaderboard() {
   const [isMobile, setIsMobile] = useState(false)

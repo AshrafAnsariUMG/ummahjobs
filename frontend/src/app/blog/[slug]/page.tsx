@@ -4,7 +4,7 @@ import type { BlogPost } from '@/types'
 import ShareButtons from '@/components/jobs/ShareButtons'
 import NewsletterSignup from '@/components/home/NewsletterSignup'
 import BlogFeaturedImage from '@/components/blog/BlogFeaturedImage'
-import MANAd from '@/components/ads/MANAdBanner'
+import MANAd from '@/components/ads/MANAd'
 
 const API = process.env.NEXT_PUBLIC_API_URL
 const SITE = process.env.NEXT_PUBLIC_SITE_URL ?? 'https://ummahjobs.com'
@@ -142,6 +142,10 @@ export default async function BlogPostPage({ params }: PageProps) {
             <p className="text-gray-500 italic">Content coming soon.</p>
           )}
 
+          <div className="block sm:hidden mt-6">
+            <MANAd size="mobile-banner" />
+          </div>
+
           {/* Share */}
           <div className="mt-8 pt-6 border-t border-gray-100">
             <ShareButtons title={post.title} url={postUrl} />
@@ -172,11 +176,8 @@ export default async function BlogPostPage({ params }: PageProps) {
             </Link>
           </div>
 
-          {/* Advertisement */}
-          <div>
-            <p style={{ fontSize: '10px', color: '#9CA3AF', textAlign: 'center', marginBottom: '4px' }}>Advertisement</p>
-            <div className="hidden sm:block"><MANAd size="rectangle" /></div>
-            <div className="block sm:hidden"><MANAd size="mobile-banner" /></div>
+          <div className="hidden sm:block">
+            <MANAd size="rectangle" />
           </div>
 
           {/* Recent posts */}

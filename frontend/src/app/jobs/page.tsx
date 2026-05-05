@@ -25,12 +25,12 @@ export const metadata: Metadata = {
 import FilterSidebar from '@/components/jobs/FilterSidebar'
 import MobileFilterDrawer from '@/components/jobs/MobileFilterDrawer'
 import JobListWithScores from '@/components/jobs/JobListWithScores'
-import MANLeaderboard from '@/components/ads/MANLeaderboard'
 import IslamicEmptyState from '@/components/ui/IslamicEmptyState'
 import { SearchIcon } from '@/components/ui/IslamicIcons'
 import SortDropdown from '@/components/jobs/SortDropdown'
 import AnimatedSection from '@/components/ui/AnimatedSection'
 import FeaturedJobsCarousel from '@/components/home/FeaturedJobsCarousel'
+import MANLeaderboard from '@/components/ads/MANLeaderboard'
 
 const API = process.env.NEXT_PUBLIC_API_URL
 
@@ -110,10 +110,7 @@ export default async function JobsPage({ searchParams }: PageProps) {
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10" style={{ position: 'relative' }}>
-{/* MAN Leaderboard Ad */}
-      <div className="mb-6 -mx-4 sm:-mx-6 lg:-mx-8">
-        <MANLeaderboard />
-      </div>
+      <MANLeaderboard />
 
       {/* Header */}
       <div className="mb-8">

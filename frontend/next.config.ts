@@ -10,7 +10,7 @@ const csp = [
   "img-src 'self' data: blob: https:",
   "font-src 'self' https://fonts.bunny.net https://fonts.gstatic.com data:",
   "connect-src 'self' https://analytics.ummahmediagroup.com https://api.stripe.com https://*.stripe.com https://ummahpass.io https://aj2742.top https://cdn77.aj2742.top https://*.aj2742.top https://*.doubleclick.net https://www.googletagservices.com https://*.googlesyndication.com",
-  "frame-src https://*.stripe.com https://js.stripe.com https://aj2742.top https://*.aj2742.top https://*.doubleclick.net https://ad.doubleclick.net https://www.googletagservices.com https://*.googletagservices.com https://*.googlesyndication.com https://*.google.com",
+  "frame-src 'self' https://*.stripe.com https://js.stripe.com https://aj2742.top https://*.aj2742.top https://*.doubleclick.net https://ad.doubleclick.net https://www.googletagservices.com https://*.googletagservices.com https://*.googlesyndication.com https://*.google.com",
   "object-src 'none'",
   "base-uri 'self'",
   "form-action 'self' https://*.stripe.com",

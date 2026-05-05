@@ -15,8 +15,8 @@ export const metadata: Metadata = {
 import JobCard from '@/components/jobs/JobCard'
 import NewsletterPopup from '@/components/ui/NewsletterPopup'
 import SectionHeading from '@/components/ui/SectionHeading'
-import MANLeaderboard from '@/components/ads/MANLeaderboard'
 import HeroSearch from '@/components/home/HeroSearch'
+import MANLeaderboard from '@/components/ads/MANLeaderboard'
 import FeaturedJobsCarousel from '@/components/home/FeaturedJobsCarousel'
 import CategoryGrid from '@/components/home/CategoryGrid'
 import AnimatedSection from '@/components/ui/AnimatedSection'
@@ -199,7 +199,7 @@ export default async function HomePage() {
         </div>
       </section>
 
-      {/* ── MAN Leaderboard Ad ── */}
+
       <MANLeaderboard />
 
       {/* ── Featured Jobs ── */}
