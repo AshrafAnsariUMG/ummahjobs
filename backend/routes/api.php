@@ -3,6 +3,7 @@
 use App\Http\Controllers\Api\Admin\CreditsController;
 use App\Http\Controllers\Api\Admin\SiteSettingsController;
 use App\Http\Controllers\Api\AuthController;
+use App\Http\Controllers\Api\CouponController;
 use App\Http\Controllers\Api\BlogController;
 use App\Http\Controllers\Api\MessageController;
 use App\Http\Controllers\Api\ContactController;
@@ -115,6 +116,9 @@ Route::middleware('auth:sanctum')->prefix('employer')->group(function () {
     // Applicants
     Route::get('applicants', [Employer\ApplicantController::class, 'index']);
     Route::put('applicants/{id}/status', [Employer\ApplicantController::class, 'updateStatus']);
+
+    // Coupons (employer — validate only)
+    Route::post('coupons/validate', [CouponController::class, 'validate']);
 });
 
 // Candidate authenticated routes
@@ -219,6 +223,9 @@ Route::middleware(['auth:sanctum', 'role:admin'])->prefix('admin')->group(functi
     Route::get('packages', [Admin\PackageController::class, 'index']);
     Route::put('packages/{id}', [Admin\PackageController::class, 'update']);
     Route::delete('packages/{id}', [Admin\PackageController::class, 'destroy']);
+
+    // Coupons (admin)
+    Route::apiResource('coupons', Admin\CouponController::class);
 
     // Feedback (stats before {id} to avoid collision)
     Route::get('feedback/stats', [Admin\FeedbackController::class, 'stats']);

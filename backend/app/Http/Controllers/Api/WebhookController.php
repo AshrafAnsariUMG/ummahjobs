@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Jobs\SendPackageConfirmation;
+use App\Models\CouponUse;
 use App\Services\EmployerPackageService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -40,6 +41,19 @@ class WebhookController
                 (int) $metadata->employer_id,
                 (int) $metadata->package_id
             );
+
+            // Record coupon use if one was applied
+            if (!empty($metadata->coupon_id)) {
+                CouponUse::create([
+                    'coupon_id'        => (int) $metadata->coupon_id,
+                    'employer_id'      => (int) $metadata->employer_id,
+                    'package_id'       => (int) $metadata->package_id,
+                    'original_price'   => (float) $metadata->original_price,
+                    'discount_amount'  => (float) $metadata->discount_amount,
+                    'final_price'      => $session->amount_total / 100,
+                    'stripe_session_id'=> $session->id,
+                ]);
+            }
 
             dispatch(new SendPackageConfirmation(
                 (string) $metadata->user_id,

@@ -6,6 +6,15 @@ import { api } from '@/lib/api'
 import { useToast } from '@/components/ui/Toast'
 import type { CreditBalance, Package, StripeOrderItem } from '@/types'
 
+interface CouponResult {
+  coupon_id: number
+  code: string
+  original_price: number
+  discount_amount: number
+  final_price: number
+  message: string
+}
+
 function getFeatures(pkg: Package): { label: string; included: boolean }[] {
   const nameLower = pkg.name?.toLowerCase() ?? ''
   return [
@@ -29,6 +38,13 @@ function PackagesContent() {
   const [packages, setPackages] = useState<Package[]>([])
   const [loading, setLoading] = useState(true)
   const [checkingOut, setCheckingOut] = useState<number | null>(null)
+
+  // Per-package coupon state
+  const [couponShown, setCouponShown] = useState<Record<number, boolean>>({})
+  const [couponCode, setCouponCode] = useState<Record<number, string>>({})
+  const [couponApplying, setCouponApplying] = useState<Record<number, boolean>>({})
+  const [couponResult, setCouponResult] = useState<Record<number, CouponResult | null>>({})
+  const [couponError, setCouponError] = useState<Record<number, string | null>>({})
 
   useEffect(() => {
     if (searchParams.get('cancelled') === '1') {
@@ -84,12 +100,40 @@ function PackagesContent() {
     return () => clearInterval(interval)
   }, [])
 
-  async function handleCheckout(packageId: number) {
-    setCheckingOut(packageId)
+  async function applyCoupon(pkgId: number) {
+    const code = (couponCode[pkgId] ?? '').trim()
+    if (!code) return
+    setCouponApplying((p) => ({ ...p, [pkgId]: true }))
+    setCouponError((p) => ({ ...p, [pkgId]: null }))
+    setCouponResult((p) => ({ ...p, [pkgId]: null }))
     try {
-      const data: { checkout_url: string } = await api.post('/api/employer/packages/checkout', {
-        package_id: packageId,
+      const data: CouponResult = await api.post('/api/employer/coupons/validate', {
+        code,
+        package_id: pkgId,
       })
+      setCouponResult((p) => ({ ...p, [pkgId]: data }))
+    } catch (err: unknown) {
+      const e = err as { message?: string }
+      setCouponError((p) => ({ ...p, [pkgId]: e?.message ?? 'Invalid coupon.' }))
+    } finally {
+      setCouponApplying((p) => ({ ...p, [pkgId]: false }))
+    }
+  }
+
+  function removeCoupon(pkgId: number) {
+    setCouponResult((p) => ({ ...p, [pkgId]: null }))
+    setCouponCode((p) => ({ ...p, [pkgId]: '' }))
+    setCouponError((p) => ({ ...p, [pkgId]: null }))
+  }
+
+  async function handleCheckout(pkg: Package) {
+    const pkgId = pkg.id
+    setCheckingOut(pkgId)
+    const appliedCoupon = couponResult[pkgId]
+    try {
+      const body: { package_id: number; coupon_id?: number } = { package_id: pkgId }
+      if (appliedCoupon) body.coupon_id = appliedCoupon.coupon_id
+      const data: { checkout_url: string } = await api.post('/api/employer/packages/checkout', body)
       window.location.href = data.checkout_url
     } catch (err: unknown) {
       const e = err as { message?: string }
@@ -186,13 +230,18 @@ function PackagesContent() {
       {/* Buy more */}
       <section>
         <h2 className="font-semibold text-gray-900 mb-5">Need more credits?</h2>
-        <div className="grid sm:grid-cols-3 gap-5 items-center">
+        <div className="grid sm:grid-cols-3 gap-5 items-start">
           {packages.map((pkg) => {
             const nameLower = pkg.name?.toLowerCase() ?? ''
             const isStandard = nameLower.includes('standard')
             const isExtended = nameLower.includes('extended')
             const busy = checkingOut === pkg.id
             const features = getFeatures(pkg)
+            const applied = couponResult[pkg.id] ?? null
+            const shown = couponShown[pkg.id] ?? false
+            const applying = couponApplying[pkg.id] ?? false
+            const cError = couponError[pkg.id] ?? null
+
             return (
               <div
                 key={pkg.id}
@@ -229,12 +278,95 @@ function PackagesContent() {
                 )}
 
                 <h3 className="font-bold text-gray-900 mb-1">{pkg.name}</h3>
-                <div className="mb-5">
-                  <span className="text-3xl font-extrabold" style={{ color: '#033BB0' }}>
-                    ${Number(pkg.price).toFixed(0)}
-                  </span>
-                  <span className="text-gray-400 text-sm ml-1">one-time</span>
+
+                {/* Price display */}
+                <div className="mb-1">
+                  {applied ? (
+                    <div>
+                      <div className="flex items-baseline gap-2">
+                        <span className="text-3xl font-extrabold" style={{ color: '#0FBB0F' }}>
+                          ${applied.final_price.toFixed(2)}
+                        </span>
+                        <span className="text-gray-400 text-sm line-through">${applied.original_price.toFixed(2)}</span>
+                      </div>
+                      <div className="flex items-center gap-1.5 mt-1">
+                        <svg viewBox="0 0 20 20" fill="#0FBB0F" width={13} height={13}>
+                          <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" />
+                        </svg>
+                        <span style={{ fontSize: '12px', color: '#0FBB0F', fontWeight: 600 }}>
+                          {applied.code} — save ${applied.discount_amount.toFixed(2)}
+                        </span>
+                        <button
+                          onClick={() => removeCoupon(pkg.id)}
+                          style={{ marginLeft: '4px', color: '#9CA3AF', fontSize: '11px', background: 'none', border: 'none', cursor: 'pointer', textDecoration: 'underline' }}
+                        >
+                          Remove
+                        </button>
+                      </div>
+                    </div>
+                  ) : (
+                    <div>
+                      <span className="text-3xl font-extrabold" style={{ color: '#033BB0' }}>
+                        ${Number(pkg.price).toFixed(0)}
+                      </span>
+                      <span className="text-gray-400 text-sm ml-1">one-time</span>
+                    </div>
+                  )}
                 </div>
+
+                {/* Coupon toggle + input */}
+                {!applied && (
+                  <div className="mb-4">
+                    {!shown ? (
+                      <button
+                        onClick={() => setCouponShown((p) => ({ ...p, [pkg.id]: true }))}
+                        style={{ fontSize: '12px', color: '#033BB0', background: 'none', border: 'none', cursor: 'pointer', padding: 0, textDecoration: 'underline' }}
+                      >
+                        Have a coupon?
+                      </button>
+                    ) : (
+                      <div style={{ marginTop: '8px' }}>
+                        <div style={{ display: 'flex', gap: '6px' }}>
+                          <input
+                            type="text"
+                            placeholder="COUPON CODE"
+                            value={couponCode[pkg.id] ?? ''}
+                            onChange={(e) => {
+                              setCouponCode((p) => ({ ...p, [pkg.id]: e.target.value.toUpperCase() }))
+                              setCouponError((p) => ({ ...p, [pkg.id]: null }))
+                            }}
+                            onKeyDown={(e) => { if (e.key === 'Enter') applyCoupon(pkg.id) }}
+                            style={{
+                              flex: 1, padding: '6px 10px', fontSize: '12px',
+                              border: cError ? '1px solid #EF4444' : '1px solid #D1D5DB',
+                              borderRadius: '6px', outline: 'none',
+                              fontFamily: 'monospace', letterSpacing: '0.05em',
+                              textTransform: 'uppercase',
+                            }}
+                          />
+                          <button
+                            onClick={() => applyCoupon(pkg.id)}
+                            disabled={applying || !couponCode[pkg.id]?.trim()}
+                            style={{
+                              padding: '6px 12px', fontSize: '12px', fontWeight: 600,
+                              background: '#033BB0', color: 'white',
+                              border: 'none', borderRadius: '6px',
+                              cursor: applying || !couponCode[pkg.id]?.trim() ? 'not-allowed' : 'pointer',
+                              opacity: applying || !couponCode[pkg.id]?.trim() ? 0.6 : 1,
+                              whiteSpace: 'nowrap',
+                            }}
+                          >
+                            {applying ? '…' : 'Apply'}
+                          </button>
+                        </div>
+                        {cError && (
+                          <p style={{ fontSize: '11px', color: '#EF4444', marginTop: '4px' }}>{cError}</p>
+                        )}
+                      </div>
+                    )}
+                  </div>
+                )}
+                {applied && <div className="mb-4" />}
 
                 <ul style={{ listStyle: 'none', padding: 0, margin: '0 0 20px' }}>
                   {features.map((f, fi) => (
@@ -259,14 +391,14 @@ function PackagesContent() {
                 </ul>
 
                 <button
-                  onClick={() => handleCheckout(pkg.id)}
+                  onClick={() => handleCheckout(pkg)}
                   disabled={busy}
                   style={{
                     width: '100%',
                     padding: '10px',
-                    background: 'white',
-                    color: '#033BB0',
-                    border: '2px solid #033BB0',
+                    background: applied ? '#0FBB0F' : 'white',
+                    color: applied ? 'white' : '#033BB0',
+                    border: applied ? '2px solid #0FBB0F' : '2px solid #033BB0',
                     borderRadius: '8px',
                     fontWeight: 700,
                     fontSize: '14px',
@@ -274,10 +406,19 @@ function PackagesContent() {
                     opacity: busy ? 0.6 : 1,
                     transition: 'background 0.2s, color 0.2s',
                   }}
-                  onMouseEnter={(e) => { if (!busy) { const b = e.currentTarget; b.style.background = '#033BB0'; b.style.color = 'white' } }}
-                  onMouseLeave={(e) => { const b = e.currentTarget; b.style.background = 'white'; b.style.color = '#033BB0' }}
+                  onMouseEnter={(e) => {
+                    if (busy) return
+                    const b = e.currentTarget
+                    if (applied) { b.style.background = '#0DA80D'; b.style.borderColor = '#0DA80D' }
+                    else { b.style.background = '#033BB0'; b.style.color = 'white' }
+                  }}
+                  onMouseLeave={(e) => {
+                    const b = e.currentTarget
+                    if (applied) { b.style.background = '#0FBB0F'; b.style.borderColor = '#0FBB0F'; b.style.color = 'white' }
+                    else { b.style.background = 'white'; b.style.color = '#033BB0' }
+                  }}
                 >
-                  {busy ? 'Redirecting…' : `Purchase ${pkg.name}`}
+                  {busy ? 'Redirecting…' : applied ? `Purchase for $${applied.final_price.toFixed(2)}` : `Purchase ${pkg.name}`}
                 </button>
               </div>
             )

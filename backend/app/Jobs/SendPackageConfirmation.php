@@ -2,6 +2,7 @@
 
 namespace App\Jobs;
 
+use App\Models\CouponUse;
 use App\Services\EmailTemplateService as ET;
 use App\Services\GmailMailerService;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -37,15 +38,43 @@ class SendPackageConfirmation implements ShouldQueue
 
         $dashboardUrl = config('services.app.frontend_url') . '/employer/post-job';
 
+        // Check if a coupon was used for this order
+        $couponUse = $this->stripeOrderId
+            ? CouponUse::with('coupon')
+                ->where('stripe_session_id', $this->stripeOrderId)
+                ->first()
+            : null;
+
+        $amountPaid = $couponUse
+            ? number_format($couponUse->final_price, 2)
+            : number_format((float) $package->price, 2);
+
+        $couponRows = '';
+        if ($couponUse && $couponUse->coupon) {
+            $couponRows = "
+              <tr>
+                <td style=\"padding:4px 0;\"><strong>Original Price</strong></td>
+                <td style=\"text-align:right;\">\${$couponUse->original_price}</td>
+              </tr>
+              <tr>
+                <td style=\"padding:4px 0;color:#0FBB0F;\"><strong>Coupon ({$couponUse->coupon->code})</strong></td>
+                <td style=\"text-align:right;color:#0FBB0F;\">-\${$couponUse->discount_amount}</td>
+              </tr>
+              <tr>
+                <td colspan=\"2\" style=\"padding:2px 0;\"><hr style=\"border:none;border-top:1px solid #BFDBFE;\"></td>
+              </tr>";
+        }
+
         $orderBox = ET::infoBox(
             "<table style=\"width:100%;font-size:14px;color:#1E40AF;\">
               <tr>
                 <td style=\"padding:4px 0;\"><strong>Package</strong></td>
                 <td style=\"text-align:right;\">{$package->name}</td>
               </tr>
+              {$couponRows}
               <tr>
                 <td style=\"padding:4px 0;\"><strong>Amount Paid</strong></td>
-                <td style=\"text-align:right;\">\${$package->price}</td>
+                <td style=\"text-align:right;\">\${$amountPaid}</td>
               </tr>
               <tr>
                 <td style=\"padding:4px 0;\"><strong>Job Post Credits</strong></td>
