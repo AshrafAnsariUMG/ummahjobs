@@ -9,6 +9,7 @@ use App\Http\Controllers\Api\ContactController;
 use App\Http\Controllers\Api\FeedbackController;
 use App\Http\Controllers\Api\NewsletterController;
 use App\Http\Controllers\Api\Admin;
+use App\Http\Controllers\Api\Admin\ExternalEmployerController;
 use App\Http\Controllers\Api\Candidate;
 use App\Http\Controllers\Api\CategoryController;
 use App\Http\Controllers\Api\Employer;
@@ -193,6 +194,11 @@ Route::middleware(['auth:sanctum', 'role:admin'])->prefix('admin')->group(functi
     Route::get('jobs/{id}', [Admin\JobController::class, 'show']);
     Route::put('jobs/{id}', [Admin\JobController::class, 'update']);
     Route::delete('jobs/{id}', [Admin\JobController::class, 'destroy']);
+
+    // External employers
+    Route::get('external-employers', [ExternalEmployerController::class, 'index']);
+    Route::post('external-employers', [ExternalEmployerController::class, 'store']);
+    Route::post('external-employers/{id}/logo', [ExternalEmployerController::class, 'uploadLogo']);
 
     // Employers (search before {id} to avoid collision)
     Route::get('employers/search', [Admin\EmployerController::class, 'search']);

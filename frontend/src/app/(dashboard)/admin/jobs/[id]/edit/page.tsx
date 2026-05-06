@@ -15,6 +15,15 @@ interface EmployerResult {
   logo_path: string | null
 }
 
+interface ExternalEmployerResult {
+  id: number
+  name: string
+  website: string | null
+  email: string | null
+  logo_path: string | null
+  logo_url: string | null
+}
+
 interface Category {
   id: number
   name: string
@@ -35,6 +44,8 @@ interface JobDetail {
   is_urgent: boolean
   employer_id: number | null
   employer: EmployerResult | null
+  external_employer_id: number | null
+  external_employer: ExternalEmployerResult | null
   external_employer_name: string | null
   external_employer_website: string | null
   external_employer_email: string | null
@@ -126,10 +137,16 @@ export default function AdminEditJobPage() {
   const [searchOpen, setSearchOpen] = useState(false)
   const searchRef = useRef<HTMLDivElement>(null)
 
-  // External employer fields
+  // External employer fields + autocomplete
   const [externalName, setExternalName] = useState('')
   const [externalWebsite, setExternalWebsite] = useState('')
   const [externalEmail, setExternalEmail] = useState('')
+  const [selectedExternalEmployerId, setSelectedExternalEmployerId] = useState<number | null>(null)
+  const [extSearchResults, setExtSearchResults] = useState<ExternalEmployerResult[]>([])
+  const [extSearchOpen, setExtSearchOpen] = useState(false)
+  const extSearchRef = useRef<HTMLDivElement>(null)
+  const [externalLogoFile, setExternalLogoFile] = useState<File | null>(null)
+  const [externalLogoPreview, setExternalLogoPreview] = useState<string | null>(null)
 
   // Categories / job types
   const [categories, setCategories] = useState<Category[]>([])
@@ -195,9 +212,15 @@ export default function AdminEditJobPage() {
         setSelectedEmployer(j.employer)
       } else {
         setEmployerType('external')
-        setExternalName(j.external_employer_name ?? '')
-        setExternalWebsite(j.external_employer_website ?? '')
-        setExternalEmail(j.external_employer_email ?? '')
+        setExternalName(j.external_employer?.name ?? j.external_employer_name ?? '')
+        setExternalWebsite(j.external_employer?.website ?? j.external_employer_website ?? '')
+        setExternalEmail(j.external_employer?.email ?? j.external_employer_email ?? '')
+        if (j.external_employer_id) {
+          setSelectedExternalEmployerId(j.external_employer_id)
+        }
+        if (j.external_employer?.logo_url) {
+          setExternalLogoPreview(j.external_employer.logo_url)
+        }
       }
     }).catch(() => {
       showToast('Failed to load job.', 'error')
@@ -232,6 +255,50 @@ export default function AdminEditJobPage() {
     return () => document.removeEventListener('mousedown', h)
   }, [])
 
+  // External employer name autocomplete
+  useEffect(() => {
+    if (!externalName || externalName.length < 2) {
+      setExtSearchResults([])
+      setExtSearchOpen(false)
+      return
+    }
+    const t = setTimeout(() => {
+      api.get(`/api/admin/external-employers?q=${encodeURIComponent(externalName)}`)
+        .then((d: unknown) => {
+          const res = (d as { employers: ExternalEmployerResult[] }).employers
+          setExtSearchResults(res)
+          setExtSearchOpen(res.length > 0)
+        })
+        .catch(() => {})
+    }, 300)
+    return () => clearTimeout(t)
+  }, [externalName])
+
+  // Close external dropdown on outside click
+  useEffect(() => {
+    function h(e: MouseEvent) {
+      if (extSearchRef.current && !extSearchRef.current.contains(e.target as Node)) setExtSearchOpen(false)
+    }
+    document.addEventListener('mousedown', h)
+    return () => document.removeEventListener('mousedown', h)
+  }, [])
+
+  function handleExternalLogoSelect(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0]
+    if (!file) return
+    setExternalLogoFile(file)
+    setExternalLogoPreview(URL.createObjectURL(file))
+  }
+
+  function selectExternalEmployer(emp: ExternalEmployerResult) {
+    setExternalName(emp.name)
+    setExternalWebsite(emp.website ?? '')
+    setExternalEmail(emp.email ?? '')
+    setSelectedExternalEmployerId(emp.id)
+    setExternalLogoPreview(emp.logo_url ?? null)
+    setExtSearchOpen(false)
+  }
+
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
     if (employerType === 'existing' && !selectedEmployer) {
@@ -258,6 +325,23 @@ export default function AdminEditJobPage() {
       if (employerType === 'existing') {
         body.employer_id = selectedEmployer!.id
       } else {
+        // Find or create external employer record
+        let extId = selectedExternalEmployerId
+        if (!extId) {
+          const extData = await api.post('/api/admin/external-employers', {
+            name: externalName.trim(),
+            website: externalWebsite.trim() || undefined,
+            email: externalEmail.trim() || undefined,
+          }) as ExternalEmployerResult
+          extId = extData.id
+        }
+        // Upload logo if new file selected
+        if (externalLogoFile && extId) {
+          const fd = new FormData()
+          fd.append('logo', externalLogoFile)
+          await api.upload(`/api/admin/external-employers/${extId}/logo`, fd)
+        }
+        body.external_employer_id = extId
         body.external_employer_name = externalName.trim()
         if (externalWebsite.trim()) body.external_employer_website = externalWebsite.trim()
         if (externalEmail.trim()) body.external_employer_email = externalEmail.trim()
@@ -465,19 +549,65 @@ export default function AdminEditJobPage() {
               )
             ) : (
               <div className="space-y-3">
-                <div>
+                <div ref={extSearchRef} className="relative">
                   <label className={labelClass}>Company Name *</label>
                   <input
                     type="text"
                     value={externalName}
-                    onChange={(e) => setExternalName(e.target.value)}
+                    onChange={(e) => { setExternalName(e.target.value); setSelectedExternalEmployerId(null) }}
                     className={inputClass}
                     style={ringStyle}
                     placeholder="e.g. Islamic Relief Worldwide"
                     required={employerType === 'external'}
+                    autoComplete="off"
                   />
+                  {extSearchOpen && extSearchResults.length > 0 && (
+                    <div className="absolute top-full left-0 right-0 mt-1 bg-white rounded-xl shadow-lg border border-gray-100 py-1 z-30">
+                      {extSearchResults.map((emp) => (
+                        <button
+                          key={emp.id}
+                          type="button"
+                          onClick={() => selectExternalEmployer(emp)}
+                          className="w-full flex items-center gap-3 px-4 py-2.5 hover:bg-gray-50 text-left"
+                        >
+                          {emp.logo_url ? (
+                            // eslint-disable-next-line @next/next/no-img-element
+                            <img src={emp.logo_url} alt={emp.name} className="w-7 h-7 rounded object-contain border border-gray-100 shrink-0" />
+                          ) : (
+                            <div className="w-7 h-7 rounded flex items-center justify-center text-xs font-bold text-white shrink-0 bg-gray-400">
+                              {emp.name.charAt(0).toUpperCase()}
+                            </div>
+                          )}
+                          <div>
+                            <p className="text-sm text-gray-900">{emp.name}</p>
+                            {emp.website && <p className="text-xs text-gray-400">{emp.website}</p>}
+                          </div>
+                        </button>
+                      ))}
+                    </div>
+                  )}
                   <FieldError field="external_employer_name" />
                 </div>
+
+                {/* Logo upload */}
+                <div>
+                  <label className={labelClass}>Company Logo</label>
+                  <div className="flex items-center gap-4">
+                    {externalLogoPreview ? (
+                      // eslint-disable-next-line @next/next/no-img-element
+                      <img src={externalLogoPreview} alt="Logo preview" style={{ width: 60, height: 60, borderRadius: 8, objectFit: 'contain', border: '1px solid #E5E7EB' }} />
+                    ) : (
+                      <div style={{ width: 60, height: 60, background: '#F3F4F6', borderRadius: 8, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 24, color: '#9CA3AF' }}>
+                        🏢
+                      </div>
+                    )}
+                    <div>
+                      <input type="file" accept="image/*" onChange={handleExternalLogoSelect} className="text-xs text-gray-600" />
+                      <p className="text-xs text-gray-400 mt-1">PNG, JPG — max 2MB. Shown on job cards.</p>
+                    </div>
+                  </div>
+                </div>
+
                 <div>
                   <label className={labelClass}>Company Website</label>
                   <input

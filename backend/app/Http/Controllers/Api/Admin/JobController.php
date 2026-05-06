@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Employer;
+use App\Models\ExternalEmployer;
 use App\Models\Job;
 use App\Services\RevalidationService;
 use Illuminate\Http\Request;
@@ -58,8 +59,21 @@ class JobController extends Controller
             $slug = $base . '-' . $i++;
         }
 
+        $extEmployerId = null;
+        if ($request->employer_type === 'external') {
+            $extEmployer = ExternalEmployer::firstOrCreate(
+                ['name' => $request->external_employer_name],
+                [
+                    'website' => $request->external_employer_website,
+                    'email'   => $request->external_employer_email,
+                ]
+            );
+            $extEmployerId = $extEmployer->id;
+        }
+
         $job = Job::create([
             'employer_id'               => $request->employer_type === 'existing' ? $request->employer_id : null,
+            'external_employer_id'      => $extEmployerId,
             'external_employer_name'    => $request->employer_type === 'external' ? $request->external_employer_name : null,
             'external_employer_website' => $request->employer_type === 'external' ? $request->external_employer_website : null,
             'external_employer_email'   => $request->employer_type === 'external' ? $request->external_employer_email : null,
@@ -143,6 +157,7 @@ class JobController extends Controller
     {
         $job = Job::with([
             'employer:id,company_name,slug,logo_path',
+            'externalEmployer:id,name,website,email,logo_path',
             'category:id,name',
         ])->findOrFail($id);
 
@@ -203,8 +218,21 @@ class JobController extends Controller
             return response()->json(['message' => 'external_employer_name is required for external employer.'], 422);
         }
 
+        $extEmployerId = null;
+        if ($request->employer_type === 'external') {
+            $extEmployer = ExternalEmployer::firstOrCreate(
+                ['name' => $request->external_employer_name],
+                [
+                    'website' => $request->external_employer_website,
+                    'email'   => $request->external_employer_email,
+                ]
+            );
+            $extEmployerId = $extEmployer->id;
+        }
+
         $job->update([
             'employer_id'               => $request->employer_type === 'existing' ? $request->employer_id : null,
+            'external_employer_id'      => $extEmployerId,
             'external_employer_name'    => $request->employer_type === 'external' ? $request->external_employer_name : null,
             'external_employer_website' => $request->employer_type === 'external' ? $request->external_employer_website : null,
             'external_employer_email'   => $request->employer_type === 'external' ? $request->external_employer_email : null,

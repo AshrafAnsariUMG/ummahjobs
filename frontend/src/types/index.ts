@@ -237,9 +237,19 @@ export interface Message {
   sent_at: string
 }
 
+export interface ExternalEmployer {
+  id: number
+  name: string
+  website: string | null
+  email: string | null
+  logo_path: string | null
+  logo_url: string | null
+}
+
 export interface Job {
   id: number
   employer_id: string | null
+  external_employer_id: number | null
   title: string
   slug: string
   description: string
@@ -266,5 +276,6 @@ export interface Job {
   external_employer_website: string | null
   external_employer_email: string | null
   employer: Employer | null
+  external_employer: ExternalEmployer | null
   category: JobCategory | null
 }

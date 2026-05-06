@@ -112,8 +112,9 @@ function GeometricAccent({ hovered }: { hovered: boolean }) {
 export default function JobCard({ job, variant = 'list', matchScore }: JobCardProps) {
   const [isHovered, setIsHovered] = useState(false)
 
-  const companyName = job.employer?.company_name ?? job.external_employer_name ?? 'Unknown Company'
+  const companyName = job.employer?.company_name ?? job.external_employer?.name ?? job.external_employer_name ?? 'Unknown Company'
   const logoPath = job.employer?.logo_path ?? null
+  const externalLogoUrl = job.external_employer?.logo_url ?? null
 
   if (variant === 'carousel') {
     return (
@@ -133,9 +134,9 @@ export default function JobCard({ job, variant = 'list', matchScore }: JobCardPr
         <GeometricAccent hovered={isHovered} />
         <div className="flex items-start gap-3 mb-3" style={{ position: 'relative', zIndex: 1 }}>
           <div className="w-12 h-12 rounded-lg border border-gray-100 overflow-hidden flex items-center justify-center shrink-0 relative">
-            {getStorageUrl(logoPath) ? (
+            {getStorageUrl(logoPath) || externalLogoUrl ? (
               <img
-                src={getStorageUrl(logoPath)!}
+                src={getStorageUrl(logoPath) ?? externalLogoUrl!}
                 alt={companyName}
                 className="w-full h-full object-contain"
               />
@@ -203,9 +204,9 @@ export default function JobCard({ job, variant = 'list', matchScore }: JobCardPr
       <GeometricAccent hovered={isHovered} />
 
       <div className="w-10 h-10 rounded-lg border border-gray-100 overflow-hidden flex items-center justify-center shrink-0" style={{ position: 'relative', zIndex: 1 }}>
-        {getStorageUrl(logoPath) ? (
+        {getStorageUrl(logoPath) || externalLogoUrl ? (
           <img
-            src={getStorageUrl(logoPath)!}
+            src={getStorageUrl(logoPath) ?? externalLogoUrl!}
             alt={companyName}
             className="w-full h-full object-contain"
           />

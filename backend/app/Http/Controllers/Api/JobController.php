@@ -12,6 +12,7 @@ use App\Services\JobMatchService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
 
 class JobController extends Controller
 {
@@ -19,6 +20,7 @@ class JobController extends Controller
     {
         $query = Job::with([
             'employer:id,company_name,slug,logo_path',
+            'externalEmployer:id,name,website,logo_path',
             'category:id,name,slug',
         ])
             ->where('status', 'active')
@@ -156,6 +158,7 @@ class JobController extends Controller
     {
         $job = Job::with([
             'employer:id,company_name,slug,logo_path,cover_photo_path,category,email,socials',
+            'externalEmployer:id,name,website,logo_path',
             'category:id,name,slug',
         ])
             ->where('slug', $slug)
@@ -171,6 +174,7 @@ class JobController extends Controller
     {
         $jobs = Job::with([
             'employer:id,company_name,slug,logo_path',
+            'externalEmployer:id,name,website,logo_path',
             'category:id,name,slug',
         ])
             ->where('status', 'active')
