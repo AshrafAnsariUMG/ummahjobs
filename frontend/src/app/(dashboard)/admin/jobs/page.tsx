@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from 'react'
 import Link from 'next/link'
+import { useRouter } from 'next/navigation'
 import { api } from '@/lib/api'
 import { useToast } from '@/components/ui/Toast'
 
@@ -69,6 +70,7 @@ function ActionsMenu({
   onExpire: () => void
   onDelete: () => void
 }) {
+  const router = useRouter()
   const [open, setOpen] = useState(false)
   const ref = useRef<HTMLDivElement>(null)
 
@@ -92,6 +94,12 @@ function ActionsMenu({
       </button>
       {open && (
         <div className="absolute right-0 mt-1 w-44 bg-white rounded-xl shadow-lg border border-gray-100 py-1 z-30">
+          <button
+            onClick={() => { setOpen(false); router.push(`/admin/jobs/${job.id}/edit`) }}
+            className="block w-full text-left px-4 py-2 text-sm font-medium text-gray-900 hover:bg-gray-50"
+          >
+            Edit
+          </button>
           <a
             href={`/jobs/${job.slug}`}
             target="_blank"

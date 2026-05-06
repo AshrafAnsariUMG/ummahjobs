@@ -505,9 +505,8 @@ components/
   about/
     AboutCTACard.tsx          CTA card on about page
   ads/
-    AdScriptLoader.tsx        Loads MAN ad script once in layout
-    MANAdBanner.tsx           Muslim Ad Network banner (728×90 / 320×50)
-    MANLeaderboard.tsx        Leaderboard ad unit
+    MANAd.tsx                 Renders a single EPOM ad placement via iframe (leaderboard/mobile-banner/rectangle)
+    MANLeaderboard.tsx        Responsive wrapper — leaderboard (728×90) on desktop, mobile-banner (320×50) on mobile
   blog/
     BlogClient.tsx            Client component for blog category/search filtering
     BlogFeaturedImage.tsx     Featured image with onError fallback gradient
@@ -735,3 +734,5 @@ These credits were inserted directly via `Admin-Features-A` / `S4c` migration sc
 - **config:cache rule** — After any `.env` change on the backend, always run `php artisan config:clear && php artisan config:cache`. Raw `env()` calls return null when config is cached.
 
 - **Nginx not enabled** — The Nginx config exists at `/etc/nginx/sites-available/ummahjobs` but has NOT been symlinked to `sites-enabled`. Do not enable it until S18 DNS cutover.
+
+- **MAN (Muslim Ad Network) EPOM ads — use the static HTML iframe method.** The EPOM JS tag approach (`<ins class="bbbac5e5">` + `<script async>`) causes `nimp:true` and "ad container already removed" errors in Next.js SPAs due to React hydration/lifecycle conflicts with `window.EpomAdServer`. The working implementation uses static HTML files in `public/ads/` (one per size), each containing only the `<ins>` tag and script. These are loaded via `<iframe scrolling="no" frameBorder="0">` in `MANAd.tsx`. `MANLeaderboard.tsx` handles responsive switching between leaderboard (728×90) and mobile-banner (320×50) using `useState<boolean | null>(null)` — **null default is required** to avoid SSR rendering the wrong size. `frame-src 'self'` must be in the CSP (`next.config.ts`) for same-origin iframes to load. See `/var/www/CLAUDE.md` for the full reference implementation.

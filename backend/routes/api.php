@@ -187,9 +187,10 @@ Route::middleware(['auth:sanctum', 'role:admin'])->prefix('admin')->group(functi
     Route::put('reviews/{id}', [Admin\ReviewController::class, 'update']);
     Route::delete('reviews/{id}', [Admin\ReviewController::class, 'destroy']);
 
-    // Jobs (post before {id} routes)
+    // Jobs (post/get list before {id} routes to avoid collision)
     Route::post('jobs', [Admin\JobController::class, 'store']);
     Route::get('jobs', [Admin\JobController::class, 'index']);
+    Route::get('jobs/{id}', [Admin\JobController::class, 'show']);
     Route::put('jobs/{id}', [Admin\JobController::class, 'update']);
     Route::delete('jobs/{id}', [Admin\JobController::class, 'destroy']);
 

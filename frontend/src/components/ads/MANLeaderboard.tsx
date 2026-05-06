@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react'
 import MANAd from './MANAd'
 
 export default function MANLeaderboard() {
-  const [isMobile, setIsMobile] = useState(false)
+  const [isMobile, setIsMobile] = useState<boolean | null>(null)
 
   useEffect(() => {
     const check = () => setIsMobile(window.innerWidth < 640)
@@ -12,6 +12,9 @@ export default function MANLeaderboard() {
     window.addEventListener('resize', check)
     return () => window.removeEventListener('resize', check)
   }, [])
+
+  // Render nothing until client-side detection is complete
+  if (isMobile === null) return null
 
   return (
     <div style={{
