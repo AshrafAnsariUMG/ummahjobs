@@ -14,6 +14,7 @@ interface AuthContextValue {
   unreadMessages: number
   login: (token: string, user: User) => void
   logout: () => void
+  updateUser: (user: User) => void
 }
 
 const AuthContext = createContext<AuthContextValue | null>(null)
@@ -67,6 +68,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     setUser(newUser)
   }
 
+  function updateUser(updatedUser: User) {
+    localStorage.setItem('uj_user', JSON.stringify(updatedUser))
+    setUser(updatedUser)
+  }
+
   function logout() {
     api.post('/api/auth/logout').catch(() => {})
     localStorage.removeItem('uj_token')
@@ -87,6 +93,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         unreadMessages,
         login,
         logout,
+        updateUser,
       }}
     >
       {children}

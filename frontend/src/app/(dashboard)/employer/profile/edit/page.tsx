@@ -42,8 +42,10 @@ export default function EmployerProfileEditPage() {
   const [saving, setSaving] = useState(false)
   const [logoPreview, setLogoPreview] = useState<string | null>(null)
   const [logoUploading, setLogoUploading] = useState(false)
+  const [logoRemoving, setLogoRemoving] = useState(false)
   const [coverPreview, setCoverPreview] = useState<string | null>(null)
   const [coverUploading, setCoverUploading] = useState(false)
+  const [coverRemoving, setCoverRemoving] = useState(false)
 
   useEffect(() => {
     api.get('/api/employer/profile')
@@ -123,6 +125,36 @@ export default function EmployerProfileEditPage() {
     }
   }
 
+  async function handleRemoveLogo() {
+    if (!confirm('Remove your company logo?')) return
+    setLogoRemoving(true)
+    try {
+      await api.delete('/api/employer/profile/logo')
+      setLogoPreview(null)
+      setEmployer((prev) => prev ? { ...prev, logo_path: null } : prev)
+      showToast('Logo removed.', 'success')
+    } catch {
+      showToast('Failed to remove logo.', 'error')
+    } finally {
+      setLogoRemoving(false)
+    }
+  }
+
+  async function handleRemoveCover() {
+    if (!confirm('Remove your cover photo?')) return
+    setCoverRemoving(true)
+    try {
+      await api.delete('/api/employer/profile/cover')
+      setCoverPreview(null)
+      setEmployer((prev) => prev ? { ...prev, cover_photo_path: null } : prev)
+      showToast('Cover photo removed.', 'success')
+    } catch {
+      showToast('Failed to remove cover photo.', 'error')
+    } finally {
+      setCoverRemoving(false)
+    }
+  }
+
   async function handleSave() {
     setSaving(true)
     try {
@@ -184,13 +216,24 @@ export default function EmployerProfileEditPage() {
               onChange={handleLogoUpload}
               disabled={logoUploading}
             />
-            <label
-              htmlFor="logo-upload"
-              className="inline-block px-4 py-2 rounded-lg text-sm font-semibold border-2 cursor-pointer transition-colors"
-              style={{ borderColor: '#033BB0', color: '#033BB0', background: 'white', opacity: logoUploading ? 0.6 : 1, pointerEvents: logoUploading ? 'none' : 'auto' }}
-            >
-              {logoUploading ? 'Uploading…' : 'Upload Logo'}
-            </label>
+            <div className="flex items-center gap-2 flex-wrap">
+              <label
+                htmlFor="logo-upload"
+                className="inline-block px-4 py-2 rounded-lg text-sm font-semibold border-2 cursor-pointer transition-colors"
+                style={{ borderColor: '#033BB0', color: '#033BB0', background: 'white', opacity: logoUploading ? 0.6 : 1, pointerEvents: logoUploading ? 'none' : 'auto' }}
+              >
+                {logoUploading ? 'Uploading…' : 'Upload Logo'}
+              </label>
+              {logoPreview && (
+                <button
+                  onClick={handleRemoveLogo}
+                  disabled={logoRemoving}
+                  className="px-4 py-2 rounded-lg text-sm font-semibold border border-red-400 text-red-500 hover:bg-red-50 transition-colors disabled:opacity-60"
+                >
+                  {logoRemoving ? 'Removing…' : 'Remove Logo'}
+                </button>
+              )}
+            </div>
             <p className="text-xs text-gray-400 mt-1.5">PNG, JPG, WebP or SVG — max 2MB</p>
           </div>
         </div>
@@ -212,13 +255,24 @@ export default function EmployerProfileEditPage() {
           onChange={handleCoverUpload}
           disabled={coverUploading}
         />
-        <label
-          htmlFor="cover-upload"
-          className="inline-block px-4 py-2 rounded-lg text-sm font-semibold border-2 cursor-pointer"
-          style={{ borderColor: '#033BB0', color: '#033BB0', background: 'white', opacity: coverUploading ? 0.6 : 1, pointerEvents: coverUploading ? 'none' : 'auto' }}
-        >
-          {coverUploading ? 'Uploading…' : coverPreview ? 'Change Cover Photo' : 'Upload Cover Photo'}
-        </label>
+        <div className="flex items-center gap-2 flex-wrap">
+          <label
+            htmlFor="cover-upload"
+            className="inline-block px-4 py-2 rounded-lg text-sm font-semibold border-2 cursor-pointer"
+            style={{ borderColor: '#033BB0', color: '#033BB0', background: 'white', opacity: coverUploading ? 0.6 : 1, pointerEvents: coverUploading ? 'none' : 'auto' }}
+          >
+            {coverUploading ? 'Uploading…' : coverPreview ? 'Change Cover Photo' : 'Upload Cover Photo'}
+          </label>
+          {coverPreview && (
+            <button
+              onClick={handleRemoveCover}
+              disabled={coverRemoving}
+              className="px-4 py-2 rounded-lg text-sm font-semibold border border-red-400 text-red-500 hover:bg-red-50 transition-colors disabled:opacity-60"
+            >
+              {coverRemoving ? 'Removing…' : 'Remove Cover'}
+            </button>
+          )}
+        </div>
         <p className="text-xs text-gray-400 mt-1.5">PNG, JPG or WebP — max 5MB — recommended 1200×300px</p>
       </div>
 

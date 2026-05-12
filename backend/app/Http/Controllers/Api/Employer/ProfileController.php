@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api\Employer;
 
+use App\Services\RevalidationService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
@@ -86,12 +87,50 @@ class ProfileController
         $employer->cover_photo_path = $path;
         $employer->save();
 
-        \App\Services\RevalidationService::trigger();
+        RevalidationService::trigger();
 
         return response()->json([
             'cover_path' => $path,
             'cover_url'  => Storage::url($path),
             'message'    => 'Cover photo updated successfully.',
         ]);
+    }
+
+    public function removeLogo(Request $request): JsonResponse
+    {
+        $employer = $request->user()->employer;
+        if (!$employer) {
+            return response()->json(['error' => 'Employer profile not found.'], 403);
+        }
+
+        if ($employer->logo_path) {
+            if (str_starts_with($employer->logo_path, 'logos/')) {
+                Storage::disk('public')->delete($employer->logo_path);
+            }
+            $employer->logo_path = null;
+            $employer->save();
+            RevalidationService::trigger();
+        }
+
+        return response()->json(['message' => 'Logo removed.']);
+    }
+
+    public function removeCover(Request $request): JsonResponse
+    {
+        $employer = $request->user()->employer;
+        if (!$employer) {
+            return response()->json(['error' => 'Employer profile not found.'], 403);
+        }
+
+        if ($employer->cover_photo_path) {
+            if (str_starts_with($employer->cover_photo_path, 'covers/')) {
+                Storage::disk('public')->delete($employer->cover_photo_path);
+            }
+            $employer->cover_photo_path = null;
+            $employer->save();
+            RevalidationService::trigger();
+        }
+
+        return response()->json(['message' => 'Cover photo removed.']);
     }
 }

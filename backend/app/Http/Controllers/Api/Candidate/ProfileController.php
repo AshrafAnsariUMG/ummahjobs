@@ -3,8 +3,10 @@
 namespace App\Http\Controllers\Api\Candidate;
 
 use App\Models\JobMatchCache;
+use App\Models\User;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
 
 class ProfileController
@@ -133,6 +135,110 @@ class ProfileController
             'cover_path' => $path,
             'message'    => 'Cover photo updated.',
         ]);
+    }
+
+    public function updateAccount(Request $request): JsonResponse
+    {
+        $request->validate([
+            'display_name'     => 'sometimes|string|max:255',
+            'email'            => 'sometimes|email|max:255',
+            'current_password' => 'required_with:email|string',
+        ]);
+
+        $user = $request->user();
+
+        if ($request->has('email') && $request->email !== $user->email) {
+            try {
+                $passwordValid = Hash::check($request->current_password, $user->password ?? '');
+            } catch (\RuntimeException $e) {
+                $passwordValid = false;
+            }
+
+            if (!$passwordValid) {
+                return response()->json([
+                    'message' => 'Current password is incorrect.',
+                    'errors'  => ['current_password' => ['Password is incorrect.']],
+                ], 422);
+            }
+
+            $exists = User::where('email', $request->email)
+                ->where('id', '!=', $user->id)
+                ->exists();
+
+            if ($exists) {
+                return response()->json([
+                    'message' => 'This email is already in use.',
+                    'errors'  => ['email' => ['Email already taken.']],
+                ], 422);
+            }
+
+            $user->email = $request->email;
+        }
+
+        if ($request->filled('display_name')) {
+            $user->display_name = $request->display_name;
+        }
+
+        $user->save();
+
+        return response()->json([
+            'message' => 'Account updated successfully.',
+            'user'    => $user,
+        ]);
+    }
+
+    public function removePhoto(Request $request): JsonResponse
+    {
+        $candidate = $request->user()->candidate;
+        if (!$candidate) {
+            return response()->json(['error' => 'Candidate profile not found.'], 403);
+        }
+
+        if ($candidate->profile_photo_path) {
+            $path = str_replace('/storage/', '', $candidate->profile_photo_path);
+            Storage::disk('public')->delete($path);
+            $candidate->profile_photo_path = null;
+            $candidate->save();
+            $candidate->update(['profile_complete_pct' => $this->calcCompletion($candidate->fresh())]);
+        }
+
+        return response()->json(['message' => 'Photo removed.']);
+    }
+
+    public function removeCv(Request $request): JsonResponse
+    {
+        $candidate = $request->user()->candidate;
+        if (!$candidate) {
+            return response()->json(['error' => 'Candidate profile not found.'], 403);
+        }
+
+        if ($candidate->cv_path) {
+            $path = str_replace('/storage/', '', $candidate->cv_path);
+            Storage::disk('public')->delete($path);
+            $candidate->cv_path = null;
+            $candidate->save();
+            $candidate->update(['profile_complete_pct' => $this->calcCompletion($candidate->fresh())]);
+        }
+
+        return response()->json(['message' => 'CV removed.']);
+    }
+
+    public function removeCover(Request $request): JsonResponse
+    {
+        $candidate = $request->user()->candidate;
+        if (!$candidate) {
+            return response()->json(['error' => 'Candidate profile not found.'], 403);
+        }
+
+        if ($candidate->cover_photo_path) {
+            if (str_starts_with($candidate->cover_photo_path, 'covers/')) {
+                Storage::disk('public')->delete($candidate->cover_photo_path);
+            }
+            $candidate->cover_photo_path = null;
+            $candidate->save();
+        }
+
+        return response()->json(['message' => 'Cover photo removed.']);
     }
 
     private function calcCompletion($candidate): float

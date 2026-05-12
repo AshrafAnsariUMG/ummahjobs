@@ -103,7 +103,9 @@ Route::middleware('auth:sanctum')->prefix('employer')->group(function () {
     Route::get('profile', [Employer\ProfileController::class, 'show']);
     Route::put('profile', [Employer\ProfileController::class, 'update']);
     Route::post('profile/logo', [Employer\ProfileController::class, 'uploadLogo']);
+    Route::delete('profile/logo', [Employer\ProfileController::class, 'removeLogo']);
     Route::post('profile/cover', [Employer\ProfileController::class, 'uploadCover']);
+    Route::delete('profile/cover', [Employer\ProfileController::class, 'removeCover']);
 
     // Jobs
     Route::post('jobs/generate-description', [Employer\JobController::class, 'generateDescription']);
@@ -126,9 +128,13 @@ Route::middleware('auth:sanctum')->prefix('candidate')->group(function () {
     // Profile
     Route::get('profile', [Candidate\ProfileController::class, 'show']);
     Route::put('profile', [Candidate\ProfileController::class, 'update']);
+    Route::post('profile/account', [Candidate\ProfileController::class, 'updateAccount']);
     Route::post('profile/cv', [Candidate\ProfileController::class, 'uploadCV']);
+    Route::delete('profile/cv', [Candidate\ProfileController::class, 'removeCv']);
     Route::post('profile/photo', [Candidate\ProfileController::class, 'uploadPhoto']);
+    Route::delete('profile/photo', [Candidate\ProfileController::class, 'removePhoto']);
     Route::post('profile/cover', [Candidate\ProfileController::class, 'uploadCover']);
+    Route::delete('profile/cover', [Candidate\ProfileController::class, 'removeCover']);
 
     // Saved jobs
     Route::get('saved-jobs/check/{jobId}', [Candidate\SavedJobController::class, 'check']);

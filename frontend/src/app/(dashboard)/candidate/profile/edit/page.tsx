@@ -3,8 +3,9 @@
 import { useEffect, useRef, useState } from 'react'
 import { api } from '@/lib/api'
 import { useToast } from '@/components/ui/Toast'
+import { useAuth } from '@/context/AuthContext'
 import SkillsInput from '@/components/candidate/SkillsInput'
-import type { Candidate, JobCategory } from '@/types'
+import type { Candidate, JobCategory, User } from '@/types'
 import { getStorageUrl } from '@/lib/imageUtils'
 
 const GENDER_OPTIONS = [
@@ -84,6 +85,7 @@ interface FormState {
 
 export default function CandidateProfileEditPage() {
   const { showToast } = useToast()
+  const { user, updateUser } = useAuth()
   const photoInputRef = useRef<HTMLInputElement>(null)
   const cvInputRef = useRef<HTMLInputElement>(null)
   const coverInputRef = useRef<HTMLInputElement>(null)
@@ -100,6 +102,14 @@ export default function CandidateProfileEditPage() {
   const [coverPreview, setCoverPreview] = useState<string | null>(null)
   const [newLang, setNewLang] = useState('')
 
+  // Account section state
+  const [displayName, setDisplayName] = useState('')
+  const [email, setEmail] = useState('')
+  const [originalEmail, setOriginalEmail] = useState('')
+  const [showPasswordField, setShowPasswordField] = useState(false)
+  const [currentPassword, setCurrentPassword] = useState('')
+  const [accountLoading, setAccountLoading] = useState(false)
+
   const [form, setForm] = useState<FormState>({
     title: '',
     location: '',
@@ -115,6 +125,14 @@ export default function CandidateProfileEditPage() {
     socials: [],
     show_profile: true,
   })
+
+  useEffect(() => {
+    if (user) {
+      setDisplayName(user.display_name ?? '')
+      setEmail(user.email ?? '')
+      setOriginalEmail(user.email ?? '')
+    }
+  }, [user?.id])
 
   useEffect(() => {
     Promise.all([
@@ -264,6 +282,70 @@ export default function CandidateProfileEditPage() {
     }
   }
 
+  async function handleAccountUpdate() {
+    setAccountLoading(true)
+    try {
+      const payload: Record<string, string> = {}
+      if (displayName.trim()) payload.display_name = displayName.trim()
+      if (email !== originalEmail) {
+        payload.email = email
+        payload.current_password = currentPassword
+      }
+      const res: { message: string; user: User } = await api.post('/api/candidate/profile/account', payload)
+      updateUser(res.user)
+      setOriginalEmail(res.user.email)
+      setShowPasswordField(false)
+      setCurrentPassword('')
+      showToast('Account updated!', 'success')
+    } catch (err: unknown) {
+      const e = err as { message?: string; errors?: Record<string, string[]> }
+      if (e.errors?.current_password) {
+        showToast(e.errors.current_password[0], 'error')
+      } else if (e.errors?.email) {
+        showToast(e.errors.email[0], 'error')
+      } else {
+        showToast(e?.message ?? 'Failed to update account.', 'error')
+      }
+    } finally {
+      setAccountLoading(false)
+    }
+  }
+
+  async function handleRemovePhoto() {
+    if (!confirm('Remove your profile photo?')) return
+    try {
+      await api.delete('/api/candidate/profile/photo')
+      setPhotoPreview(null)
+      setCandidate((prev) => prev ? { ...prev, profile_photo_path: null } : prev)
+      showToast('Photo removed.', 'success')
+    } catch {
+      showToast('Failed to remove photo.', 'error')
+    }
+  }
+
+  async function handleRemoveCv() {
+    if (!confirm('Remove your CV?')) return
+    try {
+      await api.delete('/api/candidate/profile/cv')
+      setCandidate((prev) => prev ? { ...prev, cv_path: null } : prev)
+      showToast('CV removed.', 'success')
+    } catch {
+      showToast('Failed to remove CV.', 'error')
+    }
+  }
+
+  async function handleRemoveCover() {
+    if (!confirm('Remove your cover photo?')) return
+    try {
+      await api.delete('/api/candidate/profile/cover')
+      setCoverPreview(null)
+      setCandidate((prev) => prev ? { ...prev, cover_photo_path: null } : prev)
+      showToast('Cover photo removed.', 'success')
+    } catch {
+      showToast('Failed to remove cover photo.', 'error')
+    }
+  }
+
   const completionPct = candidate ? Math.round(Number(candidate.profile_complete_pct)) : 0
 
   if (loading) {
@@ -303,6 +385,62 @@ export default function CandidateProfileEditPage() {
         )}
       </div>
 
+      {/* Account Details */}
+      <div className="bg-white rounded-2xl border border-gray-200 p-5 mb-5 space-y-4">
+        <h2 className="font-semibold text-gray-900 text-sm">Account Details</h2>
+
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1">Full Name</label>
+          <input
+            type="text"
+            value={displayName}
+            onChange={(e) => setDisplayName(e.target.value)}
+            className="w-full px-3 py-2.5 text-sm rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:border-transparent"
+            style={{ ['--tw-ring-color' as string]: '#033BB0' }}
+          />
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1">Email Address</label>
+          <input
+            type="email"
+            value={email}
+            onChange={(e) => {
+              setEmail(e.target.value)
+              setShowPasswordField(e.target.value !== originalEmail)
+            }}
+            className="w-full px-3 py-2.5 text-sm rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:border-transparent"
+            style={{ ['--tw-ring-color' as string]: '#033BB0' }}
+          />
+        </div>
+
+        {showPasswordField && (
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Current Password
+              <span className="text-xs text-gray-400 ml-2">Required to change email</span>
+            </label>
+            <input
+              type="password"
+              value={currentPassword}
+              onChange={(e) => setCurrentPassword(e.target.value)}
+              placeholder="Enter your current password"
+              className="w-full px-3 py-2.5 text-sm rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:border-transparent"
+              style={{ ['--tw-ring-color' as string]: '#033BB0' }}
+            />
+          </div>
+        )}
+
+        <button
+          onClick={handleAccountUpdate}
+          disabled={accountLoading}
+          className="px-6 py-2.5 rounded-lg text-sm font-semibold text-white transition-opacity hover:opacity-90 disabled:opacity-60"
+          style={{ backgroundColor: '#033BB0' }}
+        >
+          {accountLoading ? 'Saving…' : 'Update Account'}
+        </button>
+      </div>
+
       {/* Section 0: Cover Photo */}
       <div className="bg-white rounded-2xl border border-gray-200 p-5 mb-5">
         <h2 className="font-semibold text-gray-900 text-sm mb-4">Profile Cover Photo</h2>
@@ -332,7 +470,7 @@ export default function CandidateProfileEditPage() {
             </div>
           )}
         </div>
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-3 flex-wrap">
           <button
             type="button"
             onClick={() => coverInputRef.current?.click()}
@@ -341,6 +479,15 @@ export default function CandidateProfileEditPage() {
           >
             {uploadingCover ? 'Uploading…' : 'Upload Cover Photo'}
           </button>
+          {coverPreview && (
+            <button
+              type="button"
+              onClick={handleRemoveCover}
+              style={{ padding: '8px 16px', background: 'white', border: '1px solid #EF4444', borderRadius: '8px', color: '#EF4444', fontWeight: '600', fontSize: '14px', cursor: 'pointer' }}
+            >
+              Remove Cover
+            </button>
+          )}
           <span style={{ fontSize: '12px', color: '#6B7280' }}>PNG, JPG — max 5MB — recommended 1200×300px</span>
         </div>
         <input ref={coverInputRef} type="file" accept="image/*" className="hidden" onChange={handleCoverChange} />
@@ -378,13 +525,23 @@ export default function CandidateProfileEditPage() {
             <p className="text-sm text-gray-600 mb-2">
               {photoPreview ? 'Looking good!' : 'No photo uploaded yet.'}
             </p>
-            <button
-              onClick={() => photoInputRef.current?.click()}
-              disabled={uploadingPhoto}
-              className="px-3 py-2 rounded-lg text-xs font-medium border border-gray-300 text-gray-700 hover:bg-gray-50 transition-colors disabled:opacity-60"
-            >
-              {uploadingPhoto ? 'Uploading…' : photoPreview ? 'Change Photo' : 'Upload Photo'}
-            </button>
+            <div className="flex items-center gap-2 flex-wrap">
+              <button
+                onClick={() => photoInputRef.current?.click()}
+                disabled={uploadingPhoto}
+                className="px-3 py-2 rounded-lg text-xs font-medium border border-gray-300 text-gray-700 hover:bg-gray-50 transition-colors disabled:opacity-60"
+              >
+                {uploadingPhoto ? 'Uploading…' : photoPreview ? 'Change Photo' : 'Upload Photo'}
+              </button>
+              {photoPreview && (
+                <button
+                  onClick={handleRemovePhoto}
+                  className="px-3 py-2 rounded-lg text-xs font-medium border border-red-300 text-red-500 hover:bg-red-50 transition-colors"
+                >
+                  Remove Photo
+                </button>
+              )}
+            </div>
             <p className="text-xs text-gray-400 mt-1">JPG, PNG or WebP, max 2MB</p>
           </div>
           <input
@@ -400,17 +557,6 @@ export default function CandidateProfileEditPage() {
       {/* Section 2: Basic Info */}
       <div className="bg-white rounded-2xl border border-gray-200 p-5 mb-5 space-y-4">
         <h2 className="font-semibold text-gray-900 text-sm">Basic Information</h2>
-
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">Full Name</label>
-          <input
-            type="text"
-            value={candidate?.user?.display_name ?? ''}
-            readOnly
-            className="w-full px-3 py-2.5 text-sm rounded-lg border border-gray-200 bg-gray-50 text-gray-500 cursor-not-allowed"
-          />
-          <p className="text-xs text-gray-400 mt-1">Contact support to change your name.</p>
-        </div>
 
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-1">Headline / Title</label>
@@ -664,13 +810,23 @@ export default function CandidateProfileEditPage() {
               </div>
             )}
 
-            <button
-              onClick={() => cvInputRef.current?.click()}
-              disabled={uploadingCV}
-              className="px-3 py-2 rounded-lg text-xs font-medium border border-gray-300 text-gray-700 hover:bg-gray-50 transition-colors disabled:opacity-60"
-            >
-              {uploadingCV ? 'Uploading…' : cvFilename ? 'Replace CV' : 'Upload CV'}
-            </button>
+            <div className="flex items-center gap-2 flex-wrap">
+              <button
+                onClick={() => cvInputRef.current?.click()}
+                disabled={uploadingCV}
+                className="px-3 py-2 rounded-lg text-xs font-medium border border-gray-300 text-gray-700 hover:bg-gray-50 transition-colors disabled:opacity-60"
+              >
+                {uploadingCV ? 'Uploading…' : cvFilename ? 'Replace CV' : 'Upload CV'}
+              </button>
+              {candidate?.cv_path && (
+                <button
+                  onClick={handleRemoveCv}
+                  className="px-3 py-2 rounded-lg text-xs font-medium border border-red-300 text-red-500 hover:bg-red-50 transition-colors"
+                >
+                  Remove CV
+                </button>
+              )}
+            </div>
             <p className="text-xs text-gray-400 mt-1">PDF, DOC or DOCX, max 5MB</p>
           </div>
         </div>
