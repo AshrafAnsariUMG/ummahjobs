@@ -6,8 +6,6 @@ import type { BlogPost } from '@/types'
 import { getBlogImageUrl } from '@/lib/blogUtils'
 import AnimatedSection from '@/components/ui/AnimatedSection'
 
-const BLOG_CATEGORIES = ['All', 'Education', 'Information', 'Interview', 'Job Seeking', 'Learn', 'Skill']
-
 function formatDate(dateStr: string): string {
   return new Date(dateStr).toLocaleDateString('en-GB', {
     day: 'numeric',
@@ -112,6 +110,11 @@ export default function BlogClient({ posts }: { posts: BlogPost[] }) {
     return counts
   }, [posts])
 
+  const visibleCategories = useMemo(
+    () => ['All', ...Object.keys(categoryCounts)],
+    [categoryCounts]
+  )
+
   const recentPosts = posts.slice(0, 5)
 
   return (
@@ -120,7 +123,7 @@ export default function BlogClient({ posts }: { posts: BlogPost[] }) {
       <main className="flex-1 min-w-0">
         {/* Category tabs */}
         <div className="flex flex-wrap gap-2 mb-6">
-          {BLOG_CATEGORIES.map((cat) => (
+          {visibleCategories.map((cat) => (
             <button
               key={cat}
               onClick={() => setActiveCategory(cat)}
