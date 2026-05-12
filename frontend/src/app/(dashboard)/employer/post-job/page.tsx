@@ -110,7 +110,7 @@ export default function PostJobPage() {
     }
 
     Promise.all([
-      api.get('/api/categories'),
+      api.get('/api/categories?all=1'),
       api.get('/api/employer/packages/balance'),
     ]).then(([cats, bal]: [JobCategory[], CreditBalance]) => {
       setCategories(cats)

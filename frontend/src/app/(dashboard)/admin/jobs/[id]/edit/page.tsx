@@ -179,7 +179,7 @@ export default function AdminEditJobPage() {
   useEffect(() => {
     Promise.all([
       api.get(`/api/admin/jobs/${id}`),
-      api.get('/api/categories'),
+      api.get('/api/categories?all=1'),
       api.get('/api/job-types'),
     ]).then(([jobData, cats, types]) => {
       const j = jobData as JobDetail

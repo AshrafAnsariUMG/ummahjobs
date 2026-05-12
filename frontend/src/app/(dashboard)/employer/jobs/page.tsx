@@ -60,7 +60,7 @@ export default function EmployerJobsPage() {
   const [deleting, setDeleting] = useState(false)
 
   useEffect(() => {
-    api.get('/api/categories').then(setCategories).catch(() => {})
+    api.get('/api/categories?all=1').then(setCategories).catch(() => {})
   }, [])
 
   const fetchJobs = useCallback(() => {

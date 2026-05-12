@@ -5,7 +5,7 @@ namespace App\Http\Controllers\Api\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Feedback;
 use App\Services\EmailTemplateService;
-use App\Services\GmailMailerService;
+use App\Services\MailService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -45,7 +45,7 @@ class FeedbackController extends Controller
 
         if ($request->status === 'resolved' && $oldStatus !== 'resolved') {
             $user   = $feedback->user;
-            $mailer = new GmailMailerService();
+            $mailer = new MailService();
             $mailer->sendHtml(
                 $user->email,
                 'Your feedback has been resolved — UmmahJobs',

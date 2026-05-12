@@ -1,10 +1,12 @@
 'use client'
 
 import { useEffect, useState } from 'react'
+import { usePathname } from 'next/navigation'
 import MANAd from './MANAd'
 
 export default function MANLeaderboard() {
   const [isMobile, setIsMobile] = useState<boolean | null>(null)
+  const pathname = usePathname()
 
   useEffect(() => {
     const check = () => setIsMobile(window.innerWidth < 640)
@@ -26,8 +28,8 @@ export default function MANLeaderboard() {
       borderBottom: '1px solid #f3f4f6',
     }}>
       {isMobile
-        ? <MANAd size="mobile-banner" />
-        : <MANAd size="leaderboard" />
+        ? <MANAd key={`mob-${pathname}`} size="mobile-banner" />
+        : <MANAd key={`desk-${pathname}`} size="leaderboard" />
       }
     </div>
   )

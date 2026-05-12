@@ -4,7 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Services\EmailTemplateService as ET;
-use App\Services\GmailMailerService;
+use App\Services\MailService;
 use Illuminate\Http\Request;
 
 class ContactController extends Controller
@@ -23,7 +23,7 @@ class ContactController extends Controller
             'message' => 'required|string|max:3000',
         ]);
 
-        $to = config('services.gmail.from_address');
+        $to = config('mail.from.address');
 
         $body = ET::heading('New Contact Form Submission')
             . ET::infoBox(
@@ -39,7 +39,7 @@ class ContactController extends Controller
         $html = ET::wrap('New contact: ' . $data['subject'], $body);
 
         try {
-            $mailer = new GmailMailerService();
+            $mailer = new MailService();
             $mailer->sendHtml($to, 'Contact: ' . $data['subject'], $html, $data['email']);
         } catch (\Throwable) {
             return response()->json(['message' => 'Failed to send. Please try again.'], 500);

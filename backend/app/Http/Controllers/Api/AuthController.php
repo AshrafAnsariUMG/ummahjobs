@@ -7,7 +7,7 @@ use App\Models\Candidate;
 use App\Models\Employer;
 use App\Models\User;
 use App\Services\EmailTemplateService as ET;
-use App\Services\GmailMailerService;
+use App\Services\MailService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
@@ -80,7 +80,7 @@ class AuthController extends Controller
                 . urlencode($token) . '&email='
                 . urlencode($user->email);
             try {
-                $mailer = new GmailMailerService();
+                $mailer = new MailService();
                 $resetButton = ET::button($url, 'Set New Password');
                 $body = ET::heading("We've upgraded our platform")
                     . ET::paragraph("Assalamu Alaikum,")
@@ -161,7 +161,7 @@ class AuthController extends Controller
                 . urlencode($token) . '&email='
                 . urlencode($user->email);
             try {
-                $mailer = new GmailMailerService();
+                $mailer = new MailService();
                 $resetButton = ET::button($url, 'Reset My Password');
                 $body = ET::heading('Reset your password')
                     . ET::paragraph("Assalamu Alaikum,")

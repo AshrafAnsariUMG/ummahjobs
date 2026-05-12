@@ -108,7 +108,7 @@ export default function AdminPostJobPage() {
 
   // Load categories + job types
   useEffect(() => {
-    api.get('/api/categories').then((d: unknown) => setCategories(d as Category[])).catch(() => {})
+    api.get('/api/categories?all=1').then((d: unknown) => setCategories(d as Category[])).catch(() => {})
     api.get('/api/job-types').then((d: unknown) => setJobTypes(d as JobType[])).catch(() => {})
   }, [])
 

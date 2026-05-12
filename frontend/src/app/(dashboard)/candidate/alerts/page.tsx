@@ -138,7 +138,7 @@ export default function CandidateAlertsPage() {
   useEffect(() => {
     Promise.all([
       api.get('/api/candidate/alerts'),
-      api.get('/api/categories'),
+      api.get('/api/categories?all=1'),
       api.get('/api/job-types'),
     ])
       .then(([alts, cats, types]: [JobAlert[], JobCategory[], JobType[]]) => {

@@ -4,7 +4,7 @@ namespace App\Jobs;
 
 use App\Models\Job;
 use App\Services\EmailTemplateService as ET;
-use App\Services\GmailMailerService;
+use App\Services\MailService;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Queue\Queueable;
 
@@ -27,7 +27,7 @@ class SendJobExpiryWarning implements ShouldQueue
         $user = $job->employer->user;
 
         $dashboardUrl = config('app.frontend_url') . '/employer/dashboard';
-        $mailer = new GmailMailerService();
+        $mailer = new MailService();
         $expiryDate = $job->expires_at->format('M d, Y');
         $body = ET::heading('Your job listing expires soon')
             . ET::paragraph("Assalamu Alaikum {$user->display_name},")

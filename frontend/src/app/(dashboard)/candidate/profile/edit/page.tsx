@@ -119,7 +119,7 @@ export default function CandidateProfileEditPage() {
   useEffect(() => {
     Promise.all([
       api.get('/api/candidate/profile'),
-      api.get('/api/categories'),
+      api.get('/api/categories?all=1'),
     ])
       .then(([profile, cats]: [Candidate, JobCategory[]]) => {
         setCandidate(profile)

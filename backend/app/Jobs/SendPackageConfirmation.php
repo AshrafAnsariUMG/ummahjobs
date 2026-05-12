@@ -4,7 +4,7 @@ namespace App\Jobs;
 
 use App\Models\CouponUse;
 use App\Services\EmailTemplateService as ET;
-use App\Services\GmailMailerService;
+use App\Services\MailService;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Queue\Queueable;
 
@@ -27,7 +27,7 @@ class SendPackageConfirmation implements ShouldQueue
             return;
         }
 
-        $mailer = new GmailMailerService();
+        $mailer = new MailService();
 
         $date    = now()->format('F j, Y');
         $orderId = $this->stripeOrderId ?? 'N/A';
@@ -116,7 +116,7 @@ class SendPackageConfirmation implements ShouldQueue
 
         $mailer->sendHtml(
             $user->email,
-            'Order Confirmed — ' . $package->name . ' Package | UmmahJobs',
+            'Order Confirmed - ' . $package->name . ' Package | UmmahJobs',
             $html
         );
     }

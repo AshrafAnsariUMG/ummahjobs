@@ -6,7 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Feedback;
 use App\Models\User;
 use App\Services\EmailTemplateService;
-use App\Services\GmailMailerService;
+use App\Services\MailService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
@@ -30,7 +30,7 @@ class FeedbackController extends Controller
 
         $admin = User::where('role', 'admin')->first();
         if ($admin) {
-            $mailer    = new GmailMailerService();
+            $mailer    = new MailService();
             $user      = $request->user();
             $typeLabel = match ($request->type) {
                 'bug'     => 'Bug Report',

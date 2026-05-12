@@ -9,11 +9,21 @@ use Illuminate\Http\JsonResponse;
 
 class CategoryController extends Controller
 {
-    public function index(): JsonResponse
+    public function index(\Illuminate\Http\Request $request): JsonResponse
     {
-        return response()->json(
-            JobCategory::orderBy('name')->get(['id', 'name', 'slug', 'icon'])
-        );
+        $query = JobCategory::orderBy('name');
+
+        if ($request->boolean('all')) {
+            return response()->json($query->get(['id', 'name', 'slug', 'icon']));
+        }
+
+        $categories = $query
+            ->withCount(['jobs' => fn ($q) => $q->where('status', 'active')])
+            ->get(['id', 'name', 'slug', 'icon'])
+            ->filter(fn ($c) => $c->jobs_count > 0)
+            ->values();
+
+        return response()->json($categories);
     }
 
     public function jobTypes(): JsonResponse
