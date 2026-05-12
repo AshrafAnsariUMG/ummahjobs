@@ -51,6 +51,12 @@ return [
         'segment_id' => env('FLODESK_SEGMENT_ID'),
     ],
 
+    'mattermost' => [
+        'base_url'   => env('MATTERMOST_BASE_URL'),
+        'bot_token'  => env('MATTERMOST_BOT_TOKEN'),
+        'channel_id' => env('MATTERMOST_CHANNEL_ID'),
+    ],
+
     'gmail' => [
         'client_id'     => env('GMAIL_OAUTH_CLIENT_ID'),
         'client_secret' => env('GMAIL_OAUTH_CLIENT_SECRET'),

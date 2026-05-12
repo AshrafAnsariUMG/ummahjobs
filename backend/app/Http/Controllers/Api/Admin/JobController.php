@@ -110,6 +110,29 @@ class JobController extends Controller
 
         RevalidationService::trigger();
 
+        $job->load('category');
+
+        $frontendUrl  = config('services.app.frontend_url');
+        $employerName = $request->employer_type === 'existing'
+            ? optional(Employer::find($request->employer_id))->company_name ?? 'Unknown'
+            : $request->external_employer_name ?? 'Unknown Employer';
+
+        $message = "### :briefcase: New Job Posted on UmmahJobs (Admin)\n"
+            . "**{$job->title}**\n"
+            . "**Employer:** {$employerName}\n"
+            . "**Posted by:** Admin\n"
+            . "**Category:** " . ($job->category?->name ?? 'N/A') . "\n"
+            . "**Type:** " . ($job->job_type ?? 'N/A') . "\n"
+            . "**Location:** " . ($job->location ?? 'N/A') . "\n"
+            . "**Featured:** " . ($job->is_featured ? 'Yes :star:' : 'No') . "\n"
+            . "[View Job]({$frontendUrl}/jobs/{$job->slug})";
+
+        try {
+            (new \App\Services\MattermostService())->post($message);
+        } catch (\Throwable $e) {
+            // Fire and forget — never block user
+        }
+
         return response()->json([
             'job'     => $job,
             'slug'    => $job->slug,
