@@ -117,13 +117,14 @@ export default async function JobsPage({ searchParams }: PageProps) {
         <h1 className="text-3xl font-extrabold text-gray-900 mb-1">
           {currentCategory ? `${currentCategory.name} Jobs` : 'All Jobs'}
         </h1>
-        <p className="text-gray-500 text-sm">
-          {meta.total} {meta.total === 1 ? 'job' : 'jobs'} found
-          {currentCategory && ` in ${currentCategory.name}`}
-          {currentJobType && ` · ${currentJobType.name}`}
-          {params.location && ` · ${params.location}`}
-          {params.search && ` · "${params.search}"`}
-        </p>
+        {(currentCategory || currentJobType || params.location || params.search) && (
+          <p className="text-gray-500 text-sm">
+            {currentCategory && `${currentCategory.name}`}
+            {currentJobType && ` · ${currentJobType.name}`}
+            {params.location && ` · ${params.location}`}
+            {params.search && ` · "${params.search}"`}
+          </p>
+        )}
       </div>
 
       {/* Mobile filter trigger — visible only below lg (Tafjeera May 1: filters
@@ -150,11 +151,8 @@ export default async function JobsPage({ searchParams }: PageProps) {
             </div>
           )}
 
-          {/* Results bar with sort */}
-          <div className="flex items-center justify-between mb-4">
-            <p className="text-sm text-gray-500">
-              {meta.total} {meta.total === 1 ? 'result' : 'results'}
-            </p>
+          {/* Sort */}
+          <div className="flex justify-end mb-4">
             <Suspense fallback={null}>
               <SortDropdown currentSort={params.sort ?? ''} />
             </Suspense>
