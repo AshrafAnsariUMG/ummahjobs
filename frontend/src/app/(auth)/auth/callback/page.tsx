@@ -39,8 +39,8 @@ function AuthCallbackInner() {
         const role = data.user.role
         if (!role) router.replace('/auth/complete-profile')
         else if (role === 'admin') router.replace('/admin')
-        else if (role === 'employer') router.replace('/employer')
-        else router.replace('/candidate')
+        else if (role === 'employer') router.replace('/employer/dashboard')
+        else router.replace('/candidate/dashboard')
       })
       .catch(() => {
         localStorage.removeItem('uj_token')

@@ -48,8 +48,8 @@ export default function CompleteProfilePage() {
     } else if (role) {
       // Role already set — bounce to their dashboard.
       if (role === 'admin') router.replace('/admin')
-      else if (role === 'employer') router.replace('/employer')
-      else router.replace('/candidate')
+      else if (role === 'employer') router.replace('/employer/dashboard')
+      else router.replace('/candidate/dashboard')
     }
   }, [isLoading, isAuthenticated, role, router])
 
@@ -75,7 +75,7 @@ export default function CompleteProfilePage() {
         ...(roleArg === 'employer' ? { company_name: companyName.trim() } : {}),
       }) as { user: User; role: Role }
       updateUser(data.user)
-      router.replace(roleArg === 'employer' ? '/employer' : '/candidate')
+      router.replace(roleArg === 'employer' ? '/employer/dashboard' : '/candidate/dashboard')
     } catch (err) {
       const e = err as { message?: string }
       setError(e.message || 'Something went wrong. Please try again.')
