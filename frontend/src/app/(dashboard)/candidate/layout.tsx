@@ -77,7 +77,12 @@ export default function CandidateLayout({ children }: { children: React.ReactNod
   const [feedbackOpen, setFeedbackOpen] = useState(false)
 
   useEffect(() => {
-    if (!isLoading && (!isAuthenticated || role !== 'candidate')) {
+    if (isLoading) return
+    if (!isAuthenticated) {
+      router.replace('/login')
+    } else if (!role) {
+      router.replace('/auth/complete-profile')
+    } else if (role !== 'candidate') {
       router.replace('/login')
     }
   }, [isLoading, isAuthenticated, role, router])

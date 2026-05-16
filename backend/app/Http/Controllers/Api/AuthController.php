@@ -238,6 +238,51 @@ class AuthController extends Controller
         ]);
     }
 
+    /**
+     * Used by UmmahPass SSO new users who landed without a role chosen yet.
+     * Sets role + creates the matching Candidate/Employer row. Idempotent for
+     * users who already have a role — returns 422 so the frontend can route them away.
+     */
+    public function completeProfile(Request $request)
+    {
+        $request->validate([
+            'role'         => 'required|in:candidate,employer',
+            'company_name' => 'required_if:role,employer|nullable|string|max:255',
+        ]);
+
+        /** @var User $user */
+        $user = $request->user();
+
+        if (!empty($user->role)) {
+            return response()->json(
+                ['message' => 'Profile is already set up.'],
+                422
+            );
+        }
+
+        $user->role = $request->role;
+        $user->save();
+
+        if ($request->role === 'candidate') {
+            Candidate::firstOrCreate(['user_id' => $user->id]);
+        } else {
+            $slug = Str::slug($request->company_name);
+            if (Employer::where('slug', $slug)->exists()) {
+                $slug .= '-' . rand(1000, 9999);
+            }
+            Employer::create([
+                'user_id'      => $user->id,
+                'company_name' => $request->company_name,
+                'slug'         => $slug,
+            ]);
+        }
+
+        return response()->json([
+            'user' => $this->userPayload($user),
+            'role' => $user->role,
+        ]);
+    }
+
     private function userPayload(User $user): array
     {
         return [

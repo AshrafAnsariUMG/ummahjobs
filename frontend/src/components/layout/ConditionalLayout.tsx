@@ -10,6 +10,7 @@ const NO_CHROME_PATHS = [
   '/register',
   '/forgot-password',
   '/reset-password',
+  '/auth',
   '/candidate',
   '/employer',
   '/admin',

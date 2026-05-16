@@ -137,7 +137,12 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   const [openFeedbackCount, setOpenFeedbackCount] = useState(0)
 
   useEffect(() => {
-    if (!isLoading && (!isAuthenticated || role !== 'admin')) {
+    if (isLoading) return
+    if (!isAuthenticated) {
+      router.replace('/login')
+    } else if (!role) {
+      router.replace('/auth/complete-profile')
+    } else if (role !== 'admin') {
       router.replace('/login')
     }
   }, [isLoading, isAuthenticated, role, router])

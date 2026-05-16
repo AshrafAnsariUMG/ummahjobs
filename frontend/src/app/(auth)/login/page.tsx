@@ -222,20 +222,42 @@ export default function LoginPage() {
 
       {/* UmmahPass button */}
       <button
-        disabled
+        type="button"
+        onClick={async () => {
+          try {
+            const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/auth/ummahpass/redirect?intent=login`, {
+              headers: { Accept: 'application/json' },
+            })
+            const data = await res.json()
+            if (data?.url) {
+              window.location.href = data.url
+            }
+          } catch {
+            // silent — user can fall back to email/password
+          }
+        }}
         style={{
           width: '100%',
           height: '44px',
-          border: '1px solid #D1D5DB',
+          border: '1px solid #033BB0',
           borderRadius: '8px',
           background: 'white',
-          color: '#9CA3AF',
+          color: '#033BB0',
           fontSize: '15px',
-          cursor: 'not-allowed',
-          opacity: 0.65,
+          fontWeight: 500,
+          cursor: 'pointer',
+          transition: 'all 0.15s ease',
+        }}
+        onMouseEnter={(e) => {
+          e.currentTarget.style.background = '#033BB0'
+          e.currentTarget.style.color = 'white'
+        }}
+        onMouseLeave={(e) => {
+          e.currentTarget.style.background = 'white'
+          e.currentTarget.style.color = '#033BB0'
         }}
       >
-        Continue with UmmahPass (coming soon)
+        Continue with UmmahPass
       </button>
 
       {/* Bottom link */}

@@ -3,6 +3,7 @@
 use App\Http\Controllers\Api\Admin\CreditsController;
 use App\Http\Controllers\Api\Admin\SiteSettingsController;
 use App\Http\Controllers\Api\AuthController;
+use App\Http\Controllers\Api\UmmahPassController;
 use App\Http\Controllers\Api\CouponController;
 use App\Http\Controllers\Api\BlogController;
 use App\Http\Controllers\Api\MessageController;
@@ -27,6 +28,10 @@ Route::prefix('auth')->group(function () {
     Route::post('login', [AuthController::class, 'login']);
     Route::post('forgot-password', [AuthController::class, 'forgotPassword']);
     Route::post('reset-password', [AuthController::class, 'resetPassword']);
+
+    // UmmahPass SSO
+    Route::get('ummahpass/redirect', [UmmahPassController::class, 'redirect']);
+    Route::get('ummahpass/callback', [UmmahPassController::class, 'callback']);
 });
 
 // Authenticated auth routes
@@ -34,6 +39,7 @@ Route::middleware('auth:sanctum')->prefix('auth')->group(function () {
     Route::get('me', [AuthController::class, 'me']);
     Route::post('logout', [AuthController::class, 'logout']);
     Route::put('password', [AuthController::class, 'changePassword']);
+    Route::post('complete-profile', [AuthController::class, 'completeProfile']);
 });
 
 // Public job routes

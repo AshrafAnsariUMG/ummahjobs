@@ -2,7 +2,7 @@ export interface User {
   id: string
   email: string
   display_name: string
-  role: 'candidate' | 'employer' | 'admin'
+  role: 'candidate' | 'employer' | 'admin' | null
   legacy_password: boolean
   is_active: boolean
   email_verified_at: string | null

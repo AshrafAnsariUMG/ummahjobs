@@ -92,7 +92,12 @@ export default function EmployerLayout({ children }: { children: React.ReactNode
   const [feedbackOpen, setFeedbackOpen] = useState(false)
 
   useEffect(() => {
-    if (!isLoading && (!isAuthenticated || role !== 'employer')) {
+    if (isLoading) return
+    if (!isAuthenticated) {
+      router.replace('/login')
+    } else if (!role) {
+      router.replace('/auth/complete-profile')
+    } else if (role !== 'employer') {
       router.replace('/login')
     }
   }, [isLoading, isAuthenticated, role, router])

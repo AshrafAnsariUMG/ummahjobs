@@ -191,6 +191,62 @@ export default function RegisterPage() {
         </div>
       )}
 
+      {/* UmmahPass SSO */}
+      <button
+        type="button"
+        onClick={async () => {
+          if (isEmployer && !companyName.trim()) {
+            setError('Please enter your company name below before continuing with UmmahPass.')
+            const el = document.getElementById('company_name')
+            el?.focus()
+            return
+          }
+          setError(null)
+          try {
+            const intent = isEmployer ? 'employer' : 'candidate'
+            const params = new URLSearchParams({ intent })
+            if (isEmployer) params.set('company_name', companyName.trim())
+            const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/auth/ummahpass/redirect?${params.toString()}`, {
+              headers: { Accept: 'application/json' },
+            })
+            const data = await res.json()
+            if (data?.url) window.location.href = data.url
+          } catch {
+            setError('Could not start UmmahPass sign-in. Please try again.')
+          }
+        }}
+        style={{
+          width: '100%',
+          height: '44px',
+          border: `1px solid ${roleColor}`,
+          borderRadius: '8px',
+          background: 'white',
+          color: roleColor,
+          fontSize: '15px',
+          fontWeight: 500,
+          cursor: 'pointer',
+          marginBottom: '14px',
+          transition: 'all 0.15s ease',
+        }}
+        onMouseEnter={(e) => {
+          e.currentTarget.style.background = roleColor
+          e.currentTarget.style.color = 'white'
+        }}
+        onMouseLeave={(e) => {
+          e.currentTarget.style.background = 'white'
+          e.currentTarget.style.color = roleColor
+        }}
+      >
+        Continue with UmmahPass
+      </button>
+
+      {/* Divider */}
+      <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '14px' }}>
+        <div style={{ flex: 1, height: '1px', background: '#E5E7EB' }} />
+        <span style={{ color: '#9CA3AF', fontSize: '13px' }}>or</span>
+        <div style={{ flex: 1, height: '1px', background: '#E5E7EB' }} />
+      </div>
+
       <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
         {/* Name */}
         <div>
