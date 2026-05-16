@@ -65,4 +65,10 @@ return [
         'from_name'     => env('GMAIL_FROM_NAME', 'UmmahJobs'),
     ],
 
+    'ummahpass' => [
+        'client_id'     => env('UMMAHPASS_CLIENT_ID'),
+        'client_secret' => env('UMMAHPASS_CLIENT_SECRET'),
+        'redirect'      => env('UMMAHPASS_REDIRECT_URI'),
+    ],
+
 ];
