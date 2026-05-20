@@ -4,7 +4,10 @@ namespace App\Http\Controllers\Api;
 
 use App\Jobs\SendPackageConfirmation;
 use App\Models\CouponUse;
+use App\Models\Employer;
+use App\Models\Package;
 use App\Services\EmployerPackageService;
+use App\Services\MattermostService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
@@ -36,7 +39,7 @@ class WebhookController
             $metadata = $session->metadata;
 
             $empPackageService = new EmployerPackageService();
-            $empPackageService->createFromStripe(
+            $empPackage = $empPackageService->createFromStripe(
                 $session->id,
                 (int) $metadata->employer_id,
                 (int) $metadata->package_id
@@ -60,8 +63,50 @@ class WebhookController
                 (int) $metadata->package_id,
                 $session->id
             ));
+
+            // Mattermost notification — only fires on first webhook (createFromStripe returns null on retries)
+            if ($empPackage !== null) {
+                $this->notifyMattermostPackagePurchase(
+                    (int) $metadata->employer_id,
+                    (int) $metadata->package_id,
+                    $session
+                );
+            }
         }
 
         return response()->json(['status' => 'ok']);
+    }
+
+    private function notifyMattermostPackagePurchase(int $employerId, int $packageId, $session): void
+    {
+        try {
+            $employer = Employer::find($employerId);
+            $package  = Package::find($packageId);
+            if (!$employer || !$package) return;
+
+            $employerName = $employer->company_name ?? 'Unknown Employer';
+            $amountPaid   = number_format($session->amount_total / 100, 2);
+            $currency     = strtoupper($session->currency ?? 'usd');
+
+            $couponLine = '';
+            if (!empty($session->metadata->coupon_id)) {
+                $original = number_format((float) $session->metadata->original_price, 2);
+                $discount = number_format((float) $session->metadata->discount_amount, 2);
+                $couponLine = "**Coupon applied:** -{$discount} {$currency} (was {$original} {$currency})\n";
+            }
+
+            $message = "### :credit_card: New Package Purchase on UmmahJobs\n"
+                . "**Employer:** {$employerName}\n"
+                . "**Package:** {$package->name}\n"
+                . "**Job posts:** {$package->post_count}\n"
+                . "**Duration:** {$package->duration_days} days\n"
+                . "**Amount paid:** {$amountPaid} {$currency}\n"
+                . $couponLine
+                . "Stripe payment confirmed :white_check_mark:";
+
+            (new MattermostService())->post($message);
+        } catch (\Throwable $e) {
+            // Fire and forget — never affect webhook ack
+        }
     }
 }
