@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { api } from '@/lib/api'
 import { useAuth } from '@/context/AuthContext'
@@ -33,7 +33,16 @@ const labelStyle: React.CSSProperties = {
 
 export default function RegisterPage() {
   const router = useRouter()
-  const { login } = useAuth()
+  const { login, isAuthenticated, isLoading: authLoading, role } = useAuth()
+
+  // If a logged-in user lands here (e.g. via footer link), bounce them to their dashboard.
+  useEffect(() => {
+    if (authLoading || !isAuthenticated) return
+    if (role === 'admin') router.replace('/admin')
+    else if (role === 'employer') router.replace('/employer/dashboard')
+    else if (role === 'candidate') router.replace('/candidate/dashboard')
+    else router.replace('/auth/complete-profile')
+  }, [authLoading, isAuthenticated, role, router])
 
   const [step, setStep] = useState<1 | 2>(1)
   const [selectedRole, setSelectedRole] = useState<Role | null>(null)

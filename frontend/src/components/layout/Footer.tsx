@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import FooterNewsletter from './FooterNewsletter'
 import { getStorageUrl } from '@/lib/imageUtils'
+import { useAuth } from '@/context/AuthContext'
 
 const API = process.env.NEXT_PUBLIC_API_URL
 
@@ -57,6 +58,23 @@ const socialLinks = [
 
 export default function Footer() {
   const [logoPath, setLogoPath] = useState('')
+  const { isAuthenticated, role } = useAuth()
+
+  // Smart link destinations based on current auth state.
+  // - Login/Register: when already logged in, send users to their dashboard instead of an auth page.
+  // - Post a Job: route to whichever post-job page their role can actually access.
+  const dashboardHref =
+    role === 'admin' ? '/admin' :
+    role === 'employer' ? '/employer/dashboard' :
+    role === 'candidate' ? '/candidate/dashboard' :
+    '/login'
+
+  const loginHref = isAuthenticated ? dashboardHref : '/login'
+  const registerHref = isAuthenticated ? dashboardHref : '/register'
+  const postJobHref =
+    role === 'admin' ? '/admin/jobs/post' :
+    role === 'employer' ? '/employer/post-job' :
+    '/employer/post-job' // logged-out + candidate fall through here; layout guard sends them to /login
 
   useEffect(() => {
     fetch(`${API}/api/settings`)
@@ -105,8 +123,8 @@ export default function Footer() {
             <h3 className="text-sm font-semibold text-white mb-4">Candidates</h3>
             <ul className="space-y-2.5">
               {[
-                { href: '/login', label: 'Login' },
-                { href: '/register', label: 'Register' },
+                { href: loginHref, label: 'Login' },
+                { href: registerHref, label: 'Register' },
                 { href: '/jobs', label: 'Browse Jobs' },
                 { href: '/candidate/alerts', label: 'Job Alerts' },
               ].map((link) => (
@@ -124,7 +142,7 @@ export default function Footer() {
             <h3 className="text-sm font-semibold text-white mb-4">Employers</h3>
             <ul className="space-y-2.5">
               {[
-                { href: '/employer/post-job', label: 'Post a Job' },
+                { href: postJobHref, label: 'Post a Job' },
                 { href: '/packages', label: 'Packages' },
                 { href: '/employer/dashboard', label: 'Employer Dashboard' },
               ].map((link) => (
