@@ -82,7 +82,11 @@ export default async function JobDetailPage({ params }: PageProps) {
   const salary = formatSalary(job)
   const isExternal = job.is_external || !job.employer
   const companyName = job.employer?.company_name ?? job.external_employer_name ?? 'Unknown Company'
-  const logoSrc = job.employer ? getStorageUrl(job.employer.logo_path) : null
+  const logoSrc =
+    getStorageUrl(job.employer?.logo_path) ??
+    getStorageUrl(job.external_employer?.logo_path) ??
+    job.external_employer?.logo_url ??
+    null
   const jobUrl = `${SITE}/jobs/${job.slug}`
 
   // Suppress WP term IDs (pure numbers) that weren't resolved during migration
