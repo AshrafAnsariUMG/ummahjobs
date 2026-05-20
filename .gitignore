@@ -10,3 +10,4 @@ frontend/.env.local
 frontend/.env
 *.sql
 CONTEXT.md
+tempimages/

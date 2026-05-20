@@ -58,7 +58,7 @@ export default function AboutPage() {
       {/* ── Section 2: Mission Statement ── */}
       <section style={{ background: 'white', padding: '80px 24px' }}>
         <div style={{ maxWidth: '900px', margin: '0 auto' }}>
-          <div className="flex flex-col md:flex-row items-start gap-12">
+          <div className="flex flex-col md:flex-row items-start md:items-center gap-12">
 
             {/* Left — text */}
             <div style={{ flex: 1 }}>
