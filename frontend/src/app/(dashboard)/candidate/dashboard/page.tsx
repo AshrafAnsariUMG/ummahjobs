@@ -10,6 +10,7 @@ import { CrescentIcon } from '@/components/ui/IslamicIcons'
 import DailyQuoteWidget from '@/components/ui/DailyQuoteWidget'
 import BismillahWatermark from '@/components/ui/BismillahWatermark'
 import SectionHeading from '@/components/ui/SectionHeading'
+import CompanyLogoFallback from '@/components/ui/CompanyLogoFallback'
 import { getStorageUrl } from '@/lib/imageUtils'
 
 interface ApplicationsPage {
@@ -29,14 +30,6 @@ const STATUS_STYLES: Record<string, string> = {
   offer:       'bg-purple-100 text-purple-700',
 }
 
-function LogoFallback({ name }: { name: string }) {
-  const initials = name.split(' ').slice(0, 2).map((w) => w[0]).join('').toUpperCase()
-  return (
-    <div className="w-10 h-10 rounded-lg flex items-center justify-center text-xs font-bold text-white shrink-0" style={{ backgroundColor: '#033BB0' }}>
-      {initials}
-    </div>
-  )
-}
 
 export default function CandidateDashboardPage() {
   const { user } = useAuth()
@@ -233,7 +226,7 @@ export default function CandidateDashboardPage() {
                     {getStorageUrl(job.employer?.logo_path ?? null) ? (
                       <img src={getStorageUrl(job.employer?.logo_path ?? null)!} alt={job.employer?.company_name} className="w-full h-full object-contain" />
                     ) : (
-                      <LogoFallback name={job.employer?.company_name ?? 'J'} />
+                      <CompanyLogoFallback size="xs" />
                     )}
                   </div>
                   <div className="min-w-0">

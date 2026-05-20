@@ -2,6 +2,7 @@ import { notFound } from 'next/navigation'
 import Link from 'next/link'
 import type { ReactNode } from 'react'
 import type { Employer, EmployerReview, Job } from '@/types'
+import CompanyLogoFallback from '@/components/ui/CompanyLogoFallback'
 import JobCard from '@/components/jobs/JobCard'
 import { getStorageUrl } from '@/lib/imageUtils'
 import EmployerReviewsSection from '@/components/employers/EmployerReviewsSection'
@@ -184,9 +185,7 @@ export default async function EmployerProfilePage({ params }: PageProps) {
                 style={{ width: '100%', height: '100%', objectFit: 'contain' }}
               />
             ) : (
-              <span style={{ fontSize: '28px', fontWeight: '700', color: '#033BB0' }}>
-                {employer.company_name?.charAt(0)?.toUpperCase() ?? 'E'}
-              </span>
+              <CompanyLogoFallback size="lg" rounded="lg" />
             )}
           </div>
         </div>

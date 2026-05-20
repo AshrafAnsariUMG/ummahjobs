@@ -8,6 +8,7 @@ import { timeAgo } from '@/lib/timeAgo'
 import IslamicEmptyState from '@/components/ui/IslamicEmptyState'
 import { BriefcaseIcon } from '@/components/ui/IslamicIcons'
 import { getStorageUrl } from '@/lib/imageUtils'
+import CompanyLogoFallback from '@/components/ui/CompanyLogoFallback'
 
 interface ApplicationsPage {
   total: number
@@ -25,17 +26,6 @@ const STATUS_STYLES: Record<string, { pill: string; label: string }> = {
   offer:       { pill: 'bg-purple-100 text-purple-700', label: 'Offer' },
 }
 
-function LogoFallback({ name }: { name: string }) {
-  const initials = name.split(' ').slice(0, 2).map((w) => w[0]).join('').toUpperCase()
-  return (
-    <div
-      className="w-10 h-10 rounded-lg flex items-center justify-center text-xs font-bold text-white shrink-0"
-      style={{ backgroundColor: '#033BB0' }}
-    >
-      {initials}
-    </div>
-  )
-}
 
 function StatusPipeline({ status }: { status: JobApplication['status'] }) {
   const currentIdx = STATUS_STEPS.indexOf(status)
@@ -174,7 +164,7 @@ export default function CandidateApplicationsPage() {
                     {getStorageUrl(job?.employer?.logo_path ?? null) ? (
                       <img src={getStorageUrl(job?.employer?.logo_path ?? null)!} alt={job?.employer?.company_name} className="w-full h-full object-contain" />
                     ) : (
-                      <LogoFallback name={job?.employer?.company_name ?? 'J'} />
+                      <CompanyLogoFallback size="xs" />
                     )}
                   </div>
 

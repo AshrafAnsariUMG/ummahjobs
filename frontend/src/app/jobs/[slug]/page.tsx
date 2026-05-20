@@ -2,6 +2,7 @@ import { notFound } from 'next/navigation'
 import Link from 'next/link'
 import type { Job } from '@/types'
 import AnimatedSection from '@/components/ui/AnimatedSection'
+import CompanyLogoFallback from '@/components/ui/CompanyLogoFallback'
 import BookmarkButton from '@/components/jobs/BookmarkButton'
 import ShareButtons from '@/components/jobs/ShareButtons'
 import AIMatchScore from '@/components/jobs/AIMatchScore'
@@ -167,9 +168,7 @@ export default async function JobDetailPage({ params }: PageProps) {
                   // eslint-disable-next-line @next/next/no-img-element
                   <img src={logoSrc} alt={companyName} width={64} height={64} className="object-contain" />
                 ) : (
-                  <span className="text-xl font-bold" style={{ color: '#033BB0' }}>
-                    {companyName.charAt(0).toUpperCase()}
-                  </span>
+                  <CompanyLogoFallback size="md" rounded="xl" />
                 )}
               </div>
 
@@ -349,9 +348,7 @@ export default async function JobDetailPage({ params }: PageProps) {
                   // eslint-disable-next-line @next/next/no-img-element
                   <img src={logoSrc} alt={companyName} width={40} height={40} className="object-contain" />
                 ) : (
-                  <span className="text-sm font-bold" style={{ color: '#033BB0' }}>
-                    {companyName.charAt(0).toUpperCase()}
-                  </span>
+                  <CompanyLogoFallback size="xs" />
                 )}
               </div>
               <div>

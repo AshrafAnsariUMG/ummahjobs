@@ -9,6 +9,7 @@ import { timeAgo } from '@/lib/timeAgo'
 import IslamicEmptyState from '@/components/ui/IslamicEmptyState'
 import { BookmarkIcon } from '@/components/ui/IslamicIcons'
 import { getStorageUrl } from '@/lib/imageUtils'
+import CompanyLogoFallback from '@/components/ui/CompanyLogoFallback'
 
 interface SavedJobsPage {
   total: number
@@ -17,17 +18,6 @@ interface SavedJobsPage {
 
 type SortOrder = 'newest' | 'oldest'
 
-function LogoFallback({ name }: { name: string }) {
-  const initials = name.split(' ').slice(0, 2).map((w) => w[0]).join('').toUpperCase()
-  return (
-    <div
-      className="w-10 h-10 rounded-lg flex items-center justify-center text-xs font-bold text-white"
-      style={{ backgroundColor: '#033BB0' }}
-    >
-      {initials}
-    </div>
-  )
-}
 
 export default function CandidateSavedJobsPage() {
   const { showToast } = useToast()
@@ -144,7 +134,7 @@ export default function CandidateSavedJobsPage() {
                   {getStorageUrl(job.employer?.logo_path ?? null) ? (
                     <img src={getStorageUrl(job.employer?.logo_path ?? null)!} alt={job.employer?.company_name} className="w-full h-full object-contain" />
                   ) : (
-                    <LogoFallback name={job.employer?.company_name ?? 'J'} />
+                    <CompanyLogoFallback size="xs" />
                   )}
                 </div>
 

@@ -5,6 +5,7 @@ import Link from 'next/link'
 import type { Job } from '@/types'
 import { timeAgo } from '@/lib/timeAgo'
 import { getStorageUrl } from '@/lib/imageUtils'
+import CompanyLogoFallback from '@/components/ui/CompanyLogoFallback'
 
 interface JobCardProps {
   job: Job
@@ -33,36 +34,6 @@ function EmployerLogo({ name, logoPath }: { name: string; logoPath: string | nul
   return null
 }
 
-const FALLBACK_PALETTES: { bg: string; color: string }[] = [
-  { bg: '#EEF2FF', color: '#3730A3' }, // A–F
-  { bg: '#F0FFF0', color: '#166534' }, // G–L
-  { bg: '#FFF7ED', color: '#9A3412' }, // M–R
-  { bg: '#FDF4FF', color: '#7E22CE' }, // S–Z
-]
-
-function LogoFallback({ name, size }: { name: string; size: 'sm' | 'md' }) {
-  const initials = name
-    .split(' ')
-    .slice(0, 2)
-    .map((w) => w[0])
-    .join('')
-    .toUpperCase()
-  const dim = size === 'sm' ? 'w-10 h-10 text-xs' : 'w-14 h-14 text-sm'
-  const firstChar = name[0]?.toUpperCase() ?? 'A'
-  const paletteIdx =
-    firstChar <= 'F' ? 0 :
-    firstChar <= 'L' ? 1 :
-    firstChar <= 'R' ? 2 : 3
-  const { bg, color } = FALLBACK_PALETTES[paletteIdx]
-  return (
-    <div
-      className={`${dim} rounded-lg flex items-center justify-center font-bold shrink-0`}
-      style={{ backgroundColor: bg, color }}
-    >
-      {initials}
-    </div>
-  )
-}
 
 function MatchBadge({ score }: { score: number }) {
   const { bg, color } =
@@ -141,7 +112,7 @@ export default function JobCard({ job, variant = 'list', matchScore }: JobCardPr
                 className="w-full h-full object-contain"
               />
             ) : (
-              <LogoFallback name={companyName} size="md" />
+              <CompanyLogoFallback size="sm" />
             )}
           </div>
           <div className="min-w-0">
@@ -211,7 +182,7 @@ export default function JobCard({ job, variant = 'list', matchScore }: JobCardPr
             className="w-full h-full object-contain"
           />
         ) : (
-          <LogoFallback name={companyName} size="sm" />
+          <CompanyLogoFallback size="xs" />
         )}
       </div>
 
