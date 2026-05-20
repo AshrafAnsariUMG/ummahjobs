@@ -47,13 +47,13 @@ function PostCard({ post }: { post: BlogPost }) {
   const truncated = excerpt.length > 150 ? excerpt.slice(0, 150) + '…' : excerpt
 
   return (
-    <article className="bg-white rounded-2xl border border-gray-200 overflow-hidden hover:border-gray-300 transition-colors group">
+    <article className="bg-white rounded-2xl border border-gray-200 overflow-hidden hover:border-gray-300 transition-colors group h-full flex flex-col">
       {/* Image */}
       <div className="relative h-44 bg-gradient-to-br from-blue-50 to-blue-100 overflow-hidden">
         <BlogCardImage post={post} />
       </div>
 
-      <div className="p-5">
+      <div className="p-5 flex flex-col flex-1">
         <div className="flex items-center gap-2 mb-2">
           {post.category && (
             <span
@@ -74,7 +74,7 @@ function PostCard({ post }: { post: BlogPost }) {
 
         <Link
           href={`/blog/${post.slug}`}
-          className="text-sm font-medium hover:underline"
+          className="text-sm font-medium hover:underline mt-auto"
           style={{ color: '#033BB0' }}
         >
           Read More →
@@ -143,7 +143,7 @@ export default function BlogClient({ posts }: { posts: BlogPost[] }) {
         {filtered.length > 0 ? (
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
             {filtered.map((post, index) => (
-              <AnimatedSection key={post.id} animation="fade-up" delay={index * 100}>
+              <AnimatedSection key={post.id} animation="fade-up" delay={index * 100} className="h-full">
                 <PostCard post={post} />
               </AnimatedSection>
             ))}
