@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { api } from '@/lib/api'
@@ -34,6 +34,70 @@ function StatusBadge({ post }: { post: AdminBlogPost }) {
     return <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-700"><span className="w-1.5 h-1.5 rounded-full bg-blue-500" />Scheduled</span>
   }
   return <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-500"><span className="w-1.5 h-1.5 rounded-full bg-gray-400" />Draft</span>
+}
+
+function ActionsMenu({
+  post,
+  onDelete,
+}: {
+  post: AdminBlogPost
+  onDelete: () => void
+}) {
+  const router = useRouter()
+  const [open, setOpen] = useState(false)
+  const ref = useRef<HTMLDivElement>(null)
+  const isPublished = postStatus(post) === 'published'
+
+  useEffect(() => {
+    function h(e: MouseEvent) {
+      if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false)
+    }
+    document.addEventListener('mousedown', h)
+    return () => document.removeEventListener('mousedown', h)
+  }, [])
+
+  return (
+    <div ref={ref} className="relative inline-block text-left">
+      <button
+        onClick={() => setOpen((v) => !v)}
+        className="p-1.5 rounded-lg text-gray-400 hover:text-gray-700 hover:bg-gray-100 transition-colors"
+        aria-label="Actions"
+      >
+        <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+          <path strokeLinecap="round" strokeLinejoin="round" d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z" />
+        </svg>
+      </button>
+      {open && (
+        <div className="absolute right-0 mt-1 w-44 bg-white rounded-xl shadow-lg border border-gray-100 py-1 z-30">
+          <button
+            onClick={() => { setOpen(false); router.push(`/admin/blog/${post.slug}/edit`) }}
+            className="block w-full text-left px-4 py-2 text-sm font-medium text-gray-900 hover:bg-gray-50"
+          >
+            Edit
+          </button>
+          {isPublished && (
+            <a
+              href={`/blog/${post.slug}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              onClick={() => setOpen(false)}
+              className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-50"
+            >
+              View ↗
+            </a>
+          )}
+          <div className="border-t border-gray-100 mt-1 pt-1">
+            <button
+              onClick={() => { setOpen(false); onDelete() }}
+              className="block w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50"
+            >
+              Delete
+            </button>
+          </div>
+        </div>
+      )}
+    </div>
+  )
 }
 
 function ConfirmDialog({
@@ -197,31 +261,8 @@ export default function AdminBlogPage() {
                         {formatDate(post.published_at)}
                       </td>
                       {/* Actions */}
-                      <td className="px-4 py-3">
-                        <div className="flex items-center gap-2 justify-end">
-                          <Link
-                            href={`/admin/blog/${post.slug}/edit`}
-                            className="px-3 py-1.5 text-xs font-medium rounded-lg border border-gray-200 text-gray-700 hover:bg-gray-50 transition-colors"
-                          >
-                            Edit
-                          </Link>
-                          {postStatus(post) === 'published' && (
-                            <a
-                              href={`/blog/${post.slug}`}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              className="px-3 py-1.5 text-xs font-medium rounded-lg border border-gray-200 text-gray-700 hover:bg-gray-50 transition-colors"
-                            >
-                              View ↗
-                            </a>
-                          )}
-                          <button
-                            onClick={() => setDeleteTarget(post)}
-                            className="px-3 py-1.5 text-xs font-medium rounded-lg border border-red-200 text-red-600 hover:bg-red-50 transition-colors"
-                          >
-                            Delete
-                          </button>
-                        </div>
+                      <td className="px-4 py-3 text-right">
+                        <ActionsMenu post={post} onDelete={() => setDeleteTarget(post)} />
                       </td>
                     </tr>
                   ))}
