@@ -5,8 +5,6 @@ import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
 import { useAuth } from '@/context/AuthContext'
 import { api } from '@/lib/api'
-import type { Candidate } from '@/types'
-import { getStorageUrl } from '@/lib/imageUtils'
 import MinimalFooter from '@/components/layout/MinimalFooter'
 import FeedbackModal from '@/components/ui/FeedbackModal'
 
@@ -68,11 +66,11 @@ const navLinks = [
 ]
 
 export default function CandidateLayout({ children }: { children: React.ReactNode }) {
-  const { user, role, isLoading, isAuthenticated, logout } = useAuth()
+  const { user, role, isLoading, isAuthenticated, logout, profilePhotoUrl } = useAuth()
+  const profilePhoto = profilePhotoUrl
   const router = useRouter()
   const pathname = usePathname()
   const [mobileOpen, setMobileOpen] = useState(false)
-  const [profilePhoto, setProfilePhoto] = useState<string | null>(null)
   const [unreadCount, setUnreadCount] = useState(0)
   const [feedbackOpen, setFeedbackOpen] = useState(false)
 
@@ -86,14 +84,6 @@ export default function CandidateLayout({ children }: { children: React.ReactNod
       router.replace('/login')
     }
   }, [isLoading, isAuthenticated, role, router])
-
-  useEffect(() => {
-    if (isAuthenticated && role === 'candidate') {
-      api.get('/api/candidate/profile')
-        .then((c: Candidate) => setProfilePhoto(getStorageUrl(c.profile_photo_path)))
-        .catch(() => {})
-    }
-  }, [isAuthenticated, role])
 
   useEffect(() => {
     if (!isAuthenticated || role !== 'candidate') return

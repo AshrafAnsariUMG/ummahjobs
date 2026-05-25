@@ -85,7 +85,7 @@ interface FormState {
 
 export default function CandidateProfileEditPage() {
   const { showToast } = useToast()
-  const { user, updateUser } = useAuth()
+  const { user, updateUser, refreshProfile } = useAuth()
   const photoInputRef = useRef<HTMLInputElement>(null)
   const cvInputRef = useRef<HTMLInputElement>(null)
   const coverInputRef = useRef<HTMLInputElement>(null)
@@ -207,6 +207,7 @@ export default function CandidateProfileEditPage() {
       const res: { profile_photo_path: string } = await api.upload('/api/candidate/profile/photo', fd)
       setPhotoPreview(getStorageUrl(res.profile_photo_path))
       setCandidate((prev) => prev ? { ...prev, profile_photo_path: res.profile_photo_path } : prev)
+      refreshProfile()
       showToast('JazakAllah Khayran! Photo updated.', 'success')
     } catch (err: unknown) {
       const e = err as { message?: string }
@@ -317,6 +318,7 @@ export default function CandidateProfileEditPage() {
       await api.delete('/api/candidate/profile/photo')
       setPhotoPreview(null)
       setCandidate((prev) => prev ? { ...prev, profile_photo_path: null } : prev)
+      refreshProfile()
       showToast('Photo removed.', 'success')
     } catch {
       showToast('Failed to remove photo.', 'error')

@@ -84,7 +84,7 @@ const navLinks = [
 ]
 
 export default function EmployerLayout({ children }: { children: React.ReactNode }) {
-  const { user, role, isLoading, isAuthenticated, logout } = useAuth()
+  const { user, role, isLoading, isAuthenticated, logout, profilePhotoUrl } = useAuth()
   const router = useRouter()
   const pathname = usePathname()
   const [mobileOpen, setMobileOpen] = useState(false)
@@ -193,12 +193,21 @@ export default function EmployerLayout({ children }: { children: React.ReactNode
         {/* User info */}
         <div className="p-4 border-t border-gray-100 shrink-0">
           <div className="flex items-center gap-3 mb-3">
-            <div
-              className="w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold text-white shrink-0"
-              style={{ backgroundColor: '#033BB0' }}
-            >
-              {initials}
-            </div>
+            {profilePhotoUrl ? (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img
+                src={profilePhotoUrl}
+                alt={user?.display_name ?? ''}
+                className="w-8 h-8 rounded-full object-cover shrink-0 border border-gray-200"
+              />
+            ) : (
+              <div
+                className="w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold text-white shrink-0"
+                style={{ backgroundColor: '#033BB0' }}
+              >
+                {initials}
+              </div>
+            )}
             <div className="min-w-0">
               <p className="text-sm font-medium text-gray-900 truncate">{user?.display_name}</p>
               <p className="text-xs text-gray-400 truncate">{user?.email}</p>

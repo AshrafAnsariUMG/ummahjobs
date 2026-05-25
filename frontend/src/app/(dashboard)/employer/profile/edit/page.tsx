@@ -5,6 +5,7 @@ import { api } from '@/lib/api'
 import { useToast } from '@/components/ui/Toast'
 import type { Employer } from '@/types'
 import { getStorageUrl } from '@/lib/imageUtils'
+import { useAuth } from '@/context/AuthContext'
 
 const NETWORKS = ['LinkedIn', 'Twitter', 'Facebook', 'Instagram', 'TikTok', 'Website']
 
@@ -25,6 +26,7 @@ interface FormState {
 
 export default function EmployerProfileEditPage() {
   const { showToast } = useToast()
+  const { refreshProfile } = useAuth()
   const [form, setForm] = useState<FormState>({
     company_name: '',
     category: '',
@@ -98,6 +100,7 @@ export default function EmployerProfileEditPage() {
     try {
       const res = await api.upload('/api/employer/profile/logo', fd) as { logo_path: string }
       setLogoPreview(getStorageUrl(res.logo_path))
+      refreshProfile()
       showToast('JazakAllah Khayran! Logo updated.', 'success')
     } catch {
       showToast('Logo upload failed.', 'error')
@@ -132,6 +135,7 @@ export default function EmployerProfileEditPage() {
       await api.delete('/api/employer/profile/logo')
       setLogoPreview(null)
       setEmployer((prev) => prev ? { ...prev, logo_path: null } : prev)
+      refreshProfile()
       showToast('Logo removed.', 'success')
     } catch {
       showToast('Failed to remove logo.', 'error')

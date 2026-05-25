@@ -84,7 +84,7 @@ function AboutDropdown() {
 }
 
 function AvatarDropdown() {
-  const { user, role, logout } = useAuth()
+  const { user, role, logout, profilePhotoUrl } = useAuth()
   const [open, setOpen] = useState(false)
   const ref = useRef<HTMLDivElement>(null)
 
@@ -123,12 +123,21 @@ function AvatarDropdown() {
         className="flex items-center gap-2 rounded-full focus:outline-none"
         aria-label="Account menu"
       >
-        <div
-          className="w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold text-white"
-          style={{ backgroundColor: '#033BB0' }}
-        >
-          {initials}
-        </div>
+        {profilePhotoUrl ? (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img
+            src={profilePhotoUrl}
+            alt={user?.display_name ?? ''}
+            className="w-8 h-8 rounded-full object-cover border border-gray-200"
+          />
+        ) : (
+          <div
+            className="w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold text-white"
+            style={{ backgroundColor: '#033BB0' }}
+          >
+            {initials}
+          </div>
+        )}
         <svg className="w-4 h-4 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
         </svg>
