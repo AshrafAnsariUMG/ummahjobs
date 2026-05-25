@@ -5,6 +5,7 @@ interface Props {
 export default function BismillahWatermark({ color = '#033BB0' }: Props) {
   return (
     <div
+      className="hidden sm:block"
       style={{
         position: 'absolute',
         top: '50%',
