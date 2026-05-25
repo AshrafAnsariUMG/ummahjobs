@@ -5,6 +5,7 @@ import { api } from '@/lib/api'
 import { useToast } from '@/components/ui/Toast'
 import { useAuth } from '@/context/AuthContext'
 import SkillsInput from '@/components/candidate/SkillsInput'
+import DangerZone from '@/components/auth/DangerZone'
 import type { Candidate, JobCategory, User } from '@/types'
 import { getStorageUrl } from '@/lib/imageUtils'
 
@@ -870,6 +871,8 @@ export default function CandidateProfileEditPage() {
           {saving ? 'Saving…' : 'Save Profile'}
         </button>
       </div>
+
+      <DangerZone role="candidate" />
     </div>
   )
 }

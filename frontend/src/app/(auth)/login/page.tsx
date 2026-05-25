@@ -39,6 +39,7 @@ export default function LoginPage() {
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [legacyMessage, setLegacyMessage] = useState<string | null>(null)
+  const [pendingDeletion, setPendingDeletion] = useState<{ purge_at: string } | null>(null)
   const [focused, setFocused] = useState<string | null>(null)
 
   async function handleSubmit(e: React.FormEvent) {
@@ -46,6 +47,7 @@ export default function LoginPage() {
     setIsLoading(true)
     setError(null)
     setLegacyMessage(null)
+    setPendingDeletion(null)
 
     try {
       const data: AuthResponse = await api.post('/api/auth/login', { email, password })
@@ -55,12 +57,32 @@ export default function LoginPage() {
       else if (role === 'employer') router.push('/employer/dashboard')
       else router.push('/candidate/dashboard')
     } catch (err: unknown) {
-      const e = err as { status?: number; error?: string; message?: string }
+      const e = err as { status?: number; error?: string; message?: string; purge_at?: string }
       if (e.error === 'legacy_password') {
         setLegacyMessage(e.message ?? "We've upgraded our platform. Check your email for a reset link.")
+      } else if (e.error === 'pending_deletion' && e.purge_at) {
+        setPendingDeletion({ purge_at: e.purge_at })
       } else {
         setError(e.message ?? 'Something went wrong. Please try again.')
       }
+    } finally {
+      setIsLoading(false)
+    }
+  }
+
+  async function handleRestore() {
+    setIsLoading(true)
+    setError(null)
+    try {
+      const data: AuthResponse = await api.post('/api/auth/restore', { email, password })
+      login(data.token, data.user)
+      const role = data.user.role
+      if (role === 'admin') router.push('/admin')
+      else if (role === 'employer') router.push('/employer/dashboard')
+      else router.push('/candidate/dashboard')
+    } catch (err: unknown) {
+      const e = err as { message?: string }
+      setError(e.message ?? 'Could not restore account.')
     } finally {
       setIsLoading(false)
     }
@@ -77,6 +99,43 @@ export default function LoginPage() {
           Sign in to your UmmahJobs account
         </p>
       </div>
+
+      {/* Pending deletion — offer restore */}
+      {pendingDeletion && (
+        <div style={{
+          background: '#FFFBEB',
+          border: '1px solid #FDE68A',
+          borderRadius: '8px',
+          padding: '14px 16px',
+          marginBottom: '16px',
+        }}>
+          <p style={{ fontWeight: 600, color: '#92400E', marginBottom: '4px', fontSize: '14px' }}>
+            Account scheduled for deletion
+          </p>
+          <p style={{ color: '#78350F', fontSize: '13px', marginBottom: '12px' }}>
+            This account is scheduled to be permanently deleted on{' '}
+            <strong>{new Date(pendingDeletion.purge_at).toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' })}</strong>.
+            Restore it now to keep your profile and history.
+          </p>
+          <button
+            type="button"
+            onClick={handleRestore}
+            disabled={isLoading}
+            style={{
+              padding: '8px 16px',
+              borderRadius: '8px',
+              background: '#0FBB0F',
+              color: 'white',
+              fontSize: '13px',
+              fontWeight: 600,
+              border: 'none',
+              cursor: isLoading ? 'not-allowed' : 'pointer',
+            }}
+          >
+            {isLoading ? 'Restoring…' : 'Restore my account'}
+          </button>
+        </div>
+      )}
 
       {/* Legacy password info */}
       {legacyMessage && (

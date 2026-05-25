@@ -10,3 +10,4 @@ Artisan::command('inspire', function () {
 
 Schedule::command('jobs:expire')->dailyAt('00:00');
 Schedule::command('jobs:send-expiry-warnings')->dailyAt('09:00');
+Schedule::command('accounts:purge-deleted')->dailyAt('03:00');

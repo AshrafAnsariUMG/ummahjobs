@@ -6,6 +6,7 @@ import { useToast } from '@/components/ui/Toast'
 import type { Employer } from '@/types'
 import { getStorageUrl } from '@/lib/imageUtils'
 import { useAuth } from '@/context/AuthContext'
+import DangerZone from '@/components/auth/DangerZone'
 
 const NETWORKS = ['LinkedIn', 'Twitter', 'Facebook', 'Instagram', 'TikTok', 'Website']
 
@@ -459,6 +460,8 @@ export default function EmployerProfileEditPage() {
           {saving ? 'Saving…' : 'Save Changes'}
         </button>
       </div>
+
+      <DangerZone role="employer" />
     </div>
   )
 }

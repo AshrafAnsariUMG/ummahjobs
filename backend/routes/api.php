@@ -28,6 +28,7 @@ Route::prefix('auth')->group(function () {
     Route::post('login', [AuthController::class, 'login']);
     Route::post('forgot-password', [AuthController::class, 'forgotPassword']);
     Route::post('reset-password', [AuthController::class, 'resetPassword']);
+    Route::post('restore', [AuthController::class, 'restoreAccount']);
 
     // UmmahPass SSO
     Route::get('ummahpass/redirect', [UmmahPassController::class, 'redirect']);
@@ -40,6 +41,7 @@ Route::middleware('auth:sanctum')->prefix('auth')->group(function () {
     Route::post('logout', [AuthController::class, 'logout']);
     Route::put('password', [AuthController::class, 'changePassword']);
     Route::post('complete-profile', [AuthController::class, 'completeProfile']);
+    Route::post('delete-account', [AuthController::class, 'requestDeletion']);
 });
 
 // Public job routes

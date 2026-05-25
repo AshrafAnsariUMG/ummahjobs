@@ -111,12 +111,127 @@ class AuthController extends Controller
             return response()->json(['message' => 'Account suspended.'], 403);
         }
 
+        // Account is pending deletion: don't mint a token; let the user explicitly restore.
+        if ($user->deletion_requested_at) {
+            $purgeDate = $user->deletion_requested_at
+                ->copy()
+                ->addDays(\App\Services\AccountDeletionService::GRACE_DAYS);
+            return response()->json([
+                'error'             => 'pending_deletion',
+                'message'           => 'Your account is scheduled for deletion. Confirm your password again on the restore screen to cancel.',
+                'purge_at'          => $purgeDate->toIso8601String(),
+                'requested_at'      => $user->deletion_requested_at->toIso8601String(),
+                'restore_email'     => $user->email,
+            ], 403);
+        }
+
         $token = $user->createToken('auth')->plainTextToken;
 
         return response()->json([
             'user'  => $this->userPayload($user),
             'token' => $token,
             'role'  => $user->role,
+        ]);
+    }
+
+    /**
+     * Schedule the authenticated user's account for deletion. Requires password re-auth
+     * and a "DELETE" confirmation string to prevent accidental wipes.
+     */
+    public function requestDeletion(Request $request)
+    {
+        $request->validate([
+            'password'      => 'required',
+            'confirmation'  => 'required|in:DELETE',
+            'reason'        => 'nullable|string|max:500',
+        ]);
+
+        /** @var User $user */
+        $user = $request->user();
+
+        if (! Hash::check($request->password, $user->password)) {
+            return response()->json(['message' => 'Incorrect password.'], 422);
+        }
+
+        if ($user->deletion_requested_at) {
+            return response()->json(['message' => 'Deletion already pending.'], 422);
+        }
+
+        $service = new \App\Services\AccountDeletionService();
+        $service->requestDeletion($user, $request->reason);
+
+        // Confirmation email — fire & forget
+        try {
+            $purgeDate = $user->deletion_requested_at->copy()
+                ->addDays(\App\Services\AccountDeletionService::GRACE_DAYS);
+            $frontendUrl = rtrim(config('services.app.frontend_url', 'http://localhost:3003'), '/');
+            $restoreUrl  = $frontendUrl . '/login';
+            $body = ET::heading('Your account is scheduled for deletion')
+                . ET::paragraph("Assalamu Alaikum,")
+                . ET::paragraph("We've received your request to delete your UmmahJobs account. Your account is now scheduled for permanent deletion on <strong>" . $purgeDate->format('j F Y') . "</strong>.")
+                . ET::paragraph("Changed your mind? You can restore your account any time before that date by signing back in:")
+                . ET::button($restoreUrl, 'Restore my account')
+                . ET::infoBox('<p style="margin:0;font-size:13px;color:#1E40AF;">After ' . $purgeDate->format('j F Y') . ', your profile, files, and personal data will be permanently removed. This cannot be undone.</p>')
+                . ET::paragraph("JazakAllah Khayran,<br>The UmmahJobs Team");
+            $html = ET::wrap("Your UmmahJobs account is scheduled for deletion", $body);
+            (new \App\Services\GmailMailerService())->sendHtml($user->email, 'Your UmmahJobs account is scheduled for deletion', $html);
+        } catch (\Throwable $e) {
+            Log::warning('Account deletion request email failed: ' . $e->getMessage());
+        }
+
+        // Mattermost — fire & forget
+        try {
+            $name = $user->display_name ?: $user->email;
+            $role = $user->role ?: 'pending';
+            $reason = $request->reason ? "\n**Reason:** " . $request->reason : '';
+            $msg = "### :wastebasket: Account deletion requested\n"
+                . "**User:** {$name} ({$user->email})\n"
+                . "**Role:** {$role}\n"
+                . "**Will be purged:** " . $user->deletion_requested_at->copy()->addDays(\App\Services\AccountDeletionService::GRACE_DAYS)->format('j M Y')
+                . $reason;
+            (new \App\Services\MattermostService())->post($msg);
+        } catch (\Throwable $e) {
+            // ignore
+        }
+
+        return response()->json([
+            'message'  => 'Account scheduled for deletion. You can restore it by signing in within ' . \App\Services\AccountDeletionService::GRACE_DAYS . ' days.',
+            'purge_at' => $user->deletion_requested_at->copy()->addDays(\App\Services\AccountDeletionService::GRACE_DAYS)->toIso8601String(),
+        ]);
+    }
+
+    /**
+     * Restore an account that's pending deletion. Treats like login — requires email + password.
+     */
+    public function restoreAccount(Request $request)
+    {
+        $request->validate([
+            'email'    => 'required|email',
+            'password' => 'required',
+        ]);
+
+        $user = User::where('email', $request->email)->first();
+        if (!$user || !$user->deletion_requested_at) {
+            return response()->json(['message' => 'No pending deletion found for this account.'], 404);
+        }
+
+        if (! Hash::check($request->password, $user->password)) {
+            return response()->json(['message' => 'Incorrect password.'], 401);
+        }
+
+        if (! $user->is_active) {
+            return response()->json(['message' => 'Account suspended.'], 403);
+        }
+
+        (new \App\Services\AccountDeletionService())->cancelDeletion($user);
+
+        $token = $user->createToken('auth')->plainTextToken;
+
+        return response()->json([
+            'user'    => $this->userPayload($user),
+            'token'   => $token,
+            'role'    => $user->role,
+            'message' => 'Account restored. Welcome back!',
         ]);
     }
 

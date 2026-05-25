@@ -25,6 +25,9 @@ class User extends Authenticatable
         'ummahpass_id',
         'is_active',
         'email_verified_at',
+        'deletion_requested_at',
+        'deletion_warned_at',
+        'deletion_reason',
     ];
 
     protected $hidden = [
@@ -35,10 +38,12 @@ class User extends Authenticatable
     protected function casts(): array
     {
         return [
-            'email_verified_at' => 'datetime',
-            'password'          => 'hashed',
-            'legacy_password'   => 'boolean',
-            'is_active'         => 'boolean',
+            'email_verified_at'      => 'datetime',
+            'password'               => 'hashed',
+            'legacy_password'        => 'boolean',
+            'is_active'              => 'boolean',
+            'deletion_requested_at'  => 'datetime',
+            'deletion_warned_at'     => 'datetime',
         ];
     }
 
