@@ -683,8 +683,8 @@ export default function AdminUsersPage() {
                         </td>
                         {/* Role */}
                         <td className="px-4 py-3">
-                          <span className={`px-2 py-0.5 rounded-full text-xs font-medium ${ROLE_STYLES[user.role] ?? 'bg-gray-100 text-gray-600'}`}>
-                            {user.role.charAt(0).toUpperCase() + user.role.slice(1)}
+                          <span className={`px-2 py-0.5 rounded-full text-xs font-medium ${(user.role && ROLE_STYLES[user.role]) ?? 'bg-gray-100 text-gray-600'}`}>
+                            {user.role ? user.role.charAt(0).toUpperCase() + user.role.slice(1) : 'Pending'}
                           </span>
                         </td>
                         {/* Status */}
