@@ -66,41 +66,25 @@ async function getCategories(): Promise<JobCategory[]> {
 
 const STAT_CARDS = [
   {
-    icon: (
-      <svg width={28} height={28} fill="none" viewBox="0 0 24 24" stroke="white" strokeWidth={1.5}>
-        <path strokeLinecap="round" strokeLinejoin="round" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
-      </svg>
-    ),
+    iconPath: <path strokeLinecap="round" strokeLinejoin="round" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />,
     value: '100+',
     label: 'Trusted Employers',
     sub: 'Muslim-friendly companies',
   },
   {
-    icon: (
-      <svg width={28} height={28} fill="none" viewBox="0 0 24 24" stroke="white" strokeWidth={1.5}>
-        <path strokeLinecap="round" strokeLinejoin="round" d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
-      </svg>
-    ),
+    iconPath: <path strokeLinecap="round" strokeLinejoin="round" d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />,
     value: '26',
     label: 'Job Categories',
     sub: 'From tech to Islamic studies',
   },
   {
-    icon: (
-      <svg width={28} height={28} fill="none" viewBox="0 0 24 24" stroke="white" strokeWidth={1.5}>
-        <path strokeLinecap="round" strokeLinejoin="round" d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-      </svg>
-    ),
+    iconPath: <path strokeLinecap="round" strokeLinejoin="round" d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />,
     value: 'Global',
     label: 'Worldwide Reach',
     sub: 'Jobs across 50+ countries',
   },
   {
-    icon: (
-      <svg width={28} height={28} fill="none" viewBox="0 0 24 24" stroke="white" strokeWidth={1.5}>
-        <path strokeLinecap="round" strokeLinejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-      </svg>
-    ),
+    iconPath: <path strokeLinecap="round" strokeLinejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />,
     value: 'Free',
     label: 'Free to Register',
     sub: 'No cost for job seekers',
@@ -291,7 +275,7 @@ export default async function HomePage() {
       </section>
 
       {/* ── Stats ── */}
-      <section style={{ background: 'linear-gradient(135deg, #033BB0 0%, #0256CC 100%)' }}>
+      <section style={{ background: 'linear-gradient(160deg, #F0F4FF 0%, #FFFFFF 50%, #F0FFF0 100%)' }}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-14">
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-8">
             {STAT_CARDS.map((stat, i) => (
@@ -301,21 +285,25 @@ export default async function HomePage() {
                     width: '64px',
                     height: '64px',
                     borderRadius: '16px',
-                    background: 'rgba(255,255,255,0.12)',
+                    background: '#EFF6FF',
+                    color: '#033BB0',
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'center',
                     margin: '0 auto 16px',
                   }}>
-                    {stat.icon}
+                    {/* Icon inherits color via currentColor on stroke */}
+                    <svg width={28} height={28} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+                      {stat.iconPath}
+                    </svg>
                   </div>
-                  <p style={{ color: 'white', fontSize: '36px', fontWeight: 800, lineHeight: 1, marginBottom: '6px' }}>
+                  <p style={{ color: '#033BB0', fontSize: '36px', fontWeight: 800, lineHeight: 1, marginBottom: '6px' }}>
                     {stat.value}
                   </p>
-                  <p style={{ color: 'white', fontWeight: 600, fontSize: '15px', marginBottom: '4px' }}>
+                  <p style={{ color: '#111827', fontWeight: 600, fontSize: '15px', marginBottom: '4px' }}>
                     {stat.label}
                   </p>
-                  <p style={{ color: 'rgba(255,255,255,0.6)', fontSize: '13px' }}>
+                  <p style={{ color: '#6B7280', fontSize: '13px' }}>
                     {stat.sub}
                   </p>
                 </div>
